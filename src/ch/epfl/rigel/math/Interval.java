@@ -22,7 +22,7 @@ public abstract class Interval
         return upperBound - lowerBound;
     }
 
-    abstract boolean contains( double v );
+    public abstract boolean contains( double v );
 
     @Override
     public int hashCode() {

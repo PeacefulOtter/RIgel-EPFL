@@ -22,7 +22,7 @@ public final class Polynomial
         return new Polynomial( coefficientN, coefficients );
     }
 
-    double at( double x )
+    public double at( double x )
     {
         int len = coefficients.length;
         if ( len == 1 || x == 0 )

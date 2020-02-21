@@ -26,7 +26,7 @@ public final class ClosedInterval extends Interval
     }
 
     @Override
-    boolean contains(double v)
+    public boolean contains(double v)
     {
         return ( v >= low() && v <= high() );
     }
