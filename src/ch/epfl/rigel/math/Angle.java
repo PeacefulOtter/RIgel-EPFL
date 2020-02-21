@@ -8,17 +8,17 @@ public final class Angle
 
     //normalise l'angle rad en le réduisant à l'intervalle [0,τ[
     public static double normalizePositive( double rad ) {
-        return rad % TAU;
+        return Math.abs( rad % TAU );
     }
 
     // retourne l'angle correspondant au nombre de secondes d'arc donné, qui peut être quelconque (y compris négatif)
     public static double ofArcsec( double sec ) {
-        return sec * ( TAU / 3600 );
+        return sec * ( TAU / (3600*360) );
     }
 
     // retourne l'angle correspondant à l'angle deg​° min​′ sec​″, ou lève IllegalArgumentException si les minutes données ne sont pas comprises entre 0 (inclus) et 60 (exclus), ou si les secondes ne sont pas comprises entre 0 (inclus) et 60 (exclus),
     public static double ofDMS( int deg, int min, double sec ) {
-        if ( min < 0 || min >= 60 || sec < 0 || min >= 60 )
+        if ( min < 0 || min >= 60 || sec < 0 || sec >= 60 )
         {
             throw new IllegalArgumentException();
         }

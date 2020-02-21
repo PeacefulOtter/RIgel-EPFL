@@ -7,11 +7,10 @@ public final class ClosedInterval extends Interval
     private ClosedInterval( double lowerBound, double upperBound )
     {
         super( lowerBound, upperBound );
-
     }
 
-    public static Interval of( double low, double high ) {
-        if ( high >= low ) { throw new IllegalArgumentException(); }
+    public static ClosedInterval of( double low, double high ) {
+        if ( low >= high ) { throw new IllegalArgumentException(); }
         return new ClosedInterval( low, high );
     }
 
@@ -20,7 +19,7 @@ public final class ClosedInterval extends Interval
         return new ClosedInterval( -size/2, size/2 );
     }
 
-    double clip( double v ) {
+    public double clip( double v ) {
         if ( v <= low() ) { return low(); }
         else if ( v >= high() ) { return high(); }
         return v;

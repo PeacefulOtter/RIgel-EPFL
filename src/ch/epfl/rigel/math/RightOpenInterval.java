@@ -9,12 +9,12 @@ public class RightOpenInterval extends Interval
         super(lowerBound, upperBound);
     }
 
-    public static Interval of( double low, double high ) {
-        if ( high >= low ) { throw new IllegalArgumentException(); }
+    public static RightOpenInterval of( double low, double high ) {
+        if ( low >= high ) { throw new IllegalArgumentException(); }
         return new RightOpenInterval( low, high );
     }
 
-    public static RightOpenInterval symmetric(double size ) {
+    public static RightOpenInterval symmetric( double size ) {
         if ( size <= 0 ) { throw new IllegalArgumentException(); }
         return new RightOpenInterval( -size/2, size/2 );
     }
@@ -29,7 +29,7 @@ public class RightOpenInterval extends Interval
         return x - y * Math.floor( x / y );
     }
 
-    double reduce( double v )
+    public double reduce( double v )
     {
         return low() + floorMod( v - low(), high() - low() );
     }
@@ -40,6 +40,7 @@ public class RightOpenInterval extends Interval
     {
         return String.format( Locale.ROOT, "[%s,%s[", low(), high() );
     }
+
 }
 
 

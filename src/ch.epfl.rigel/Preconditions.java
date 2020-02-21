@@ -8,7 +8,7 @@ public final class Preconditions
     {
     }
 
-    void checkArgument( boolean isTrue )
+    public static void checkArgument( boolean isTrue )
     {
         if ( !isTrue )
         {
@@ -16,7 +16,7 @@ public final class Preconditions
         }
     }
 
-    double checkInInterval( Interval interval, double value )
+    public static double checkInInterval( Interval interval, double value )
     {
         if ( value < interval.low() || value > interval.high() )
         {

@@ -26,14 +26,12 @@ public abstract class Interval
 
     @Override
     public int hashCode() {
-        // throw new UnsupportedOperationException();
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean equals( Object object ) {
-        // throw UnsupportedOperationException
-        return true;
+        throw new UnsupportedOperationException();
     }
 
 }
