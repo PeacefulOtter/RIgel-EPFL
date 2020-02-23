@@ -26,7 +26,7 @@ public final class HorizontalCoordinates extends SphericalCoordinates
 
     public static HorizontalCoordinates ofDeg( double azDeg, double altDeg )
     {
-        if (az < 0 || az >= 360 || alt < -90 || alt > 90) {
+        if (azDeg < 0 || azDeg >= 360 || altDeg < -90 || altDeg > 90) {
             throw new IllegalArgumentException();
         }
         // TO CHECK
@@ -45,23 +45,16 @@ public final class HorizontalCoordinates extends SphericalCoordinates
 
     public String azOctantName( String n, String e, String s, String w )
     {
-        switch (az) {
-            case az <= Angle.ofDeg(22.5) || az > Angle.ofDeg( 337.5 ) :
-                return n;
-            case az > Angle.ofDeg(22.5) && az <= Angle.ofDeg(67.5):
-                return n + e;
-            case az > Angle.ofDeg(67.5) && az <= Angle.ofDeg(112.5):
-                return e;
-            case az > Angle.ofDeg(112.5) && az <= Angle.ofDeg(157.5):
-                return s + e;
-            case az > Angle.ofDeg(157.5) && az <= Angle.ofDeg(202.5):
-                return s;
-            case az > Angle.ofDeg(202.5) && az <= Angle.ofDeg(247.5):
-                return s + w;
-            case az > Angle.ofDeg(247.5) && az <= Angle.ofDeg(292.5):
-                return w;
-            case az > Angle.ofDeg(292.5) && az <= Angle.ofDeg(337.5):
-                return n + w;
+        if ( az <= Angle.ofDeg(22.5) || az > Angle.ofDeg( 337.5 ) ){ return n;}
+        else if( az > Angle.ofDeg(22.5) && az <= Angle.ofDeg(67.5) ){ return n + e; }
+        else if( az > Angle.ofDeg(67.5) && az <= Angle.ofDeg(112.5) ){ return e; }
+        else if( az > Angle.ofDeg(112.5) && az <= Angle.ofDeg(157.5) ){ return s + e; }
+        else if( az > Angle.ofDeg(157.5) && az <= Angle.ofDeg(202.5) ){ return s; }
+        else if( az > Angle.ofDeg(202.5) && az <= Angle.ofDeg(247.5) ){ return s + w; }
+        else if( az > Angle.ofDeg(247.5) && az <= Angle.ofDeg(292.5) ){ return w; }
+        else if( az > Angle.ofDeg(292.5) && az <= Angle.ofDeg(337.5) ){ return n + w; }
+        else {
+            throw new IllegalArgumentException();
         }
     }
 
