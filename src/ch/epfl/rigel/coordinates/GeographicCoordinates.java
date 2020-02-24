@@ -7,8 +7,8 @@ import java.util.Locale;
 
 public final class GeographicCoordinates extends SphericalCoordinates
 {
-    private static final RightOpenInterval lonInterval = RightOpenInterval.of( -180, 180 );
-    private static final RightOpenInterval latInterval = RightOpenInterval.of( -90, 90 );
+    private static final RightOpenInterval lonDegInterval = RightOpenInterval.of( -180, 180 );
+    private static final RightOpenInterval latDegInterval = RightOpenInterval.of( -90, 90 );
 
 
     private GeographicCoordinates( double lonDeg, double latDeg )
@@ -27,12 +27,12 @@ public final class GeographicCoordinates extends SphericalCoordinates
 
     public static boolean isValidLonDeg( double lonDeg )
     {
-        return lonInterval.contains( lonDeg );
+        return lonDegInterval.contains( lonDeg );
     }
 
     public static boolean isValidLatDeg( double latDeg )
     {
-        return latInterval.contains( latDeg );
+        return latDegInterval.contains( latDeg );
     }
 
     @Override

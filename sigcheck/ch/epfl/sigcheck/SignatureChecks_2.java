@@ -6,13 +6,18 @@ import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import org.junit.Test;
 
+import static org.junit.Assert.*;
+
 final class SignatureChecks_2 {
     @Test
     void checkGeographicCoordinates() {
         boolean b;
         double d = 0;
         GeographicCoordinates g;
-        b = GeographicCoordinates.isValidLonDeg(d);
+
+        assertTrue( GeographicCoordinates.isValidLonDeg( 0 ) );
+        assertFalse( GeographicCoordinates.isValidLonDeg( 200 ) );
+
         b = GeographicCoordinates.isValidLatDeg(d);
         g = GeographicCoordinates.ofDeg(d, d);
         d = g.lon();
