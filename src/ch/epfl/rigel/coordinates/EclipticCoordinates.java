@@ -1,11 +1,11 @@
 package ch.epfl.rigel.coordinates;
 
+import ch.epfl.rigel.math.Angle;
+
 import java.util.Locale;
 
 public final class EclipticCoordinates extends SphericalCoordinates
 {
-    private final double lon;
-    private final double lat;
 
     private EclipticCoordinates( double lon, double lat )
     {
@@ -15,37 +15,33 @@ public final class EclipticCoordinates extends SphericalCoordinates
 
     public EclipticCoordinates of( double lon, double lat )
     {
-        // throw new IllegalArgumentException
+        if (lon < 0 || lon >= 2*Math.PI || lat < - Math.PI/2 || lat > Math.PI/2) {
+            throw new IllegalArgumentException();
+        }
         return new EclipticCoordinates( lon, lat );
     }
 
     @Override
     public double lon()
     {
-        return 0;
+        return lon;
     }
 
     @Override
     public double lonDeg()
     {
-        return 0;
+        return Angle.toDeg(lon);
     }
 
     @Override
-    public double lat()
-    {
-        return 0;
-    }
+    public double lat() { return lat; }
 
     @Override
-    public double latDeg()
-    {
-        return 0;
-    }
+    public double latDeg() { return Angle.toDeg(lat); }
 
     @Override
     public String toString()
     {
-        return String.format( Locale.ROOT, "(λ=%.4f°, β=%.4f°)", lon, lat );
+        return String.format( Locale.ROOT, "(λ=%.4f°, β=%.4f°)", Angle.toDeg(lon), Angle.toDeg(lat) );
     }
 }
