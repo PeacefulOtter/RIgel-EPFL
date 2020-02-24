@@ -11,6 +11,7 @@ public final class HorizontalCoordinates extends SphericalCoordinates
 
     private HorizontalCoordinates( double az, double alt )
     {
+        super( az, alt );
         this.az = az;
         this.alt = alt;
     }
@@ -66,29 +67,6 @@ public final class HorizontalCoordinates extends SphericalCoordinates
         return Math.acos(Math.sin(that.alt) * Math.sin(this.alt) + Math.cos(that.alt) * Math.cos(this.alt) * Math.cos(that.az - this.az));
     }
 
-    @Override
-    double lon()
-    {
-        return 0;
-    }
-
-    @Override
-    double lonDeg()
-    {
-        return 0;
-    }
-
-    @Override
-    double lat()
-    {
-        return 0;
-    }
-
-    @Override
-    double latDeg()
-    {
-        return 0;
-    }
 
     @Override
     public String toString()

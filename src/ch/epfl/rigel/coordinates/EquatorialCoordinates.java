@@ -11,6 +11,7 @@ public final class EquatorialCoordinates extends SphericalCoordinates
 
     private EquatorialCoordinates( double ra, double dec )
     {
+        super( ra, dec );
         this.ra = ra;
         this.dec = dec;
     }
@@ -49,29 +50,6 @@ public final class EquatorialCoordinates extends SphericalCoordinates
         return Angle.toDeg( dec );
     }
 
-    @Override
-    double lon()
-    {
-        return 0;
-    }
-
-    @Override
-    double lonDeg()
-    {
-        return 0;
-    }
-
-    @Override
-    double lat()
-    {
-        return 0;
-    }
-
-    @Override
-    double latDeg()
-    {
-        return 0;
-    }
 
     @Override
     public String toString()
