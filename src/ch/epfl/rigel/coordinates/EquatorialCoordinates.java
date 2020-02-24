@@ -1,7 +1,6 @@
 package ch.epfl.rigel.coordinates;
 
 import ch.epfl.rigel.math.Angle;
-import org.junit.platform.commons.util.ExceptionUtils;
 
 import java.util.Locale;
 
@@ -18,7 +17,10 @@ public final class EquatorialCoordinates extends SphericalCoordinates
 
     public static EquatorialCoordinates of( double ra, double dec )
     {
-        // throw new IllegalArgumentException
+        if ( ra < 0 || ra >= Angle.TAU || dec < -Angle.TAU / 4 || dec > Angle.TAU / 4 )
+        {
+            throw new IllegalArgumentException();
+        }
         return new EquatorialCoordinates( ra, dec );
     }
 
@@ -29,12 +31,12 @@ public final class EquatorialCoordinates extends SphericalCoordinates
 
     public double raDeg()
     {
-        return ra;
+        return Angle.toDeg(ra);
     }
 
     public double raHr()
     {
-        return ra;
+        return Angle.toHr( ra );
     }
 
     public double dec()
@@ -44,7 +46,7 @@ public final class EquatorialCoordinates extends SphericalCoordinates
 
     public double decDeg()
     {
-        return dec;
+        return Angle.toDeg( dec );
     }
 
     @Override
@@ -74,8 +76,6 @@ public final class EquatorialCoordinates extends SphericalCoordinates
     @Override
     public String toString()
     {
-        return String.format( Locale.ROOT, "(ra=%.4f°, dec=%.4f°)", ra, dec );
+        return String.format( Locale.ROOT, "(ra=%.4fh, dec=%.4f°)", raHr(), decDeg() );
     }
-
-    //  Notez bien que l'ascension droite est exprimée en heures !  ????
 }
