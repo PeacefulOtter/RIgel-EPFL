@@ -20,7 +20,6 @@ public final class HorizontalCoordinates extends SphericalCoordinates
         if (az < 0 || az >= 2*Math.PI || alt < - Math.PI/2 || alt > Math.PI/2) {
             throw new IllegalArgumentException();
         }
-        // TO CHECK
         return new HorizontalCoordinates( az, alt );
     }
 
@@ -29,7 +28,6 @@ public final class HorizontalCoordinates extends SphericalCoordinates
         if (azDeg < 0 || azDeg >= 360 || altDeg < -90 || altDeg > 90) {
             throw new IllegalArgumentException();
         }
-        // TO CHECK
         return new HorizontalCoordinates( Angle.ofDeg( azDeg ), Angle.ofDeg( altDeg ) );
     }
 
@@ -42,6 +40,11 @@ public final class HorizontalCoordinates extends SphericalCoordinates
     {
         return Angle.toDeg( az );
     }
+
+    public double alt() { return alt; }
+
+    public double altDeg() { return Angle.toDeg( alt ); }
+
 
     public String azOctantName( String n, String e, String s, String w )
     {
@@ -57,11 +60,6 @@ public final class HorizontalCoordinates extends SphericalCoordinates
             throw new IllegalArgumentException();
         }
     }
-
-    public double alt() { return alt; }
-
-
-    public double altDeg() { return Angle.toDeg( alt ); }
 
     public double angularDistanceTo( HorizontalCoordinates that )
     {

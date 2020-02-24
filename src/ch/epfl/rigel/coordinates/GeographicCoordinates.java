@@ -9,10 +9,10 @@ public final class GeographicCoordinates extends SphericalCoordinates
     private final double lonDeg;
     private final double latDeg;
 
-    private GeographicCoordinates( double lon, double lat )
+    private GeographicCoordinates( double lonDeg, double latDeg )
     {
-        this.lonDeg = lon;
-        this.latDeg = lat;
+        this.lonDeg = lonDeg;
+        this.latDeg = latDeg;
     }
 
     public static GeographicCoordinates ofDeg( double lonDeg, double latDeg )

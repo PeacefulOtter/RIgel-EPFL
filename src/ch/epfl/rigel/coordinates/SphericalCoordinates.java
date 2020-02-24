@@ -1,14 +1,33 @@
 package ch.epfl.rigel.coordinates;
 
+import ch.epfl.rigel.math.Angle;
+
 abstract class SphericalCoordinates
 {
-    abstract double lon();
+    private final double lon;
+    private final double lat;
 
-    abstract double lonDeg();
+    public SphericalCoordinates( double lon, double lat )
+    {
+        this.lon = lon;
+        this.lat = lat;
+    }
 
-    abstract double lat();
+    double lon() {
+        return lon;
+    };
 
-    abstract double latDeg();
+    double lonDeg()  {
+        return Angle.toDeg( lon );
+    }
+
+    double lat() {
+        return lat;
+    }
+
+    double latDeg() {
+        return Angle.toDeg( lat );
+    }
 
     @Override
     public final int hashCode()
