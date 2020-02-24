@@ -2,9 +2,13 @@ package ch.epfl.rigel.coordinates;
 
 import java.util.Locale;
 import ch.epfl.rigel.math.Angle;
+import ch.epfl.rigel.math.ClosedInterval;
+import ch.epfl.rigel.math.RightOpenInterval;
 
 public final class EclipticCoordinates extends SphericalCoordinates
 {
+    private static final RightOpenInterval lonInterval = RightOpenInterval.of( 0, Angle.TAU );
+    private static final ClosedInterval latInterval = ClosedInterval.of( -Angle.TAU, Angle.TAU);
 
     private EclipticCoordinates( double lon, double lat )
     {
@@ -13,10 +17,11 @@ public final class EclipticCoordinates extends SphericalCoordinates
 
     public static EclipticCoordinates of( double lon, double lat )
     {
-        if ( lon < 0 || lon >= Angle.TAU || lat < -Angle.TAU / 4 || lat > Angle.TAU / 4 )
+        if ( !lonInterval.contains(lon) || !latInterval.contains(lat))
         {
             throw new IllegalArgumentException();
-        }        return new EclipticCoordinates( lon, lat );
+        }
+        return new EclipticCoordinates( lon, lat );
     }
 
     @Override

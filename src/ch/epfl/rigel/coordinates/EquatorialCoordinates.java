@@ -1,11 +1,16 @@
 package ch.epfl.rigel.coordinates;
 
 import ch.epfl.rigel.math.Angle;
+import ch.epfl.rigel.math.ClosedInterval;
+import ch.epfl.rigel.math.RightOpenInterval;
 
 import java.util.Locale;
 
 public final class EquatorialCoordinates extends SphericalCoordinates
 {
+    private static final RightOpenInterval radInterval = RightOpenInterval.of( 0, Angle.TAU );
+    private static final ClosedInterval decInterval = ClosedInterval.of( -Angle.TAU/4, Angle.TAU/4);
+
     private EquatorialCoordinates( double ra, double dec )
     {
         super( ra, dec );
@@ -13,7 +18,7 @@ public final class EquatorialCoordinates extends SphericalCoordinates
 
     public static EquatorialCoordinates of( double ra, double dec )
     {
-        if ( ra < 0 || ra >= Angle.TAU || dec < -Angle.TAU / 4 || dec > Angle.TAU / 4 )
+        if ( !radInterval.contains(ra) || !decInterval.contains(dec) )
         {
             throw new IllegalArgumentException();
         }
