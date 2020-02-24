@@ -6,13 +6,9 @@ import java.util.Locale;
 
 public final class GeographicCoordinates extends SphericalCoordinates
 {
-    private final double lonDeg;
-    private final double latDeg;
-
     private GeographicCoordinates( double lonDeg, double latDeg )
     {
-        this.lonDeg = lonDeg;
-        this.latDeg = latDeg;
+        super( Angle.ofDeg( lonDeg ), Angle.ofDeg( latDeg ) );
     }
 
     public static GeographicCoordinates ofDeg( double lonDeg, double latDeg )
@@ -35,32 +31,8 @@ public final class GeographicCoordinates extends SphericalCoordinates
     }
 
     @Override
-    public double lon()
-    {
-        return Angle.ofDeg( lonDeg );
-    }
-
-    @Override
-    public double lonDeg()
-    {
-        return lonDeg;
-    }
-
-    @Override
-    public double lat()
-    {
-        return Angle.ofDeg( latDeg );
-    }
-
-    @Override
-    public double latDeg()
-    {
-        return latDeg;
-    }
-
-    @Override
     public String toString()
     {
-        return String.format( Locale.ROOT, "(lon=%.4f°, lat=%.4f°)", lonDeg, latDeg );
+        return String.format( Locale.ROOT, "(lon=%.4f°, lat=%.4f°)", lonDeg(), latDeg() );
     }
 }
