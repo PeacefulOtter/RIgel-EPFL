@@ -1,6 +1,7 @@
 package ch.epfl.rigel.coordinates;
 
 import java.util.Locale;
+import ch.epfl.rigel.math.Angle;
 
 public final class EclipticCoordinates extends SphericalCoordinates
 {
@@ -10,10 +11,12 @@ public final class EclipticCoordinates extends SphericalCoordinates
         super( lon, lat );
     }
 
-    public EclipticCoordinates of( double lon, double lat )
+    public static EclipticCoordinates of( double lon, double lat )
     {
-        // throw new IllegalArgumentException
-        return new EclipticCoordinates( lon, lat );
+        if ( lon < 0 || lon >= Angle.TAU || lat < -Angle.TAU / 4 || lat > Angle.TAU / 4 )
+        {
+            throw new IllegalArgumentException();
+        }        return new EclipticCoordinates( lon, lat );
     }
 
     @Override

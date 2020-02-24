@@ -6,14 +6,9 @@ import java.util.Locale;
 
 public final class EquatorialCoordinates extends SphericalCoordinates
 {
-    private final double ra;
-    private final double dec;
-
     private EquatorialCoordinates( double ra, double dec )
     {
         super( ra, dec );
-        this.ra = ra;
-        this.dec = dec;
     }
 
     public static EquatorialCoordinates of( double ra, double dec )
@@ -27,27 +22,27 @@ public final class EquatorialCoordinates extends SphericalCoordinates
 
     public double ra()
     {
-        return ra;
+        return lon();
     }
 
     public double raDeg()
     {
-        return Angle.toDeg(ra);
+        return lonDeg();
     }
 
     public double raHr()
     {
-        return Angle.toHr( ra );
+        return Angle.toHr(lon());
     }
 
     public double dec()
     {
-        return dec;
+        return lat();
     }
 
     public double decDeg()
     {
-        return Angle.toDeg( dec );
+        return latDeg();
     }
 
 
