@@ -1,11 +1,16 @@
 package ch.epfl.rigel.coordinates;
 
 import ch.epfl.rigel.math.Angle;
+import ch.epfl.rigel.math.RightOpenInterval;
 
 import java.util.Locale;
 
 public final class GeographicCoordinates extends SphericalCoordinates
 {
+    private static final RightOpenInterval lonInterval = RightOpenInterval.of( -180, 180 );
+    private static final RightOpenInterval latInterval = RightOpenInterval.of( -90, 90 );
+
+
     private GeographicCoordinates( double lonDeg, double latDeg )
     {
         super( Angle.ofDeg( lonDeg ), Angle.ofDeg( latDeg ) );
@@ -22,12 +27,12 @@ public final class GeographicCoordinates extends SphericalCoordinates
 
     public static boolean isValidLonDeg( double lonDeg )
     {
-        return !( lonDeg < -180 || lonDeg >= 180 );
+        return lonInterval.contains( lonDeg );
     }
 
     public static boolean isValidLatDeg( double latDeg )
     {
-        return !( latDeg < 0 || latDeg >= 360 );
+        return latInterval.contains( latDeg );
     }
 
     @Override

@@ -13,19 +13,19 @@ abstract class SphericalCoordinates
         this.lat = lat;
     }
 
-    double lon() {
+    public double lon() {
         return lon;
     };
 
-    double lonDeg()  {
+    public double lonDeg()  {
         return Angle.toDeg( lon );
     }
 
-    double lat() {
+    public double lat() {
         return lat;
     }
 
-    double latDeg() {
+    public double latDeg() {
         return Angle.toDeg( lat );
     }
 
