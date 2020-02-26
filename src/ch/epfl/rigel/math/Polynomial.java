@@ -1,13 +1,15 @@
 package ch.epfl.rigel.math;
 
-import java.sql.Array;
-import java.util.Arrays;
-import java.util.Locale;
-
 public final class Polynomial
 {
+    // store the polynomial coefficient
     private double[] coefficients;
 
+    /**
+     * Build the polynomial using the coefficients and the last coefficient (N)
+     * @param coefficientN : last coefficient
+     * @param coefficients : all the other coefficients
+     */
     private Polynomial( double coefficientN, double... coefficients )
     {
         int len = coefficients.length;
@@ -16,12 +18,23 @@ public final class Polynomial
         System.arraycopy( coefficients, 0, this.coefficients, 1, len );
     }
 
+    /**
+     * Creates a new Polynomial with the given coefficients
+     * @param coefficientN : last coefficient
+     * @param coefficients : all the other coefficients
+     * @return the polynomial
+     */
     public static Polynomial of( double coefficientN, double... coefficients )
     {
         if ( coefficientN == 0 ) { throw new IllegalArgumentException(); }
         return new Polynomial( coefficientN, coefficients );
     }
 
+    /**
+     * Give the value of the polynomial at a certain x
+     * @param x
+     * @return the value at x
+     */
     public double at( double x )
     {
         int len = coefficients.length;
@@ -32,7 +45,6 @@ public final class Polynomial
 
         double value = coefficients[ 0 ];
 
-        System.out.println(Arrays.toString(this.coefficients));
         for ( int i = 1; i < len; i++ )
         {
             System.out.println(coefficients[i]);
@@ -42,6 +54,10 @@ public final class Polynomial
         return value;
     }
 
+    /**
+     * Build a string to display the polynomial in a "readable" way
+     * @return the polynomial string
+     */
     @Override
     public String toString()
     {

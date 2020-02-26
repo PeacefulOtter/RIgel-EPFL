@@ -4,6 +4,7 @@ import ch.epfl.rigel.math.Interval;
 
 public final class Preconditions
 {
+    // avoid any creation of intances
     private Preconditions()
     {
     }
