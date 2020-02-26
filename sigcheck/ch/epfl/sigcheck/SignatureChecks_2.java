@@ -4,8 +4,8 @@ import ch.epfl.rigel.coordinates.EclipticCoordinates;
 import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
-import org.junit.Test;
 
+import org.junit.jupiter.api.Test;
 import static org.junit.Assert.*;
 
 final class SignatureChecks_2 {
