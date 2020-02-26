@@ -8,10 +8,15 @@ import java.util.Locale;
 
 public final class HorizontalCoordinates extends SphericalCoordinates
 {
+    // Interval of longitude
     private static final RightOpenInterval azInterval =  RightOpenInterval.of( 0, Angle.TAU );
+    // Interval of latitude
     private static final ClosedInterval altInterval = ClosedInterval.of( -Math.PI / 2, Math.PI / 2 );
 
+    // Interval of longitude in degrees
     private static final RightOpenInterval azDegInterval =  RightOpenInterval.of( 0, 360 );
+
+    // Interval of latitude in degrees
     private static final ClosedInterval altDegInterval = ClosedInterval.of( -90, 90 );
 
     private HorizontalCoordinates( double az, double alt )
@@ -19,6 +24,8 @@ public final class HorizontalCoordinates extends SphericalCoordinates
         super( az, alt );
     }
 
+    // methode of construction
+    // throw exception if the interval not contains the values
     public static HorizontalCoordinates of( double az, double alt )
     {
         if ( !azInterval.contains( az ) || !altInterval.contains( alt ) ) {
@@ -27,6 +34,8 @@ public final class HorizontalCoordinates extends SphericalCoordinates
         return new HorizontalCoordinates( az, alt );
     }
 
+    // methode of construction in degrees
+    // throw exception if the interval in degrees not contains the values
     public static HorizontalCoordinates ofDeg( double azDeg, double altDeg )
     {
         if ( !azDegInterval.contains( azDeg ) || !altDegInterval.contains( altDeg ) ) {
@@ -49,7 +58,9 @@ public final class HorizontalCoordinates extends SphericalCoordinates
 
     public double altDeg() { return latDeg(); }
 
-
+    /**
+     * @return the direction (N, E, S, W) of the longitude angle
+     */
     public String azOctantName( String n, String e, String s, String w )
     {
         double azDeg = azDeg();
