@@ -15,7 +15,6 @@ public final class HorizontalCoordinates extends SphericalCoordinates
 
     // Interval of longitude in degrees
     private static final RightOpenInterval azDegInterval =  RightOpenInterval.of( 0, 360 );
-
     // Interval of latitude in degrees
     private static final ClosedInterval altDegInterval = ClosedInterval.of( -90, 90 );
 
