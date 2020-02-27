@@ -24,7 +24,7 @@ public final class GeographicCoordinates extends SphericalCoordinates
     {
         if ( !isValidLonDeg( lonDeg ) || !isValidLatDeg( latDeg ) )
         {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException( "Invalid longitude or latitude" );
         }
         return new GeographicCoordinates( lonDeg, latDeg );
     }

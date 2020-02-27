@@ -9,9 +9,9 @@ import java.util.Locale;
 public final class EquatorialCoordinates extends SphericalCoordinates
 {
     // Interval of the longitude
-    private static final RightOpenInterval radInterval = RightOpenInterval.of( 0, Angle.TAU );
+    private static final RightOpenInterval raInterval = RightOpenInterval.of( 0, Angle.TAU );
     // Interval of the latitude
-    private static final ClosedInterval decInterval = ClosedInterval.of( -Angle.TAU/4, Angle.TAU/4);
+    private static final ClosedInterval decInterval = ClosedInterval.of( -Angle.TAU / 4, Angle.TAU / 4);
 
     private EquatorialCoordinates( double ra, double dec )
     {
@@ -22,7 +22,7 @@ public final class EquatorialCoordinates extends SphericalCoordinates
     // throw exception if the interval not contains the values
     public static EquatorialCoordinates of( double ra, double dec )
     {
-        if ( !radInterval.contains(ra) || !decInterval.contains(dec) )
+        if ( !raInterval.contains(ra) || !decInterval.contains(dec) )
         {
             throw new IllegalArgumentException();
         }

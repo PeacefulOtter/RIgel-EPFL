@@ -11,7 +11,7 @@ public final class EclipticCoordinates extends SphericalCoordinates
     // Interval of the longitude
     private static final RightOpenInterval lonInterval = RightOpenInterval.of( 0, Angle.TAU );
     // Interval of the latitude
-    private static final ClosedInterval latInterval = ClosedInterval.of( -Angle.TAU, Angle.TAU);
+    private static final ClosedInterval latInterval = ClosedInterval.of( -Angle.TAU / 4, Angle.TAU / 4 );
 
     private EclipticCoordinates( double lon, double lat )
     {

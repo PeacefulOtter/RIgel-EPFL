@@ -6,38 +6,80 @@ import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 final class SignatureChecks_2 {
     @Test
     void checkGeographicCoordinates() {
-        boolean b;
-        double d = 0;
+        double d;
         GeographicCoordinates g;
 
         assertTrue( GeographicCoordinates.isValidLonDeg( 0 ) );
         assertFalse( GeographicCoordinates.isValidLonDeg( 200 ) );
 
-        b = GeographicCoordinates.isValidLatDeg(d);
-        g = GeographicCoordinates.ofDeg(d, d);
+        assertThrows( IllegalArgumentException.class, () -> {GeographicCoordinates.ofDeg(0, 90); } );
+        assertThrows( IllegalArgumentException.class, () -> {GeographicCoordinates.ofDeg(180, 70); } );
+
+        g = GeographicCoordinates.ofDeg( 90, 45 );
         d = g.lon();
+        assertEquals( Math.PI / 2, d );
         d = g.lonDeg();
+        assertEquals(90, d );
         d = g.lat();
+        assertEquals( Math.PI / 4, d );
         d = g.latDeg();
+        assertEquals( 45, d );
+        System.out.println(g.toString());
+
+        g = GeographicCoordinates.ofDeg( 45, 22.5 );
+        d = g.lon();
+        assertEquals( Math.PI / 4, d );
+        d = g.lonDeg();
+        assertEquals(45, d );
+        d = g.lat();
+        assertEquals( Math.PI / 8, d );
+        d = g.latDeg();
+        assertEquals( 22.5, d );
+
+        System.out.println(g.toString());
     }
     @Test
     void checkHorizontalCoordinates() {
         double d = 0;
         String s = "";
         HorizontalCoordinates h;
-        h = HorizontalCoordinates.of(d, d);
-        h = HorizontalCoordinates.ofDeg(d, d);
-        d = h.az();
-        d = h.azDeg();
-        d = h.alt();
-        d = h.altDeg();
-        s = h.azOctantName(s, s, s, s);
-        d = h.angularDistanceTo(h);
+
+        assertThrows( IllegalArgumentException.class, () -> {HorizontalCoordinates.ofDeg(400, 90); } );
+        assertThrows( IllegalArgumentException.class, () -> {HorizontalCoordinates.ofDeg(100, -150); } );
+        assertThrows( IllegalArgumentException.class, () -> {HorizontalCoordinates.of(Math.PI * 3, 2); } );
+        assertThrows( IllegalArgumentException.class, () -> {HorizontalCoordinates.ofDeg(0, 500 ); } );
+
+        h = HorizontalCoordinates.ofDeg( 225, 45 );
+        d = h.lon();
+        assertEquals( Math.PI + Math.PI / 4, d, Math.exp(-6) );
+        d = h.lonDeg();
+        assertEquals(225, d, Math.exp(-6) );
+        d = h.lat();
+        assertEquals( Math.PI / 4, d, Math.exp(-6) );
+        d = h.latDeg();
+        assertEquals( 45, d, Math.exp(-6) );
+        System.out.println(h);
+        System.out.println( h.azOctantName("N", "E", "S", "O") );
+
+        HorizontalCoordinates m = HorizontalCoordinates.of( Math.PI / 3, Math.PI / 4 );
+        d = m.lon();
+        assertEquals( Math.PI / 3, d, Math.exp(-6) );
+        d = m.lonDeg();
+        assertEquals(60, d, Math.exp(-6) );
+        d = m.lat();
+        assertEquals( Math.PI / 4, d, Math.exp(-6) );
+        d = m.latDeg();
+        assertEquals( 45, d, Math.exp(-6) );
+        System.out.println(m);
+        System.out.println( m.azOctantName("N", "E", "S", "O") );
+
+
+        System.out.println( m.angularDistanceTo(h) );
     }
     @Test
     void checkEquatorialCoordinates() {
