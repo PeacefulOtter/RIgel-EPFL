@@ -18,8 +18,13 @@ public final class EquatorialCoordinates extends SphericalCoordinates
         super( ra, dec );
     }
 
-    // methode of construction
-    // throw exception if the interval not contains the values
+    /**
+     * Creates an Equatorial Coordinate
+     * @param ra : right ascension
+     * @param dec : declination
+     * @throws IllegalArgumentException if the right ascension or the declination given is out of bound
+     * @return the coordinates
+     */
     public static EquatorialCoordinates of( double ra, double dec )
     {
         if ( !raInterval.contains(ra) || !decInterval.contains(dec) )
@@ -39,9 +44,10 @@ public final class EquatorialCoordinates extends SphericalCoordinates
         return lonDeg();
     }
 
+    // converts the right ascension to hours
     public double raHr()
     {
-        return Angle.toHr(lon());
+        return Angle.toHr( lon() );
     }
 
     public double dec()

@@ -22,12 +22,12 @@ public final class EclipticCoordinates extends SphericalCoordinates
      * Creates an Ecliptic Coordinate
      * @param lon : longitude
      * @param lat : latitude
-     * @throws IllegalArgumentException if longitude or latitude given is out of bound
-     * @return the coordinate
+     * @throws IllegalArgumentException if the longitude or the latitude given is out of bound
+     * @return the coordinates
      */
     public static EclipticCoordinates of( double lon, double lat )
     {
-        if ( !lonInterval.contains(lon) || !latInterval.contains(lat))
+        if ( !lonInterval.contains( lon ) || !latInterval.contains( lat ) )
         {
             throw new IllegalArgumentException();
         }
