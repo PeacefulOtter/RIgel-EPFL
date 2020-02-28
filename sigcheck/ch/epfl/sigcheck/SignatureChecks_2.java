@@ -4,8 +4,9 @@ import ch.epfl.rigel.coordinates.EclipticCoordinates;
 import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
-
+import ch.epfl.rigel.math.Angle;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 final class SignatureChecks_2 {
@@ -84,22 +85,45 @@ final class SignatureChecks_2 {
     @Test
     void checkEquatorialCoordinates() {
         double d = 0;
+        assertThrows( IllegalArgumentException.class, () -> {EquatorialCoordinates.of(Angle.TAU, Angle.TAU/5); } );
+        assertThrows( IllegalArgumentException.class, () -> {EquatorialCoordinates.of(0, Angle.TAU/2); } );
+        assertThrows( IllegalArgumentException.class, () -> {EquatorialCoordinates.of(Math.PI * 3, 2); } );
+        assertThrows( IllegalArgumentException.class, () -> {EquatorialCoordinates.of(0, 500 ); } );
+
         EquatorialCoordinates e;
-        e = EquatorialCoordinates.of(d, d);
+        e = EquatorialCoordinates.of(Angle.TAU/2, Angle.TAU/6);
         d = e.ra();
+        assertEquals( Math.PI , d, Math.exp(-6) );
         d = e.raDeg();
+        assertEquals( 180, d, Math.exp(-6) );
         d = e.raHr();
+        assertEquals( 12, d, Math.exp(-6) );
         d = e.dec();
+        assertEquals( Math.PI / 3, d, Math.exp(-6) );
         d = e.decDeg();
+        assertEquals( 60, d, Math.exp(-6) );
+        System.out.print(e);
+
     }
     @Test
     void checkEclipticCoordinates() {
         double d = 0;
+
+        assertThrows( IllegalArgumentException.class, () -> {EclipticCoordinates.of(Angle.TAU, Angle.TAU/5); } );
+        assertThrows( IllegalArgumentException.class, () -> {EclipticCoordinates.of(0, Angle.TAU/2); } );
+        assertThrows( IllegalArgumentException.class, () -> {EclipticCoordinates.of(Math.PI * 3, 2); } );
+        assertThrows( IllegalArgumentException.class, () -> {EclipticCoordinates.of(0, 500 ); } );
+
         EclipticCoordinates e;
-        e = EclipticCoordinates.of(d, d);
+        e = EclipticCoordinates.of(Angle.TAU/2, Angle.TAU/6);
         d = e.lon();
+        assertEquals( Math.PI , d, Math.exp(-6) );
         d = e.lonDeg();
+        assertEquals( 180, d, Math.exp(-6) );
         d = e.lat();
+        assertEquals( Math.PI / 3, d, Math.exp(-6) );
         d = e.latDeg();
+        assertEquals( 60, d, Math.exp(-6) );
+        System.out.print(d);
     }
 }
