@@ -11,7 +11,7 @@ public enum Epoch {
 
     private final LocalDateTime date;
 
-    private Epoch( LocalDateTime date)
+    Epoch( LocalDateTime date )
     {
         this.date = date;
     }

@@ -20,6 +20,7 @@ public final class SiderealTime
 
     public static double local( ZonedDateTime when, GeographicCoordinates where )
     {
+        double greenwichTime = greenwich( when );
         // Need to get a ZoneId Object using longitude and latitude
         // HOW ?
         return 0; // when.withZoneSameInstant( where.lon(), where.lat() );
