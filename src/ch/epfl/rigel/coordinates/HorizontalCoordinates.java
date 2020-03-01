@@ -8,23 +8,23 @@ import java.util.Locale;
 
 public final class HorizontalCoordinates extends SphericalCoordinates
 {
-    // Interval of longitude
+    // Interval of the longitude in radians
     private static final RightOpenInterval azInterval =  RightOpenInterval.of( 0, Angle.TAU );
-    // Interval of latitude
+    // Interval of the latitude in radians
     private static final ClosedInterval altInterval = ClosedInterval.of( -Math.PI / 2, Math.PI / 2 );
-
-    // Interval of longitude in degrees
-    private static final RightOpenInterval azDegInterval =  RightOpenInterval.of( 0, 360 );
-    // Interval of latitude in degrees
-    private static final ClosedInterval altDegInterval = ClosedInterval.of( -90, 90 );
 
     private HorizontalCoordinates( double az, double alt )
     {
         super( az, alt );
     }
 
-    // methode of construction
-    // throw exception if the interval not contains the values
+    /**
+     * Creates an Horizontal Coordinate
+     * @param az : azimuth
+     * @param alt : altitude
+     * @throws IllegalArgumentException if the azimuth or the altitude given is out of bound
+     * @return the coordinates
+     */
     public static HorizontalCoordinates of( double az, double alt )
     {
         if ( !azInterval.contains( az ) || !altInterval.contains( alt ) ) {
@@ -33,50 +33,56 @@ public final class HorizontalCoordinates extends SphericalCoordinates
         return new HorizontalCoordinates( az, alt );
     }
 
-    // methode of construction in degrees
-    // throw exception if the interval in degrees not contains the values
+    /**
+     * Creates an Horizontal Coordinate
+     * @param azDeg : azimuth in degrees
+     * @param altDeg : altitude in degrees
+     * @throws IllegalArgumentException if the azimuth or the altitude given is out of bound
+     * @return the coordinates
+     */
     public static HorizontalCoordinates ofDeg( double azDeg, double altDeg )
     {
-        if ( !azDegInterval.contains( azDeg ) || !altDegInterval.contains( altDeg ) ) {
+        double az = Angle.ofDeg( azDeg ), alt = Angle.ofDeg( altDeg );
+        if ( !azInterval.contains( az ) || !altInterval.contains( alt ) ) {
             throw new IllegalArgumentException();
         }
-        return new HorizontalCoordinates( Angle.ofDeg( azDeg ), Angle.ofDeg( altDeg ) );
+        return new HorizontalCoordinates( az, alt );
     }
 
-    public double az()
-    {
-        return lon();
-    }
+    public double az() { return lon(); }
 
-    public double azDeg()
-    {
-        return lonDeg();
-    }
+    public double azDeg() { return lonDeg(); }
 
     public double alt() { return lat(); }
 
     public double altDeg() { return latDeg(); }
 
     /**
-     * @return the direction (N, E, S, W) of the longitude angle
+     * @return the direction (N, E, S, W) depending on the longitude
      */
     public String azOctantName( String n, String e, String s, String w )
     {
-        double azDeg = azDeg();
-        if ( azDeg <= 22.5 ||     azDeg >  337.5 ) { return n; }
-        else if( azDeg > 22.5  && azDeg <= 67.5 )  { return n + e; }
-        else if( azDeg > 67.5  && azDeg <= 112.5 ) { return e; }
-        else if( azDeg > 112.5 && azDeg <= 157.5 ) { return s + e; }
-        else if( azDeg > 157.5 && azDeg <= 202.5 ) { return s; }
-        else if( azDeg > 202.5 && azDeg <= 247.5 ) { return s + w; }
-        else if( azDeg > 247.5 && azDeg <= 292.5 ) { return w; }
-        else if( azDeg > 292.5 && azDeg <= 337.5 ) { return n + w; }
-        else { throw new IllegalArgumentException(); }
+        int octant = (int) Math.round( azDeg() / 45 );
+        switch ( octant )
+        {
+            case 2: return e;
+            case 3: return s + e;
+            case 4: return s;
+            case 5: return s + w;
+            case 6: return w;
+            case 7: return n + w;
+        }
+        return n; // if octant = 0 or = 8
     }
 
+    /**
+     * Calculates the angular distance between two HorizontalCoordinates
+     * @param that : the other coordinates
+     * @return the angular distance
+     */
     public double angularDistanceTo( HorizontalCoordinates that )
     {
-        return Math.acos(Math.sin(that.alt()) * Math.sin(this.alt()) + Math.cos(that.alt()) * Math.cos(this.alt()) * Math.cos(that.az() - this.az()));
+        return Math.acos( Math.sin( that.alt() ) * Math.sin( this.alt() ) + Math.cos( that.alt() ) * Math.cos( this.alt() ) * Math.cos( that.az() - this.az() ) );
     }
 
 

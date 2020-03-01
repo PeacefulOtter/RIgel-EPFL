@@ -78,10 +78,8 @@ final class SignatureChecks_2 {
         assertEquals( 45, d, Math.exp(-6) );
         System.out.println(m);
         System.out.println( m.azOctantName("N", "E", "S", "O") );
-
-
-        System.out.println( m.angularDistanceTo(h) );
     }
+
     @Test
     void checkEquatorialCoordinates() {
         double d = 0;
