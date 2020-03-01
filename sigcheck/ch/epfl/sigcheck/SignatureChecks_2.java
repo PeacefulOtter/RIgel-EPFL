@@ -124,6 +124,6 @@ final class SignatureChecks_2 {
         assertEquals( Math.PI / 3, d, Math.exp(-6) );
         d = e.latDeg();
         assertEquals( 60, d, Math.exp(-6) );
-        System.out.print(d);
+        System.out.print(e);
     }
 }
