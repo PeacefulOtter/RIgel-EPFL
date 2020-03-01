@@ -12,11 +12,11 @@ public final class EclipticToEquatorialConversion implements Function<EclipticCo
     // problem because Angle.ofDMS return radians and not minutes
     private final static double LAST_COEF = Angle.ofDMS(23, 26, 21.45 );
     private final Polynomial epsilonPolynomial = Polynomial.of( 0.00181, -0.0006, -46.815, 0 );
-    private double cosEpsilon;
-    private double sinEpsilon;
+    private final static double cosEpsilon;
+    private double final static sinEpsilon;
     public EclipticToEquatorialConversion( ZonedDateTime when ) {
         double daysT = Epoch.J2000.daysUntil( when );
-        double epsilon = Angle.ofDeg( epsilonPolynomial.at(daysT) ) + LAST_COEF;
+        double epsilon = Angle.ofDMS(0, 0, epsilonPolynomial.at(daysT) ) + LAST_COEF;
         cosEpsilon = Math.cos( epsilon );
         sinEpsilon = Math.sin( epsilon );
         // changement de système de coordonnées entre les coordonnées écliptiques et les coordonnées équatoriales pour le couple date/heure when.
