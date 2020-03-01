@@ -7,20 +7,23 @@ import java.util.function.Function;
 
 public final class EquatorialToHorizontalConversion implements Function<EquatorialCoordinates, HorizontalCoordinates>
 {
+    private final double Sl;
 
-    public EquatorialToHorizontalConversion(ZonedDateTime when, GeographicCoordinates where )
+    public EquatorialToHorizontalConversion( ZonedDateTime when, GeographicCoordinates where )
     {
+        // add something there idk what
+        Sl = SiderealTime.local( when, where );
     }
 
     @Override
     public HorizontalCoordinates apply( EquatorialCoordinates equ )
     {
-        double delta = equ.dec(); // delinaison coord equatorial ??
+        double delta = equ.dec(); // delinaison coord equatorial
         double phi = equ.ra(); // latitude de l'observateur
-        double H = SiderealTime.greenwich() - equ.ra(); // angle horaire - Sl = temps sidéral, alpha =
-        double h; // hauteur coord horizontale = Math.asin( sin(delta) * sin(phi) + cos(delta) * cos(phi) * cos(H) );
-        double A; // azimut coord horizontale = Math.atan2( ( -cos(delta) * cos(phi) * sin(H) ) / ( sin(delta) - sin(phi) * sin(h) ) );
-        return null;
+        double H = Sl - phi; // angle horaire
+        double h = Math.asin( Math.sin(delta) * Math.sin(phi) + Math.cos(delta) * Math.cos(phi) * Math.cos(H) ); // hauteur coord horizontale
+        double A = Math.atan2( ( -Math.cos(delta) * Math.cos(phi) * Math.sin(H) ) / ( Math.sin(delta) - Math.sin(phi) * Math.sin(h) ), 1 ); // azimut coord horizontale
+        return HorizontalCoordinates.of( A, h );
     }
 
     @Override
