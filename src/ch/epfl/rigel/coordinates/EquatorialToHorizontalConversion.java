@@ -12,6 +12,7 @@ public final class EquatorialToHorizontalConversion implements Function<Equatori
     public EquatorialToHorizontalConversion( ZonedDateTime when, GeographicCoordinates where )
     {
         // add something there idk what
+        double phi = where.lat(); // latitude de l'observateur
         Sl = SiderealTime.local( when, where );
     }
 
@@ -19,10 +20,9 @@ public final class EquatorialToHorizontalConversion implements Function<Equatori
     public HorizontalCoordinates apply( EquatorialCoordinates equ )
     {
         double delta = equ.dec(); // delinaison coord equatorial
-        double phi = equ.ra(); // latitude de l'observateur
         double H = Sl - phi; // angle horaire
         double h = Math.asin( Math.sin(delta) * Math.sin(phi) + Math.cos(delta) * Math.cos(phi) * Math.cos(H) ); // hauteur coord horizontale
-        double A = Math.atan2( ( -Math.cos(delta) * Math.cos(phi) * Math.sin(H) ) / ( Math.sin(delta) - Math.sin(phi) * Math.sin(h) ), 1 ); // azimut coord horizontale
+        double A = Math.atan2( ( -Math.cos(delta) * Math.cos(phi) * Math.sin(H) ) , ( Math.sin(delta) - Math.sin(phi) * Math.sin(h) ) ); // azimut coord horizontale
         return HorizontalCoordinates.of( A, h );
     }
 
