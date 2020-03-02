@@ -28,7 +28,9 @@ public enum Epoch {
      */
     public double daysUntil( ZonedDateTime when )
     {
-        return when.until( this.date, ChronoUnit.MILLIS );
+        when.until()
+        when.until( this.date, ChronoUnit.MILLIS );
+        return 0;
     }
 
     /**
@@ -37,6 +39,7 @@ public enum Epoch {
      */
     public double julianCenturiesUntil( ZonedDateTime when )
     {
-        return when.until( this.date, ChronoUnit.CENTURIES );
+        when.until( this.date, ChronoUnit.CENTURIES );
+        return 0;
     }
 }
