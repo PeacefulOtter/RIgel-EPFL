@@ -7,20 +7,32 @@ import java.util.function.Function;
 
 public final class EquatorialToHorizontalConversion implements Function<EquatorialCoordinates, HorizontalCoordinates>
 {
-    private final double Sl, sinPhi, cosPhi;
 
+    private final double localTime, sinPhi, cosPhi;
+
+    /**
+     * change of coordinate systems from equatorial coordinates to ecliptic coordinates, at a given time and for a given location
+     * Stores important variables used in apply method
+     * @param when : the actual time date and hour
+     * @param where : a position
+     */
     public EquatorialToHorizontalConversion( ZonedDateTime when, GeographicCoordinates where )
     {
-        this.Sl = SiderealTime.local( when, where );
+        this.localTime= SiderealTime.local( when, where );
         this.sinPhi = Math.sin( where.lat() );
         this.cosPhi = Math.cos( where.lat() );
     }
 
+    /**
+     * Apply the formula to convert Equatorial coordinates to Horizontal coordinates
+     * @param equ : Equatorial Coordinates
+     * @return : horizontal coordinates corresponding to equatorial coordinates (equ)
+     */
     @Override
     public HorizontalCoordinates apply( EquatorialCoordinates equ )
     {
-        double delta = equ.dec(); // delinaison coord equatorial
-        double H = Sl - equ.ra(); // angle horaire
+        double delta = equ.dec(); // declinaison coord equatorial
+        double H = localTime- equ.ra(); // angle horaire
 
         double sinDelta = Math.sin( delta );
         double cosDelta = Math.cos( delta );

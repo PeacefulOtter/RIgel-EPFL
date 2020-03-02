@@ -7,6 +7,10 @@ import java.time.ZonedDateTime;
 
 public final class SiderealTime
 {
+    /**
+     * @param when: the actual time date and hour
+     * @return : the Greenwish Sidereal time in radians for a precise date and hour (when)
+     */
     public static double greenwich( ZonedDateTime when )
     {
         double T = Epoch.J2000.julianCenturiesUntil( when );
@@ -17,6 +21,11 @@ public final class SiderealTime
         return Angle.normalizePositive( Angle.ofHr( Sg ) );
     }
 
+    /**
+     * @param when: the actual time date and hour
+     * @param where: a position
+     * @return: the local Sidereal time in radians for a precise date and hour (when) and a position (where)
+     */
     public static double local( ZonedDateTime when, GeographicCoordinates where )
     {
         return greenwich( when ) + where.lon();
