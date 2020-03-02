@@ -23,6 +23,6 @@ public enum Epoch {
 
     public double julianCenturiesUntil( ZonedDateTime when )
     {
-        return when.until( this.date, ChronoUnit.CENTURIES );
+        return when.until( this.date, ChronoUnit.CENTURIES ); // ???
     }
 }

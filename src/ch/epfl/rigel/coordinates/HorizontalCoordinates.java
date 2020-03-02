@@ -3,6 +3,7 @@ package ch.epfl.rigel.coordinates;
 import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.ClosedInterval;
 import ch.epfl.rigel.math.RightOpenInterval;
+import jdk.swing.interop.SwingInterOpUtils;
 
 import java.util.Locale;
 
@@ -65,6 +66,7 @@ public final class HorizontalCoordinates extends SphericalCoordinates
         int octant = (int) Math.round( azDeg() / 45 );
         switch ( octant )
         {
+            case 1: return n + e;
             case 2: return e;
             case 3: return s + e;
             case 4: return s;

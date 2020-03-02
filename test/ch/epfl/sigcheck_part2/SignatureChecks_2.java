@@ -1,4 +1,4 @@
-package ch.epfl.sigcheck;
+package ch.epfl.sigcheck_part2;
 
 import ch.epfl.rigel.coordinates.EclipticCoordinates;
 import ch.epfl.rigel.coordinates.EquatorialCoordinates;
@@ -18,7 +18,6 @@ final class SignatureChecks_2 {
         assertTrue( GeographicCoordinates.isValidLonDeg( 0 ) );
         assertFalse( GeographicCoordinates.isValidLonDeg( 200 ) );
 
-        assertThrows( IllegalArgumentException.class, () -> {GeographicCoordinates.ofDeg(0, 90); } );
         assertThrows( IllegalArgumentException.class, () -> {GeographicCoordinates.ofDeg(180, 70); } );
 
         g = GeographicCoordinates.ofDeg( 90, 45 );
@@ -45,39 +44,52 @@ final class SignatureChecks_2 {
         System.out.println(g.toString());
     }
     @Test
-    void checkHorizontalCoordinates() {
+    void checkHorizontalCoordinates()
+    {
         double d = 0;
         String s = "";
         HorizontalCoordinates h;
 
-        assertThrows( IllegalArgumentException.class, () -> {HorizontalCoordinates.ofDeg(400, 90); } );
-        assertThrows( IllegalArgumentException.class, () -> {HorizontalCoordinates.ofDeg(100, -150); } );
-        assertThrows( IllegalArgumentException.class, () -> {HorizontalCoordinates.of(Math.PI * 3, 2); } );
-        assertThrows( IllegalArgumentException.class, () -> {HorizontalCoordinates.ofDeg(0, 500 ); } );
+        assertThrows(IllegalArgumentException.class, () ->
+        {
+            HorizontalCoordinates.ofDeg(400, 90);
+        });
+        assertThrows(IllegalArgumentException.class, () ->
+        {
+            HorizontalCoordinates.ofDeg(100, -150);
+        });
+        assertThrows(IllegalArgumentException.class, () ->
+        {
+            HorizontalCoordinates.of(Math.PI * 3, 2);
+        });
+        assertThrows(IllegalArgumentException.class, () ->
+        {
+            HorizontalCoordinates.ofDeg(0, 500);
+        });
 
-        h = HorizontalCoordinates.ofDeg( 225, 45 );
+        h = HorizontalCoordinates.ofDeg(225, 45);
         d = h.lon();
-        assertEquals( Math.PI + Math.PI / 4, d, Math.exp(-6) );
+        assertEquals(Math.PI + Math.PI / 4, d, Math.exp(-6));
         d = h.lonDeg();
-        assertEquals(225, d, Math.exp(-6) );
+        assertEquals(225, d, Math.exp(-6));
         d = h.lat();
-        assertEquals( Math.PI / 4, d, Math.exp(-6) );
+        assertEquals(Math.PI / 4, d, Math.exp(-6));
         d = h.latDeg();
-        assertEquals( 45, d, Math.exp(-6) );
+        assertEquals(45, d, Math.exp(-6));
         System.out.println(h);
-        System.out.println( h.azOctantName("N", "E", "S", "O") );
+        System.out.println(h.azOctantName("N", "E", "S", "O"));
 
-        HorizontalCoordinates m = HorizontalCoordinates.of( Math.PI / 3, Math.PI / 4 );
+        HorizontalCoordinates m = HorizontalCoordinates.of(Math.PI / 3, Math.PI / 4);
         d = m.lon();
-        assertEquals( Math.PI / 3, d, Math.exp(-6) );
+        assertEquals(Math.PI / 3, d, Math.exp(-6));
         d = m.lonDeg();
-        assertEquals(60, d, Math.exp(-6) );
+        assertEquals(60, d, Math.exp(-6));
         d = m.lat();
-        assertEquals( Math.PI / 4, d, Math.exp(-6) );
+        assertEquals(Math.PI / 4, d, Math.exp(-6));
         d = m.latDeg();
-        assertEquals( 45, d, Math.exp(-6) );
+        assertEquals(45, d, Math.exp(-6));
         System.out.println(m);
-        System.out.println( m.azOctantName("N", "E", "S", "O") );
+        System.out.println(m.azOctantName("N", "E", "S", "O"));
     }
 
     @Test

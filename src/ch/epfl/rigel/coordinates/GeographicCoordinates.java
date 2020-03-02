@@ -1,6 +1,7 @@
 package ch.epfl.rigel.coordinates;
 
 import ch.epfl.rigel.math.Angle;
+import ch.epfl.rigel.math.ClosedInterval;
 import ch.epfl.rigel.math.RightOpenInterval;
 
 import java.util.Locale;
@@ -10,7 +11,7 @@ public final class GeographicCoordinates extends SphericalCoordinates
     // Interval of the longitude in degrees
     private static final RightOpenInterval lonDegInterval = RightOpenInterval.of( -180, 180 );
     // Interval of the latitude in degrees
-    private static final RightOpenInterval latDegInterval = RightOpenInterval.of( -90, 90 );
+    private static final ClosedInterval latDegInterval = ClosedInterval.of( -90, 90 );
 
 
     private GeographicCoordinates( double lonDeg, double latDeg )

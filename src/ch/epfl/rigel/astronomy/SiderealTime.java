@@ -7,7 +7,6 @@ import java.time.ZonedDateTime;
 
 public final class SiderealTime
 {
-
     public static double greenwich( ZonedDateTime when )
     {
         double T = Epoch.J2000.julianCenturiesUntil( when );
