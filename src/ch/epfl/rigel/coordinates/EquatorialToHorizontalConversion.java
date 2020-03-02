@@ -7,23 +7,28 @@ import java.util.function.Function;
 
 public final class EquatorialToHorizontalConversion implements Function<EquatorialCoordinates, HorizontalCoordinates>
 {
-    private final double Sl;
+    private final double Sl, sinPhi, cosPhi;
 
     public EquatorialToHorizontalConversion( ZonedDateTime when, GeographicCoordinates where )
     {
-        // add something there idk what
-        double phi = where.lat(); // latitude de l'observateur
-        Sl = SiderealTime.local( when, where );
+        this.Sl = SiderealTime.local( when, where );
+        this.sinPhi = Math.sin( where.lat() );
+        this.cosPhi = Math.cos( where.lat() );
     }
 
     @Override
     public HorizontalCoordinates apply( EquatorialCoordinates equ )
     {
         double delta = equ.dec(); // delinaison coord equatorial
-        double H = Sl - phi; // angle horaire
-        double h = Math.asin( Math.sin(delta) * Math.sin(phi) + Math.cos(delta) * Math.cos(phi) * Math.cos(H) ); // hauteur coord horizontale
-        double A = Math.atan2( ( -Math.cos(delta) * Math.cos(phi) * Math.sin(H) ) , ( Math.sin(delta) - Math.sin(phi) * Math.sin(h) ) ); // azimut coord horizontale
-        return HorizontalCoordinates.of( A, h );
+        double H = Sl - equ.ra(); // angle horaire
+
+        double sinDelta = Math.sin( delta );
+        double cosDelta = Math.cos( delta );
+
+        double height = Math.asin( sinDelta * sinPhi + cosDelta * cosPhi * Math.cos( H ) ); // hauteur coord horizontale
+        double azimut = Math.atan2( ( -cosDelta * cosPhi * Math.sin( H ) ), ( sinDelta - sinPhi * Math.sin( height ) ) ); // azimut coord horizontale
+
+        return HorizontalCoordinates.of( azimut, height );
     }
 
     @Override
