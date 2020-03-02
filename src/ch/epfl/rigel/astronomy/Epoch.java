@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 
 public enum Epoch {
     J2000( LocalDateTime.of( 2000, Month.JANUARY, 1, 12, 0 ) ),
