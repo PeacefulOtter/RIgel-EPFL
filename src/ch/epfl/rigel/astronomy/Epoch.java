@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.Temporal;
 
 /**
  * set two astronomique Epoch
@@ -29,9 +28,8 @@ public enum Epoch {
      */
     public double daysUntil( ZonedDateTime when )
     {
-        when.until()
-        when.until( this.date, ChronoUnit.MILLIS );
-        return 0;
+        double time = this.date.until( when, ChronoUnit.MILLIS );
+        return time * 1.1574e-8; // convert in days
     }
 
     /**
@@ -40,7 +38,6 @@ public enum Epoch {
      */
     public double julianCenturiesUntil( ZonedDateTime when )
     {
-        when.until( this.date, ChronoUnit.CENTURIES );
-        return 0;
+        return daysUntil(when) * 36.525; // convert in century
     }
 }

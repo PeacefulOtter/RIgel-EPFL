@@ -6,23 +6,25 @@ import ch.epfl.rigel.astronomy.SiderealTime;
 import ch.epfl.rigel.coordinates.*;
 import org.junit.jupiter.api.Test;
 
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.function.Function;
 
 final class SignatureChecks_3 {
     @Test
     void checkEpoch() {
         double d;
-        ZonedDateTime z = ZonedDateTime.of( 1980, 4, 22, 14, 36, 51, 670000000, ZoneOffset.UTC );
+        ZonedDateTime z = ZonedDateTime.of(
+                LocalDate.of(2000, Month.JANUARY, 3),
+                LocalTime.of(18, 0),
+                ZoneOffset.UTC);
         System.out.println(z);
 
         Epoch e = Epoch.J2000;
-        d = e.daysUntil(z);
-        //assertEquals(  )
-        d = e.julianCenturiesUntil(z);
-        e = Epoch.J2010;
+        System.out.println(Epoch.J2000.daysUntil(z));
+        z = ZonedDateTime.of( LocalDate.of(2002, Month.JANUARY, 3),
+                LocalTime.of(18, 0),
+                ZoneOffset.UTC);
+        System.out.println(Epoch.J2000.julianCenturiesUntil(z));
 
     }
 
