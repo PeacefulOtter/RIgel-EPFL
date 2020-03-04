@@ -14,6 +14,7 @@ import java.util.function.Function;
 import static org.junit.Assert.assertEquals;
 
 final class SignatureChecks_3 {
+    @Test
     void checkEpoch() {
         double d;
         ZonedDateTime z = ZonedDateTime.of( 1980, 4, 22, 14, 36, 51, 670000000, ZoneId.of( "UT" ) );
@@ -30,9 +31,9 @@ final class SignatureChecks_3 {
     @Test
     void checkSiderealTime() {
         double d;
-        ZoneId utc = ZoneId.of( ZoneOffset.UTC.getId() );
-        ZonedDateTime z = ZonedDateTime.of( 1980, 4, 22, 14, 36, 51, 670000000, utc );
-
+        //ZoneId utc = ZoneId.of( ZoneOffset.UTC.getId() );
+        ZonedDateTime z = ZonedDateTime.of( 1980, 4, 22, 14, 36, 51, 670000000, ZoneId.of( "UTC") );
+        System.out.println(z);
         //GeographicCoordinates g = null;
         d = SiderealTime.greenwich(z);
         System.out.println(d);
