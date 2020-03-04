@@ -1,7 +1,6 @@
 package ch.epfl.rigel.coordinates;
 
 import java.util.Locale;
-import java.util.Objects;
 import java.util.function.Function;
 
 public final class StereographicProjection implements Function<HorizontalCoordinates, CartesianCoordinates>
@@ -20,22 +19,22 @@ public final class StereographicProjection implements Function<HorizontalCoordin
         return null;
     }
 
-    CartesianCoordinates circleCenterForParallel( HorizontalCoordinates hor )
+    public CartesianCoordinates circleCenterForParallel( HorizontalCoordinates hor )
     {
         return null;
     }
 
-    double circleRadiusForParallel( HorizontalCoordinates parallel )
+    public double circleRadiusForParallel( HorizontalCoordinates parallel )
     {
         return 0;
     }
 
-    double applyToAngle( double rad )
+    public double applyToAngle( double rad )
     {
         return 0;
     }
 
-    HorizontalCoordinates inverseApply( CartesianCoordinates xy )
+    public HorizontalCoordinates inverseApply( CartesianCoordinates xy )
     {
         return null;
     }
