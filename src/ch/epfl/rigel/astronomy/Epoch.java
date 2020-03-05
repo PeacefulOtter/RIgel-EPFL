@@ -28,8 +28,8 @@ public enum Epoch {
      */
     public double daysUntil( ZonedDateTime when )
     {
-        double time = this.date.until( when, ChronoUnit.MILLIS );
-        return time * 1.1574e-8; // convert in days
+        double millis = this.date.until( when, ChronoUnit.MILLIS );
+        return millis / 86400000; // convert milliseconds in days
     }
 
     /**
@@ -38,6 +38,7 @@ public enum Epoch {
      */
     public double julianCenturiesUntil( ZonedDateTime when )
     {
-        return daysUntil(when) * 36.525; // convert in century
+        double days = daysUntil( when );
+        return days / 36525; // convert days in julian century
     }
 }

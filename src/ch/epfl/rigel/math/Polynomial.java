@@ -47,9 +47,7 @@ public final class Polynomial
 
         for ( int i = 1; i < len; i++ )
         {
-            System.out.println(coefficients[i]);
             value = coefficients[ i ] + x * value;
-            System.out.println(value);
         }
         return value;
     }
