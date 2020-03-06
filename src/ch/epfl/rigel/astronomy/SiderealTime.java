@@ -4,12 +4,10 @@ import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.Polynomial;
 import ch.epfl.rigel.math.RightOpenInterval;
-import jdk.swing.interop.SwingInterOpUtils;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.concurrent.TimeUnit;
 
 public final class SiderealTime
 {
@@ -25,10 +23,10 @@ public final class SiderealTime
      */
     public static double greenwich( ZonedDateTime when )
     {
-        ZonedDateTime startOfDay = when.withZoneSameInstant( ZoneOffset.UTC )
+        ZonedDateTime dayStart = when.withZoneSameInstant( ZoneOffset.UTC )
                 .truncatedTo( ChronoUnit.DAYS );
-        double T = Epoch.J2000.julianCenturiesUntil( startOfDay );
-        double t = startOfDay.until( when, ChronoUnit.MILLIS );
+        double T = Epoch.J2000.julianCenturiesUntil( dayStart );
+        double t = dayStart.until( when, ChronoUnit.MILLIS );
         t = t / (1000*3600);
         double S0 = HOURS_INTERVAL.reduce( CENTURY_POLY.at( T ) );
         double S1 = HOURS_POLY.at( t );

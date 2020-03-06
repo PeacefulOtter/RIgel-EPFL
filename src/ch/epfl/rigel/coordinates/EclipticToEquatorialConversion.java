@@ -42,17 +42,20 @@ public final class EclipticToEquatorialConversion implements Function<EclipticCo
     @Override
     public EquatorialCoordinates apply( EclipticCoordinates ecl )
     {
-        double sinLambda = Math.sin( ecl.lon() );
-        double cosLambda = Math.cos( ecl.lon() );
+        double eclLon = ecl.lon();
+        double eclLat = ecl.lat();
 
-        double sinBeta = Math.sin( ecl.lat() );
-        double cosBeta = Math.cos( ecl.lat() );
-        double tanBeta = Math.tan( ecl.lat() );
+        double sinLambda = Math.sin( eclLon );
+        double cosLambda = Math.cos( eclLon );
 
-        double lon = Math.atan2( ( sinLambda * cosEpsilon - tanBeta * sinEpsilon ) , cosLambda );
-        double lat = Math.asin( sinBeta * cosEpsilon + cosBeta * sinEpsilon * sinLambda );
+        double sinBeta = Math.sin( eclLat );
+        double cosBeta = Math.cos( eclLat );
+        double tanBeta = Math.tan( eclLat );
 
-        return EquatorialCoordinates.of( lon, lat );
+        double equatorialLon = Math.atan2( ( sinLambda * cosEpsilon - tanBeta * sinEpsilon ) , cosLambda );
+        double equatorialLat = Math.asin( sinBeta * cosEpsilon + cosBeta * sinEpsilon * sinLambda );
+
+        return EquatorialCoordinates.of( equatorialLon, equatorialLat );
     }
 
     @Override

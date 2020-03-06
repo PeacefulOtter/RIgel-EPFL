@@ -18,7 +18,7 @@ public final class EquatorialToHorizontalConversion implements Function<Equatori
      */
     public EquatorialToHorizontalConversion( ZonedDateTime when, GeographicCoordinates where )
     {
-        this.localTime= SiderealTime.local( when, where );
+        this.localTime = SiderealTime.local( when, where );
         this.sinPhi = Math.sin( where.lat() );
         this.cosPhi = Math.cos( where.lat() );
     }
@@ -31,8 +31,8 @@ public final class EquatorialToHorizontalConversion implements Function<Equatori
     @Override
     public HorizontalCoordinates apply( EquatorialCoordinates equ )
     {
-        double delta = equ.dec(); // declinaison coord equatorial
-        double H = localTime- equ.ra(); // angle horaire
+        double delta = equ.dec(); // declination equatorial coordinates
+        double H = localTime - equ.ra(); // hour angle
 
         double sinDelta = Math.sin( delta );
         double cosDelta = Math.cos( delta );
