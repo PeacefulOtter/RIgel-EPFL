@@ -31,11 +31,11 @@ public final class EquatorialToHorizontalConversion implements Function<Equatori
     @Override
     public HorizontalCoordinates apply( EquatorialCoordinates equ )
     {
-        double delta = equ.dec(); // declination equatorial coordinates
+        double declination = equ.dec(); // declination equatorial coordinates
         double H = localTime - equ.ra(); // hour angle
 
-        double sinDelta = Math.sin( delta );
-        double cosDelta = Math.cos( delta );
+        double sinDelta = Math.sin( declination );
+        double cosDelta = Math.cos( declination );
 
         double height = Math.asin( sinDelta * sinPhi + cosDelta * cosPhi * Math.cos( H ) ); // hauteur coord horizontale
         double azimut = Math.atan2( ( -cosDelta * cosPhi * Math.sin( H ) ), ( sinDelta - sinPhi * Math.sin( height ) ) ); // azimut coord horizontale

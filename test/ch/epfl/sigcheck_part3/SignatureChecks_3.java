@@ -83,4 +83,17 @@ final class SignatureChecks_3 {
         EquatorialToHorizontalConversion e = new EquatorialToHorizontalConversion(z, g);
         Function<EquatorialCoordinates, HorizontalCoordinates> f = e;
     }
+    @Test
+    void worksWithValidCoordinates(){
+        EclipticCoordinates start = EclipticCoordinates.of(Angle.ofDMS(139,41,10),Angle.ofDMS(4,52,31));
+        var conversion = new EclipticToEquatorialConversion(ZonedDateTime.of(2009,7,6,9,34,53,0, ZoneOffset.UTC));
+        assertEquals("(ra=9.5815h, dec=19.5350°)", conversion.apply(start).toString());
+    }
+
+    @Test
+    void ConversionWorksOnBaseCase(){
+        var start = EquatorialCoordinates.of(Angle.ofHr(5.862222222),Angle.ofDeg(23.21944444));
+        var conversion= new EquatorialToHorizontalConversion(ZonedDateTime.now(),GeographicCoordinates.ofDeg(0,52));
+        System.out.println(conversion.apply(start));
+    }
 }
