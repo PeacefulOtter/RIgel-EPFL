@@ -2,6 +2,7 @@ package ch.epfl.rigel.coordinates;
 
 import ch.epfl.rigel.astronomy.Epoch;
 import ch.epfl.rigel.math.Angle;
+import ch.epfl.rigel.math.ClosedInterval;
 import ch.epfl.rigel.math.Polynomial;
 import ch.epfl.rigel.math.RightOpenInterval;
 
@@ -11,7 +12,7 @@ import java.util.function.Function;
 public final class EclipticToEquatorialConversion implements Function<EclipticCoordinates, EquatorialCoordinates>
 {
     // function used to determine epsilon based on the number of julian centuries
-    private final static Polynomial EPSILON_POLYNOMIAL = Polynomial.of(
+    private static final Polynomial EPSILON_POLYNOMIAL = Polynomial.of(
             Angle.ofArcsec( 0.00181 ),
             Angle.ofArcsec( -0.0006 ),
             Angle.ofArcsec( -46.815 ),
@@ -19,6 +20,9 @@ public final class EclipticToEquatorialConversion implements Function<EclipticCo
 
     // cosine and sin of the Epsilon polynomial
     private final double cosEpsilon, sinEpsilon;
+
+    private static final RightOpenInterval LON_INTERVAL = RightOpenInterval.of( 0, Angle.TAU );
+    private static final ClosedInterval LAT_INTERVAL = ClosedInterval.of( -Angle.TAU / 4, Angle.TAU / 4);
 
     /**
      * change of coordinate system between ecliptic and equatorial coordinates for the date/time pair when
@@ -54,7 +58,7 @@ public final class EclipticToEquatorialConversion implements Function<EclipticCo
         double equatorialLon = Math.atan2( ( sinLambda * cosEpsilon - tanBeta * sinEpsilon ) , cosLambda );
         double equatorialLat = Math.asin( sinBeta * cosEpsilon + cosBeta * sinEpsilon * sinLambda );
 
-        return EquatorialCoordinates.of( equatorialLon, equatorialLat );
+        return EquatorialCoordinates.of( LON_INTERVAL.reduce( equatorialLon ), LAT_INTERVAL.clip( equatorialLat ) );
     }
 
     @Override
