@@ -1,4 +1,4 @@
-package ch.epfl.sigcheck;
+package ch.epfl.sigcheck_part4;
 
 import ch.epfl.rigel.astronomy.*;
 import ch.epfl.rigel.coordinates.*;

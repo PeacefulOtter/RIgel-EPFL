@@ -6,12 +6,13 @@ public enum SunModel implements CelestialObjectModel<Sun> {
 
     SUN();
 
-    private SunModel(){
+    private SunModel() {
 
     }
 
     @Override
-    public Sun at(double daysSinceJ2010, EclipticToEquatorialConversion eclipticToEquatorialConversion) {
+    public Sun at( double daysSinceJ2010, EclipticToEquatorialConversion eclipticToEquatorialConversion )
+    {
         return null;
     }
 }

@@ -1,7 +1,6 @@
-package ch.epfl.rigel.coordinates;
+package ch.epfl.rigel.astronomy;
 
-import ch.epfl.rigel.astronomy.CelestialObjectModel;
-import ch.epfl.rigel.astronomy.Planet;
+import ch.epfl.rigel.coordinates.EclipticToEquatorialConversion;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,23 +26,27 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
             30.1985, 1.7673, 131.879, 62.20, -6.87);
 
 
-    public static List<PlanetModel> ALL = Arrays.asList(MERCURY, VENUS, EARTH, MARS, JUPITER, SATURN, URANUS, NEPTUNE);
+    public static List<PlanetModel> ALL = Arrays.asList(
+            MERCURY, VENUS, EARTH, MARS, JUPITER, SATURN, URANUS, NEPTUNE );
 
-    private String frenchName;
-    private double revolutionPeriod;
-    private double lonJ2010;
-    private double lonPerigee;
-    private double orbitEccentricity;
-    private double halfOrbitMajorAxis;
-    private double inclinationOrbit;
-    private double lonAscendingNode;
-    private double angularSize;
-    private double magnitude;
-    // j ai mis des types double par default pour tous
-    PlanetModel ( String frenchName, double revolutionPeriod, double lonJ2010, double lonPerigee,
-                  double orbitEccentricity, double halfOrbitMajorAxis, double inclinationOrbit, double lonAscendingNode,
-                  double angularSize, double magnitude){
-        this.frenchName = frenchName;
+    private final String name;
+    private final double revolutionPeriod;
+    private final double lonJ2010;
+    private final double lonPerigee;
+    private final double orbitEccentricity;
+    private final double halfOrbitMajorAxis;
+    private final double inclinationOrbit;
+    private final double lonAscendingNode;
+    private final double angularSize;
+    private final double magnitude;
+
+    PlanetModel(
+            String name, double revolutionPeriod, double lonJ2010,
+            double lonPerigee, double orbitEccentricity, double halfOrbitMajorAxis,
+            double inclinationOrbit, double lonAscendingNode, double angularSize,
+            double magnitude )
+    {
+        this.name = name;
         this.revolutionPeriod = revolutionPeriod;
         this.lonJ2010 = lonJ2010;
         this.lonPerigee = lonPerigee;
@@ -53,11 +56,13 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         this.lonAscendingNode = lonAscendingNode;
         this.angularSize = angularSize;
         this.magnitude = magnitude;
-
     }
 
     @Override
-    public Planet at(double daysSinceJ2010, EclipticToEquatorialConversion eclipticToEquatorialConversion) {
+    public Planet at(
+            double daysSinceJ2010,
+            EclipticToEquatorialConversion eclipticToEquatorialConversion )
+    {
         return null;
     }
 }

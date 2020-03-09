@@ -12,17 +12,13 @@ public final class CartesianCoordinates
         this.y = y;
     }
 
-    public static CartesianCoordinates of(double x, double y )
+    public static CartesianCoordinates of( double x, double y )
     {
         return new CartesianCoordinates( x, y );
     }
 
-    double x()
-    {
-        return x;
-    }
-
-    double y()
+    public double x() { return x; }
+    public double y()
     {
         return y;
     }
