@@ -4,12 +4,10 @@ import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.Polynomial;
 import ch.epfl.rigel.math.RightOpenInterval;
-import jdk.swing.interop.SwingInterOpUtils;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.concurrent.TimeUnit;
 
 public final class SiderealTime
 {
