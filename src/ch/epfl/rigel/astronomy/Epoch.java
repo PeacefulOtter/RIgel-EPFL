@@ -2,6 +2,7 @@ package ch.epfl.rigel.astronomy;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -28,7 +29,7 @@ public enum Epoch {
      */
     public double daysUntil( ZonedDateTime when )
     {
-        double millis = this.date.until( when, ChronoUnit.MILLIS );
+        double millis = this.date.until( when.withZoneSameInstant(ZoneOffset.UTC ), ChronoUnit.MILLIS );
         return millis / 86400000; // convert milliseconds in days
     }
 
@@ -38,7 +39,7 @@ public enum Epoch {
      */
     public double julianCenturiesUntil( ZonedDateTime when )
     {
-        double days = daysUntil( when );
+        double days = daysUntil( when.withZoneSameInstant( ZoneOffset.UTC ) );
         return days / 36525; // convert days in julian century
     }
 }

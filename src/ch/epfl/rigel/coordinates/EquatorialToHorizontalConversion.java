@@ -1,6 +1,9 @@
 package ch.epfl.rigel.coordinates;
 
 import ch.epfl.rigel.astronomy.SiderealTime;
+import ch.epfl.rigel.math.Angle;
+import ch.epfl.rigel.math.ClosedInterval;
+import ch.epfl.rigel.math.RightOpenInterval;
 
 import java.time.ZonedDateTime;
 import java.util.function.Function;
@@ -9,6 +12,10 @@ public final class EquatorialToHorizontalConversion implements Function<Equatori
 {
 
     private final double localTime, sinPhi, cosPhi;
+
+    private static final RightOpenInterval LON_INTERVAL =  RightOpenInterval.of( 0, Angle.TAU );
+    private static final ClosedInterval LAT_INTERVAL = ClosedInterval.of( -Math.PI / 2, Math.PI / 2 );
+
 
     /**
      * change of coordinate systems from equatorial coordinates to ecliptic coordinates, at a given time and for a given location
@@ -40,7 +47,7 @@ public final class EquatorialToHorizontalConversion implements Function<Equatori
         double height = Math.asin( sinDelta * sinPhi + cosDelta * cosPhi * Math.cos( H ) ); // hauteur coord horizontale
         double azimut = Math.atan2( ( -cosDelta * cosPhi * Math.sin( H ) ), ( sinDelta - sinPhi * Math.sin( height ) ) ); // azimut coord horizontale
 
-        return HorizontalCoordinates.of( azimut, height );
+        return HorizontalCoordinates.of( LON_INTERVAL.reduce( azimut ), LAT_INTERVAL.clip( height ) );
     }
 
     @Override
