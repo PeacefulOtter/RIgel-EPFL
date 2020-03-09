@@ -18,7 +18,7 @@ public enum Epoch {
     /**
      * @param date : LocalDateTime
      */
-    Epoch( LocalDateTime date )
+    private Epoch( LocalDateTime date )
     {
         this.date = date;
     }
