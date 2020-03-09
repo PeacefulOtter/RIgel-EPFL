@@ -3,23 +3,22 @@ package ch.epfl.rigel.coordinates;
 import ch.epfl.rigel.astronomy.Epoch;
 import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.Polynomial;
+import ch.epfl.rigel.math.RightOpenInterval;
 
 import java.time.ZonedDateTime;
 import java.util.function.Function;
 
 public final class EclipticToEquatorialConversion implements Function<EclipticCoordinates, EquatorialCoordinates>
 {
-    // the last coeff of Epsilon polynomial
-    private final static double LAST_COEF = Angle.ofDMS(23, 26, 21.45 );
+    // function used to determine epsilon based on the number of julian centuries
+    private final static Polynomial EPSILON_POLYNOMIAL = Polynomial.of(
+            Angle.ofArcsec( 0.00181 ),
+            Angle.ofArcsec( -0.0006 ),
+            Angle.ofArcsec( -46.815 ),
+            Angle.ofDMS(23, 26, 21.45 )  );
 
-    // function used to determine epsilon based on the number of julians century
-    private final static Polynomial EPSILON_POLYNOMIAL = Polynomial.of( 0.00181, -0.0006, -46.815, 0 );
-
-    // cosinus of the Epsilon polynomial
-    private final double cosEpsilon;
-
-    // sinus of the Epsilon polynomial
-    private final double sinEpsilon;
+    // cosine and sin of the Epsilon polynomial
+    private final double cosEpsilon, sinEpsilon;
 
     /**
      * change of coordinate system between ecliptic and equatorial coordinates for the date/time pair when
@@ -28,8 +27,8 @@ public final class EclipticToEquatorialConversion implements Function<EclipticCo
      */
     public EclipticToEquatorialConversion( ZonedDateTime when )
     {
-        double daysT = Epoch.J2000.daysUntil( when );
-        double epsilon = Angle.ofDMS( 0, 0, EPSILON_POLYNOMIAL.at( daysT ) ) + LAST_COEF;
+        double deltaJulianCenturies = Epoch.J2000.julianCenturiesUntil( when );
+        double epsilon = EPSILON_POLYNOMIAL.at( deltaJulianCenturies );
         cosEpsilon = Math.cos( epsilon );
         sinEpsilon = Math.sin( epsilon );
     }
@@ -42,17 +41,20 @@ public final class EclipticToEquatorialConversion implements Function<EclipticCo
     @Override
     public EquatorialCoordinates apply( EclipticCoordinates ecl )
     {
-        double sinLambda = Math.sin( ecl.lon() );
-        double cosLambda = Math.cos( ecl.lon() );
+        double eclLon = ecl.lon();
+        double eclLat = ecl.lat();
 
-        double sinBeta = Math.sin( ecl.lat() );
-        double cosBeta = Math.cos( ecl.lat() );
-        double tanBeta = Math.tan( ecl.lat() );
+        double sinLambda = Math.sin( eclLon );
+        double cosLambda = Math.cos( eclLon );
 
-        double lon = Math.atan2( ( sinLambda * cosEpsilon - tanBeta * sinEpsilon ) , cosLambda );
-        double lat = Math.asin( sinBeta * cosEpsilon + cosBeta * sinEpsilon * sinLambda );
+        double sinBeta = Math.sin( eclLat );
+        double cosBeta = Math.cos( eclLat );
+        double tanBeta = Math.tan( eclLat );
 
-        return EquatorialCoordinates.of( lon, lat );
+        double equatorialLon = Math.atan2( ( sinLambda * cosEpsilon - tanBeta * sinEpsilon ) , cosLambda );
+        double equatorialLat = Math.asin( sinBeta * cosEpsilon + cosBeta * sinEpsilon * sinLambda );
+
+        return EquatorialCoordinates.of( equatorialLon, equatorialLat );
     }
 
     @Override
