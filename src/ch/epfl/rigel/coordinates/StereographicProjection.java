@@ -53,12 +53,14 @@ public final class StereographicProjection implements Function<HorizontalCoordin
         double sinLambda = Math.sin( azAlt.alt() );
         double cosPhi = Math.cos( azAlt.az() );
         double sinPhi = Math.sin( azAlt.az() );
+        double sinDeltaLambda = Math.sin(azAlt.alt() - lambda0);
+        double cosDeltaLambda = Math.cos(azAlt.alt() - lambda0) ;
 
-        double d = 1 / (1 + sinLambda * sinPhi1 + cosPhi * cosPhi1 * Math.cos(azAlt.alt() - lambda0));
+        double d = 1 / (1 + sinPhi * sinPhi1 + cosPhi * cosPhi1 * cosDeltaLambda);
         // peut etre mettre une valeur infinie
 
-        double x = d * cosPhi * Math.sin(azAlt.alt() - lambda0);
-        double y = d * (sinPhi * cosPhi1 - cosPhi * sinPhi1 * Math.cos(azAlt.alt() - lambda0));
+        double x = d * cosPhi * sinDeltaLambda;
+        double y = d * (sinPhi * cosPhi1 - cosPhi * sinPhi1 * cosDeltaLambda);
 
         return CartesianCoordinates.of( x, y );
     }
