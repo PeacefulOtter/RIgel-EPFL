@@ -22,7 +22,6 @@ public final class StereographicProjection implements Function<HorizontalCoordin
         sinLambda0 = Math.sin( lambda0 );
         cosPhi1 = Math.cos( phi1 );
         sinPhi1 = Math.sin( phi1 );
-        // /!\ Calculate as much values as possible
     }
 
     public CartesianCoordinates circleCenterForParallel( HorizontalCoordinates hor )
@@ -39,7 +38,7 @@ public final class StereographicProjection implements Function<HorizontalCoordin
         if ( Math.sin( parallel.lon() ) + sinPhi1 == 0){
             return Double.POSITIVE_INFINITY;
         }
-        return Math.cos( parallel.lat() ) / ( Math.sin( parallel.lon() ) + sinPhi1 );
+        return Math.cos( parallel.lat() ) / ( Math.sin( parallel.lat() ) + sinPhi1 );
     }
 
     public double applyToAngle( double rad )
@@ -74,7 +73,9 @@ public final class StereographicProjection implements Function<HorizontalCoordin
 
         double lambda = Math.atan2(x * sinC, p * cosPhi1 * cosC - y * sinPhi1 * sinC) + lambda0;
         double phi = Math.asin(cosC * sinPhi1 + (y * sinC * cosPhi1 / p));
-
+        /**
+                BOUND TO INTERVAL
+        **/
         return HorizontalCoordinates.of(lambda, phi);
     }
 
