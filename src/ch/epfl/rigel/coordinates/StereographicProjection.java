@@ -49,12 +49,12 @@ public final class StereographicProjection implements Function<HorizontalCoordin
     @Override
     public CartesianCoordinates apply( HorizontalCoordinates azAlt )
     {
-        double cosLambda = Math.cos( azAlt.alt() );
-        double sinLambda = Math.sin( azAlt.alt() );
-        double cosPhi = Math.cos( azAlt.az() );
-        double sinPhi = Math.sin( azAlt.az() );
-        double sinDeltaLambda = Math.sin(azAlt.alt() - lambda0);
-        double cosDeltaLambda = Math.cos(azAlt.alt() - lambda0) ;
+        double cosLambda = Math.cos( azAlt.az() );
+        double sinLambda = Math.sin( azAlt.az() );
+        double cosPhi = Math.cos( azAlt.alt() );
+        double sinPhi = Math.sin( azAlt.alt() );
+        double sinDeltaLambda = Math.sin(azAlt.az() - lambda0);
+        double cosDeltaLambda = Math.cos(azAlt.az() - lambda0) ;
 
         double d = 1 / (1 + sinPhi * sinPhi1 + cosPhi * cosPhi1 * cosDeltaLambda);
         // peut etre mettre une valeur infinie
@@ -67,11 +67,11 @@ public final class StereographicProjection implements Function<HorizontalCoordin
 
     public HorizontalCoordinates inverseApply( CartesianCoordinates xy )
     {
-        double p = Math.sqrt( Math.pow(xy.x(), 2) + Math.pow(xy.y(), 2) );
-        double cosC = (1 - Math.pow(p, 2)) / (Math.pow(p, 2) + 1);
-        double sinC = (2 * p) / (Math.pow(p, 2) + 1) ;
         double x = xy.x();
         double y = xy.y();
+        double p = Math.sqrt( Math.pow(x, 2) + Math.pow(y, 2) );
+        double cosC = (1 - Math.pow(p, 2)) / (Math.pow(p, 2) + 1);
+        double sinC = (2 * p) / (Math.pow(p, 2) + 1) ;
 
         double lambda = Math.atan2(x * sinC, p * cosPhi1 * cosC - y * sinPhi1 * sinC) + lambda0;
         double phi = Math.asin(cosC * sinPhi1 + (y * sinC * cosPhi1 / p));
