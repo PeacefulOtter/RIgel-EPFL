@@ -29,8 +29,5 @@ public final class Sun extends CelestialObject
     // ecliptic position getter
     public EclipticCoordinates eclipticPos() { return eclipticPos; }
     // mean anomaly getter
-    public double meanAnomaly()
-    {
-        return meanAnomaly;
-    }
+    public double meanAnomaly() { return meanAnomaly; }
 }

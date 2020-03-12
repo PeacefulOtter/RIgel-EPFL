@@ -30,6 +30,18 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
 
     private static final double ANGULAR_SPEED = Angle.TAU / 365.242191;
 
+
+
+    /**
+     * USED TO AVOID COMPILATION ERROR
+     * NEED TO FIND A WAY TO CALCULATE THESE VALUES
+     */
+    private static final double EARTH_RADIUS = 0;
+    private static final double EARTH_LON = 0;
+
+
+
+
     public static List<PlanetModel> ALL = Arrays.asList(
             MERCURY, VENUS, EARTH, MARS, JUPITER, SATURN, URANUS, NEPTUNE );
 
@@ -130,7 +142,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         float planetMagnitude = (float) ( magnitude + 5 * Math.log10( radius * distance / Math.sqrt( phase ) ) );
         /* END OF MAGNITUDE */
 
-        
+
         return new Planet( name, equatorialPos, planetAngularSize, planetMagnitude );
     }
 
