@@ -6,10 +6,19 @@ import java.util.Objects;
 
 public abstract class CelestialObject
 {
+    // name of the object
     private final String name;
+
+    // Equatorial position
     private final EquatorialCoordinates equatorialPos;
+
+    // angular size and magnitude of the object
     private final float angularSize, magnitude;
 
+    /**
+     * throw IllegalArgumentException if the angular size is negative
+     * throw NullPointerException if the name or the position are null
+     */
     CelestialObject( String name, EquatorialCoordinates equatorialPos, float angularSize, float magnitude )
     {
         Objects.requireNonNull( name );
@@ -24,21 +33,33 @@ public abstract class CelestialObject
         this.magnitude = magnitude;
     }
 
+    /**
+     * @return the name of the object
+     */
     public String name()
     {
         return name;
     }
 
+    /**
+     * @return the equatorial position of the object
+     */
     public EquatorialCoordinates equatorialPos()
     {
         return equatorialPos;
     }
 
+    /**
+     * @return the angular size of the object
+     */
     public double angularSize()
     {
         return angularSize;
     }
 
+    /**
+     * @return the magnitude of the object
+     */
     public double magnitude()
     {
         return magnitude;
@@ -59,6 +80,9 @@ public abstract class CelestialObject
         return name();
     }
 
+    /**
+     * @return the information written for the user
+     */
     @Override
     public String toString()
     {

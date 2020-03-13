@@ -7,9 +7,13 @@ import java.util.Locale;
 
 public class Moon extends CelestialObject
 {
+    // phase Interval
     private static final ClosedInterval PHASE_INTERVAL = ClosedInterval.of( 0, 1 );
     private float phase;
 
+    /**
+     * throw IllegalArgumentException if the phase is not contains by the Interval
+     */
     public Moon( EquatorialCoordinates equatorialPos, float angularSize, float magnitude, float phase )
     {
         super( "Lune", equatorialPos, angularSize, magnitude );

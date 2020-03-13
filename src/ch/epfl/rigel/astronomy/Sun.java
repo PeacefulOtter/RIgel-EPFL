@@ -2,9 +2,6 @@ package ch.epfl.rigel.astronomy;
 
 import ch.epfl.rigel.coordinates.EclipticCoordinates;
 import ch.epfl.rigel.coordinates.EquatorialCoordinates;
-import ch.epfl.rigel.math.Angle;
-
-import java.time.ZonedDateTime;
 
 public final class Sun extends CelestialObject
 {
@@ -14,6 +11,9 @@ public final class Sun extends CelestialObject
     private final EclipticCoordinates eclipticPos;
     private final float meanAnomaly;
 
+    /**
+     * throw NullPointerException if the ecliptique position is null
+     */
     public Sun( EclipticCoordinates eclipticPos, EquatorialCoordinates equatorialPos, float angularSize, float meanAnomaly )
     {
         super( "Soleil", equatorialPos, angularSize, MAGNITUDE );
