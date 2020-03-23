@@ -12,6 +12,7 @@ public final class Asterism
         this.stars = List.copyOf( stars );
     }
 
+    // DO WE NEED TO RETURN A COPY OF THE ARRAY ???
     public List<Star> stars(){
         return stars;
     }

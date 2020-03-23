@@ -2,9 +2,7 @@ package ch.epfl.rigel.astronomy;
 
 import ch.epfl.rigel.coordinates.EclipticCoordinates;
 import ch.epfl.rigel.coordinates.EquatorialCoordinates;
-import ch.epfl.rigel.math.Angle;
 
-import java.time.ZonedDateTime;
 
 public final class Sun extends CelestialObject
 {

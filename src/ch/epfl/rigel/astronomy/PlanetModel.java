@@ -12,21 +12,21 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
 
 
     MERCURY("Mercure", 0.24085, 75.5671, 77.612, 0.205627,
-            0.387098, 7.0051, 48.449, 6.74, -0.42, "inner"),
+            0.387098, 7.0051, 48.449, 6.74, -0.42 ),
     VENUS("Vénus", 0.615207, 272.30044, 131.54, 0.006812,
-            0.723329, 3.3947, 76.769, 16.92, -4.40, "inner"),
+            0.723329, 3.3947, 76.769, 16.92, -4.40 ),
     EARTH("Terre", 0.999996, 99.556772, 103.2055, 0.016671,
-            0.999985, 0, 0, 0, 0, "ref"),
+            0.999985, 0, 0, 0, 0 ),
     MARS("Mars", 1.880765, 109.09646, 336.217, 0.093348,
-            1.523689, 1.8497, 49.632, 9.36, -1.52, "outer"),
+            1.523689, 1.8497, 49.632, 9.36, -1.52 ),
     JUPITER("Jupiter", 11.857911, 337.917132, 14.6633, 0.048907,
-            5.20278, 1.3035, 100.595, 196.74, -9.40, "outer"),
+            5.20278, 1.3035, 100.595, 196.74, -9.40 ),
     SATURN("Saturne", 29.310579, 172.398316, 89.567, 0.053853,
-            9.51134, 2.4873, 113.752, 165.60, -8.88, "outer"),
+            9.51134, 2.4873, 113.752, 165.60, -8.88 ),
     URANUS("Uranus", 84.039492, 271.063148, 172.884833, 0.046321,
-            19.21814, 0.773059, 73.926961, 65.80, -7.19, "outer"),
+            19.21814, 0.773059, 73.926961, 65.80, -7.19 ),
     NEPTUNE("Neptune", 165.84539, 326.895127, 23.07, 0.010483,
-            30.1985, 1.7673, 131.879, 62.20, -6.87, "outer");
+            30.1985, 1.7673, 131.879, 62.20, -6.87 );
 
     private static final double ANGULAR_SPEED = Angle.TAU / 365.242191;
 
@@ -55,7 +55,6 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
     private final double lonAscendingNode;
     private final double angularSize;
     private final double magnitude;
-    private final String type;
 
     private final double deltaLon;
     private final double eccentricitySquared;
@@ -64,7 +63,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
             String name, double revolutionPeriod, double lonJ2010,
             double lonPerigee, double orbitEccentricity, double halfOrbitMajorAxis,
             double inclinationOrbit, double lonAscendingNode, double angularSize,
-            double magnitude, String type )
+            double magnitude )
     {
         this.name = name;
         this.revolutionPeriod = revolutionPeriod;
@@ -76,7 +75,6 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         this.lonAscendingNode = lonAscendingNode;
         this.angularSize = angularSize;
         this.magnitude = magnitude;
-        this.type = type;
 
         this.deltaLon = lonJ2010 - lonPerigee;
         this.eccentricitySquared = Math.pow( orbitEccentricity, 2 );
@@ -100,17 +98,18 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         double inclinationSin = Math.sin( inclinationOrbit );
 
         /** Psi **/
-        double latitude = Math.asin( deltaLonSin * inclinationSin );
+        double psi = Math.asin( deltaLonSin * inclinationSin );
+        double cosPsi = Math.cos( psi );
 
         /** r' **/
-        double projectedRadius = radius * Math.cos( latitude );
+        double projectedRadius = radius * cosPsi;
         /** l' **/
         double projectedLongitude = Math.atan2( deltaLonSin * inclinationCos, deltaLonCos ) + lonAscendingNode;
 
         /* EQUATORIAL POS */
         /** lambda **/
         double eclipticLon;
-        if ( type == "inner" )
+        if ( this == MERCURY || this == VENUS )
         {
             eclipticLon = getInnerLon( projectedRadius, projectedLongitude );
         } else {
@@ -118,7 +117,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         }
         /** beta **/
         double eclipticLat = Math.atan2(
-                projectedRadius * Math.tan( latitude ) * Math.sin( eclipticLon - projectedLongitude ),
+                projectedRadius * Math.tan( psi ) * Math.sin( eclipticLon - projectedLongitude ),
                 EARTH_RADIUS * Math.sin( eclipticLon - EARTH_LON )
         );
 
@@ -128,8 +127,8 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
 
 
         /* ANGULAR SIZE */
-        double distance = Math.abs( Math.sqrt(
-                Math.pow( EARTH_RADIUS, 2 ) + Math.pow( radius, 2 ) - 2 * EARTH_RADIUS * radius * Math.cos( longitude - EARTH_LON ) * Math.cos( latitude )
+        double distance = Math.sqrt( Math.abs(
+                Math.pow( EARTH_RADIUS, 2 ) + Math.pow( radius, 2 ) - 2 * EARTH_RADIUS * radius * Math.cos( longitude - EARTH_LON ) * cosPsi
         ) );
         float planetAngularSize = (float) ( angularSize / distance );
         /* END OF ANGULAR SIZE */
@@ -137,20 +136,20 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
 
         /* MAGNITUDE */
         /** F **/
-        double phase = ( 1 + Math.cos( longitude - EARTH_LON ) ) / 2;
+        double phase = ( 1 + Math.cos( eclipticLon - longitude ) ) / 2;
         /** m **/
-        float planetMagnitude = (float) ( magnitude + 5 * Math.log10( radius * distance / Math.sqrt( phase ) ) );
+        double planetMagnitude =  magnitude + 5 * Math.log10( radius * distance / Math.sqrt( phase ) );
         /* END OF MAGNITUDE */
 
 
-        return new Planet( name, equatorialPos, planetAngularSize, planetMagnitude );
+        return new Planet( name, equatorialPos, planetAngularSize, (float)planetMagnitude );
     }
 
 
     /**
      * Get the Ecliptic Geocentric Longitude for inner planets
-     * @param planetRadius
-     * @param planetLon
+     * @param planetRadius : planet radius
+     * @param planetLon : planet longitude
      * @return ecliptic longitude
      */
     private double getInnerLon( double planetRadius, double planetLon )
@@ -164,8 +163,8 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
 
     /**
      * Get the Ecliptic Geocentric Longitude for outer planets
-     * @param planetRadius
-     * @param planetLon
+     * @param planetRadius : planet radius
+     * @param planetLon : planet longitude
      * @return ecliptic longitude
      */
     private double getOuterLon( double planetRadius, double planetLon )
