@@ -13,7 +13,7 @@ public final class StereographicProjection implements Function<HorizontalCoordin
     private static final RightOpenInterval azInterval =  RightOpenInterval.of( 0, Angle.TAU );
     // Interval of the latitude in radians
     private static final ClosedInterval altInterval = ClosedInterval.of( -Math.PI / 2, Math.PI / 2 );
-
+    // Horiyontal Cooordinates of the center
     private final HorizontalCoordinates center;
     private final double lambda0;
     private final double phi1;
@@ -29,6 +29,10 @@ public final class StereographicProjection implements Function<HorizontalCoordin
         sinPhi1 = Math.sin( phi1 );
     }
 
+    /**
+     * @param hor : a point in HorizontalCoordinates
+     * @return :the coordinates of the centre of the circle corresponding to the projection of the parallel passing through the point hor
+     */
     public CartesianCoordinates circleCenterForParallel( HorizontalCoordinates hor )
     {
         if ( ( Math.sin( hor.alt() ) + sinPhi1 ) == 0){
@@ -38,6 +42,11 @@ public final class StereographicProjection implements Function<HorizontalCoordin
         return CartesianCoordinates.of( 0, cy );
     }
 
+    /**
+     *
+     * @param parallel
+     * @return : the radius of the circle corresponding to the projection of the parallel passing through the coordinate point hor
+     */
     public double circleRadiusForParallel( HorizontalCoordinates parallel )
     {
         if ( Math.sin( parallel.lon() ) + sinPhi1 == 0){
@@ -46,11 +55,19 @@ public final class StereographicProjection implements Function<HorizontalCoordin
         return Math.cos( parallel.lat() ) / ( Math.sin( parallel.lat() ) + sinPhi1 );
     }
 
+    /**
+     * @param rad the angular size of the sphere
+     * @return : the projected diameter of a sphere of angular size rad centred at the centre of projection, assuming that it is on the horizon
+     */
     public double applyToAngle( double rad )
     {
         return 2 * Math.tan( rad / 4 );
     }
 
+    /**
+     * @param azAlt the Horizontal coordinates point
+     * @return : the Cartesian coordinates of the projection of the horizontal coordinate point azAlt
+     */
     @Override
     public CartesianCoordinates apply( HorizontalCoordinates azAlt )
     {
@@ -68,6 +85,10 @@ public final class StereographicProjection implements Function<HorizontalCoordin
         return CartesianCoordinates.of( x, y );
     }
 
+    /**
+     * @param xy Cartesian coordinates of a point
+     * @return : the horizontal coordinates of the point whose projection is the point of Cartesian coordinates xy
+     */
     public HorizontalCoordinates inverseApply( CartesianCoordinates xy )
     {
         double x = xy.x();
