@@ -31,8 +31,8 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
             30.1985, 1.7673, 131.879, 62.20, -6.87 );
 
     private static final double ANGULAR_SPEED = Angle.TAU / 365.242191;
-    private static final ClosedInterval latitudeInterval = ClosedInterval.of( -Angle.TAU / 4, Angle.TAU / 4 );
-    private static final RightOpenInterval longitudeInterval = RightOpenInterval.of( -Angle.TAU / 4, Angle.TAU / 4 );
+    private static final ClosedInterval latInterval = ClosedInterval.of( -Angle.TAU / 4, Angle.TAU / 4 );
+    private static final RightOpenInterval lonInterval = RightOpenInterval.of( 0, Angle.TAU );
 
     public static List<PlanetModel> ALL = Arrays.asList(
             MERCURY, VENUS, EARTH, MARS, JUPITER, SATURN, URANUS, NEPTUNE );
@@ -97,7 +97,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         /** r' **/
         double projectedRadius = radius * cosPsi;
         /** l' **/
-        double projectedLongitude = longitudeInterval.reduce(
+        double projectedLongitude = lonInterval.reduce(
                 Math.atan2( deltaLonSin * inclinationCos, deltaLonCos ) + lonAscendingNode
         );
 
@@ -115,10 +115,10 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         } else {
             eclipticLon = getOuterLon( projectedRadius, projectedLongitude, earthRadius, earthLongitude );
         }
-        eclipticLon = longitudeInterval.reduce( eclipticLon );
+        eclipticLon = lonInterval.reduce( eclipticLon );
 
         /** beta **/
-        double eclipticLat = latitudeInterval.clip(
+        double eclipticLat = latInterval.clip(
                 Math.atan2(
                     projectedRadius * Math.tan( psi ) * Math.sin( eclipticLon - projectedLongitude ),
                     earthRadius * Math.sin( eclipticLon - earthLongitude )
