@@ -4,6 +4,7 @@ import ch.epfl.rigel.coordinates.EclipticCoordinates;
 import ch.epfl.rigel.coordinates.EclipticToEquatorialConversion;
 import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 import ch.epfl.rigel.math.Angle;
+import ch.epfl.rigel.math.ClosedInterval;
 import ch.epfl.rigel.math.RightOpenInterval;
 
 import java.util.Arrays;
@@ -30,6 +31,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
             30.1985, 1.7673, 131.879, 62.20, -6.87 );
 
     private static final double ANGULAR_SPEED = Angle.TAU / 365.242191;
+    private static final ClosedInterval latitudeInterval = ClosedInterval.of( -Angle.TAU / 4, Angle.TAU / 4 );
     private static final RightOpenInterval longitudeInterval = RightOpenInterval.of( -Angle.TAU / 4, Angle.TAU / 4 );
 
     public static List<PlanetModel> ALL = Arrays.asList(
@@ -58,14 +60,14 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
     {
         this.name = name;
         this.revolutionPeriod = revolutionPeriod;
-        this.lonJ2010 = lonJ2010;
-        this.lonPerigee = lonPerigee;
+        this.lonJ2010 = Angle.ofDeg(lonJ2010);
+        this.lonPerigee = Angle.ofDeg(lonPerigee);
         this.orbitEccentricity = orbitEccentricity;
         this.halfOrbitMajorAxis = halfOrbitMajorAxis;
-        this.inclinationOrbit = inclinationOrbit;
-        this.lonAscendingNode = lonAscendingNode;
-        this.angularSize = angularSize;
-        this.magnitude = magnitude;
+        this.inclinationOrbit = Angle.ofDeg(inclinationOrbit);
+        this.lonAscendingNode = Angle.ofDeg(lonAscendingNode);
+        this.angularSize = Angle.ofArcsec(angularSize);
+        this.magnitude = Angle.ofDeg(magnitude);
 
         this.deltaLon = lonJ2010 - lonPerigee;
         this.eccentricitySquared = Math.pow( orbitEccentricity, 2 );
@@ -116,9 +118,11 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         eclipticLon = longitudeInterval.reduce( eclipticLon );
 
         /** beta **/
-        double eclipticLat = Math.atan2(
-                projectedRadius * Math.tan( psi ) * Math.sin( eclipticLon - projectedLongitude ),
-                earthRadius * Math.sin( eclipticLon - earthLongitude )
+        double eclipticLat = latitudeInterval.clip(
+                Math.atan2(
+                    projectedRadius * Math.tan( psi ) * Math.sin( eclipticLon - projectedLongitude ),
+                    earthRadius * Math.sin( eclipticLon - earthLongitude )
+                )
         );
 
         EclipticCoordinates eclipticPos = EclipticCoordinates.of( eclipticLon, eclipticLat );
@@ -130,7 +134,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         double distance = Math.sqrt( Math.abs(
                 Math.pow( earthRadius, 2 ) + Math.pow( radius, 2 ) - 2 * earthRadius * radius * Math.cos( longitude - earthLongitude ) * cosPsi
         ) );
-        float planetAngularSize = (float) ( angularSize / distance );
+        float planetAngularSize = (float) Angle.ofDeg( angularSize / distance );
         /* END OF ANGULAR SIZE */
 
 
