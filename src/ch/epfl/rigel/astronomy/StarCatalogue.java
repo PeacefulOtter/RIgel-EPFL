@@ -74,12 +74,21 @@ public final class StarCatalogue
 
         List<Asterism> asterisms() { return Collections.unmodifiableList(asterisms()); }
 
-        Builder loadFrom( InputStream inputStream, Loader loader ){
-            loader.load(inputStream, this);
+        Builder loadFrom( InputStream inputStream, Loader loader )
+        {
+            try {
+                loader.load( inputStream, this );
+            } catch( IOException e )
+            {
+                e.printStackTrace();
+            }
             return this;
         }
 
-        StarCatalogue build(){ return new StarCatalogue(stars, asterisms); }
+        StarCatalogue build()
+        {
+            return new StarCatalogue( stars, asterisms );
+        }
     }
 
     public interface Loader
