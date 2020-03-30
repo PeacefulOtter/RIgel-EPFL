@@ -51,39 +51,34 @@ public final class StarCatalogue
     public final static class Builder
     {
 
-        Builder()
-        {
+        private List< Star > stars;
+        private List< Asterism > asterisms;
 
+        Builder() {
+            stars = new ArrayList<>();
+            asterisms = new ArrayList<>();
         }
 
-        Builder addStar( Star star ){
-            return null;
+        Builder addStar( Star star ) {
+            stars.add(star);
+            return this;
         }
 
-        // pas sur que ca soit ca qu il faut retourner ( une vue non modifiable )
-        List<Star> stars()
-        {
-           // return Collections.unmodifiableList(stars());
-            return null;
+        List<Star> stars() { return Collections.unmodifiableList(stars()); }
+
+        Builder addAsterism( Asterism asterism ) {
+            asterisms.add(asterism);
+            return this;
         }
 
-        Builder addAsterism( Asterism asterism ){
-            return null;
-        }
-
-        List<Asterism> asterisms()
-        {
-            // return Collections.unmodifiableList(asterism());
-            return null;
-        }
+        List<Asterism> asterisms() { return Collections.unmodifiableList(asterisms()); }
 
         Builder loadFrom( InputStream inputStream, Loader loader ){
-            return null;
+            loader.load(inputStream, this);
+            return this;
         }
 
-        StarCatalogue build(){
-            return null;
-        }
+        StarCatalogue build(){ return new StarCatalogue(stars, asterisms); }
     }
 
     interface Loader
