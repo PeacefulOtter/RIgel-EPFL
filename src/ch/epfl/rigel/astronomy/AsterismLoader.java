@@ -1,0 +1,12 @@
+package ch.epfl.rigel.astronomy;
+
+import java.io.InputStream;
+
+public enum AsterismLoader implements StarCatalogue.Loader{
+    INSTANCE();
+
+    @Override
+    public void load(InputStream inputStream, StarCatalogue.Builder builder) {
+
+    }
+}
