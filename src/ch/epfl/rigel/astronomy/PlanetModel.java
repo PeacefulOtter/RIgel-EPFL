@@ -67,9 +67,9 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         this.inclinationOrbit = Angle.ofDeg(inclinationOrbit);
         this.lonAscendingNode = Angle.ofDeg(lonAscendingNode);
         this.angularSize = Angle.ofArcsec(angularSize);
-        this.magnitude = Angle.ofDeg(magnitude);
+        this.magnitude = magnitude;
 
-        this.deltaLon = lonJ2010 - lonPerigee;
+        this.deltaLon = this.lonJ2010 - this.lonPerigee;
         this.eccentricitySquared = Math.pow( orbitEccentricity, 2 );
     }
 
@@ -78,7 +78,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
             double daysSinceJ2010,
             EclipticToEquatorialConversion eclipticToEquatorialConversion )
     {
-        double meanAnomaly = ANGULAR_SPEED * daysSinceJ2010 / revolutionPeriod + deltaLon;
+        double meanAnomaly = ANGULAR_SPEED * ( daysSinceJ2010 / revolutionPeriod ) + deltaLon;
         double trueAnomaly = meanAnomaly + 2 * orbitEccentricity * Math.sin( meanAnomaly );
         /** r **/
         double radius = ( halfOrbitMajorAxis * ( 1 - eccentricitySquared ) )  /  ( 1 + orbitEccentricity * Math.cos( trueAnomaly ) );
@@ -101,7 +101,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
                 Math.atan2( deltaLonSin * inclinationCos, deltaLonCos ) + lonAscendingNode
         );
 
-        /* Earth constants 0: eartchRad, 1:earthLon */
+        /* Earth constants 0: earthRad, 1: earthLon */
         double[] earthConstants = getEarthConstants( daysSinceJ2010 );
         double earthRadius = earthConstants[ 0 ];
         double earthLongitude = earthConstants[ 1 ];
@@ -134,7 +134,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         double distance = Math.sqrt( Math.abs(
                 Math.pow( earthRadius, 2 ) + Math.pow( radius, 2 ) - 2 * earthRadius * radius * Math.cos( longitude - earthLongitude ) * cosPsi
         ) );
-        float planetAngularSize = (float) Angle.ofDeg( angularSize / distance );
+        double planetAngularSize = angularSize / distance;
         /* END OF ANGULAR SIZE */
 
 
@@ -146,7 +146,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         /* END OF MAGNITUDE */
 
 
-        return new Planet( name, equatorialPos, planetAngularSize, (float)planetMagnitude );
+        return new Planet( name, equatorialPos, (float) planetAngularSize, (float) planetMagnitude );
     }
 
 
@@ -159,9 +159,8 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
     private double getInnerLon( double planetRadius, double planetLon, double earthRad, double earthLon )
     {
         double delta = earthLon - planetLon;
-        return Math.PI + earthLon + Math.atan2(
-                planetRadius * Math.sin( delta ),
-                earthRad - planetRadius * Math.cos( delta )
+        return Math.PI + earthLon + Math.atan(
+                ( planetRadius * Math.sin( delta ) )  /  ( earthRad - planetRadius * Math.cos( delta ) )
         );
     }
 
@@ -174,20 +173,19 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
     private double getOuterLon( double planetRadius, double planetLon, double earthRad, double earthLon )
     {
         double delta = planetLon - earthLon;
-        return planetLon + Math.atan2(
-                earthRad * Math.sin( delta ),
-                planetRadius - earthRad * Math.cos( delta )
+        return planetLon + Math.atan(
+                ( earthRad * Math.sin( delta ) )  /  ( planetRadius - earthRad * Math.cos( delta ) )
         );
     }
 
     private double[] getEarthConstants( double daysSinceJ2010 )
     {
-        double meanAnomaly = ANGULAR_SPEED * daysSinceJ2010 / EARTH.revolutionPeriod + EARTH.deltaLon;
-        double trueAnomaly = meanAnomaly + 2 * EARTH.orbitEccentricity * Math.sin( meanAnomaly );
+        double earthMeanAnomaly = ANGULAR_SPEED * daysSinceJ2010 / EARTH.revolutionPeriod + EARTH.deltaLon;
+        double earthTrueAnomaly = earthMeanAnomaly + 2 * EARTH.orbitEccentricity * Math.sin( earthMeanAnomaly );
         /** R **/
-        double earthRad = ( EARTH.halfOrbitMajorAxis * ( 1 - EARTH.eccentricitySquared ) )  /  ( 1 + EARTH.orbitEccentricity * Math.cos( trueAnomaly ) );
+        double earthRad = ( EARTH.halfOrbitMajorAxis * ( 1 - EARTH.eccentricitySquared ) )  /  ( 1 + EARTH.orbitEccentricity * Math.cos( earthTrueAnomaly ) );
         /** L **/
-        double earthLon = trueAnomaly + EARTH.lonPerigee;
+        double earthLon = earthTrueAnomaly + EARTH.lonPerigee;
         return new double[] { earthRad, earthLon };
     }
 }
