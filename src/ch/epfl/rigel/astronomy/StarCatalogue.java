@@ -2,6 +2,7 @@ package ch.epfl.rigel.astronomy;
 
 import ch.epfl.rigel.Preconditions;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
@@ -81,8 +82,8 @@ public final class StarCatalogue
         StarCatalogue build(){ return new StarCatalogue(stars, asterisms); }
     }
 
-    interface Loader
+    public interface Loader
     {
-        public void load( InputStream inputStream, Builder builder );
+        void load( InputStream inputStream, Builder builder ) throws IOException;
     }
 }
