@@ -9,9 +9,9 @@ import java.util.*;
 public final class StarCatalogue
 {
 
-    private Map<Asterism, List<Integer>> index;
-    private List<Star> stars;
-    private Set<Asterism> asterisms;
+    private final Map<Asterism, List<Integer>> index;
+    private final List<Star> stars;
+    private final Set<Asterism> asterisms;
 
     public StarCatalogue( List<Star> stars, List<Asterism> asterisms )
     {

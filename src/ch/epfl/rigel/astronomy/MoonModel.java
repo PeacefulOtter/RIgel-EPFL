@@ -7,8 +7,6 @@ import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.ClosedInterval;
 import ch.epfl.rigel.math.RightOpenInterval;
 
-import java.security.spec.ECField;
-
 public enum MoonModel implements CelestialObjectModel<Moon>
 {
 
@@ -22,6 +20,8 @@ public enum MoonModel implements CelestialObjectModel<Moon>
 
     private static final RightOpenInterval lonInterval = RightOpenInterval.of( 0, Angle.TAU );
     private static final ClosedInterval latInterval = ClosedInterval.of( -Angle.TAU / 4, Angle.TAU / 4 );
+    private static final ClosedInterval moonPhaseInterval = ClosedInterval.of( 0, 1 );
+
 
     @Override
     public Moon at(
@@ -76,8 +76,8 @@ public enum MoonModel implements CelestialObjectModel<Moon>
         double angularSize = Angle.ofDeg( 0.5181 ) / p;
 
 
-
-        double phase = ( 1 - Math.cos( lprimeprime - sunLon ) ) / 2;
+        // between 0 and 1
+        double phase = moonPhaseInterval.clip( ( 1 - Math.cos( lprimeprime - sunLon ) ) / 2 );
 
 
         return new Moon( equatorialPos, (float)angularSize, 0, (float)phase );

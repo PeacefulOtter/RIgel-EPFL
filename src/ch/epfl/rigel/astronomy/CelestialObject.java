@@ -66,14 +66,7 @@ public abstract class CelestialObject
     }
 
     /*
-
-
-    MUST BE OVERIDDEN IN SUBCLASSES
     String info(), qui retourne un (court) texte informatif au sujet de l'objet, destiné à être montré à l'utilisateur.
-
-
-
-
      */
     public String info()
     {

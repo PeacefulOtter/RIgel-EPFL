@@ -34,7 +34,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
     private static final ClosedInterval latInterval = ClosedInterval.of( -Angle.TAU / 4, Angle.TAU / 4 );
     private static final RightOpenInterval lonInterval = RightOpenInterval.of( 0, Angle.TAU );
 
-    public static List<PlanetModel> ALL = Arrays.asList(
+    public final static List<PlanetModel> ALL = Arrays.asList(
             MERCURY, VENUS, EARTH, MARS, JUPITER, SATURN, URANUS, NEPTUNE );
 
     private final String name;

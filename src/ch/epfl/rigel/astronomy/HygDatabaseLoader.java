@@ -7,7 +7,8 @@ import java.io.InputStreamReader;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
-public enum HygDatabaseLoader implements StarCatalogue.Loader {
+public enum HygDatabaseLoader implements StarCatalogue.Loader
+{
 
     INSTANCE();
 

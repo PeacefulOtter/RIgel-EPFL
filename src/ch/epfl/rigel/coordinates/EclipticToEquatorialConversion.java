@@ -11,6 +11,9 @@ import java.util.function.Function;
 
 public final class EclipticToEquatorialConversion implements Function<EclipticCoordinates, EquatorialCoordinates>
 {
+    private static final RightOpenInterval LON_INTERVAL = RightOpenInterval.of( 0, Angle.TAU );
+    private static final ClosedInterval LAT_INTERVAL = ClosedInterval.of( -Angle.TAU / 4, Angle.TAU / 4);
+
     // function used to determine epsilon based on the number of julian centuries
     private static final Polynomial EPSILON_POLYNOMIAL = Polynomial.of(
             Angle.ofArcsec( 0.00181 ),
@@ -20,9 +23,6 @@ public final class EclipticToEquatorialConversion implements Function<EclipticCo
 
     // cosine and sin of the Epsilon polynomial
     private final double cosEpsilon, sinEpsilon;
-
-    private static final RightOpenInterval LON_INTERVAL = RightOpenInterval.of( 0, Angle.TAU );
-    private static final ClosedInterval LAT_INTERVAL = ClosedInterval.of( -Angle.TAU / 4, Angle.TAU / 4);
 
     /**
      * change of coordinate system between ecliptic and equatorial coordinates for the date/time pair when
