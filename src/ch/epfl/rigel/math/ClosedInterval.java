@@ -21,7 +21,8 @@ public final class ClosedInterval extends Interval
      * @throws IllegalArgumentException if low is greater or equal to high
      * @return the interval
      */
-    public static ClosedInterval of( double low, double high ) {
+    public static ClosedInterval of( double low, double high )
+    {
         if ( low >= high ) { throw new IllegalArgumentException(); }
         return new ClosedInterval( low, high );
     }
@@ -31,9 +32,10 @@ public final class ClosedInterval extends Interval
      * @param size : the interval size
      * @return the interval
      */
-    public static ClosedInterval symmetric( double size ) {
+    public static ClosedInterval symmetric( double size )
+    {
         if ( size <= 0 ) { throw new IllegalArgumentException(); }
-        return new ClosedInterval( -size/2, size/2 );
+        return new ClosedInterval( -size / 2, size / 2 );
     }
 
     /**
@@ -41,7 +43,8 @@ public final class ClosedInterval extends Interval
      * @param v : the value we want to contain
      * @return the contained value
      */
-    public double clip( double v ) {
+    public double clip( double v )
+    {
         if ( v <= low() ) { return low(); }
         else if ( v >= high() ) { return high(); }
         return v;
@@ -53,7 +56,7 @@ public final class ClosedInterval extends Interval
      * @return boolean : true if inside, false if not
      */
     @Override
-    public boolean contains(double v)
+    public boolean contains( double v )
     {
         return ( v >= low() && v <= high() );
     }

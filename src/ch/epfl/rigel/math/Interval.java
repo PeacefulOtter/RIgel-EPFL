@@ -10,7 +10,8 @@ public abstract class Interval
     // the upper bound
     private final double upperBound;
 
-    protected Interval( double lowerBound, double upperBound) {
+    protected Interval( double lowerBound, double upperBound )
+    {
         this.lowerBound = lowerBound;
         this.upperBound = upperBound;
     }

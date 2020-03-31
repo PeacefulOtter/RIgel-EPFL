@@ -9,7 +9,7 @@ import java.util.*;
 public final class StarCatalogue
 {
 
-    private final Map<Asterism, List<Integer>> index;
+    private final Map<Asterism, List<Integer>> indices;
     private final List<Star> stars;
     private final Set<Asterism> asterisms;
 
@@ -17,12 +17,15 @@ public final class StarCatalogue
     {
         for ( Asterism asterism : asterisms )
         {
-            Preconditions.checkArgument( stars.contains( asterism.stars() ) );
+            for ( Star star : asterism.stars() )
+            {
+                Preconditions.checkArgument( stars.contains( star ) );
+            }
         }
 
-        this.stars = stars;
+        this.stars = List.copyOf( stars );
         this.asterisms = Set.copyOf( asterisms );
-        this.index = new HashMap<>();
+        this.indices = new HashMap<>();
 
         for ( Asterism asterism : asterisms )
         {
@@ -31,61 +34,64 @@ public final class StarCatalogue
             {
                 tempList.add( stars.indexOf( asterismStar ) );
             }
-            index.put( asterism, tempList );
+            indices.put( asterism, tempList );
         }
     }
 
+    // return a copy ??
     public List<Star> stars(){
         return stars;
     }
-
+    // return a copy ??
     public Set<Asterism> asterisms(){
         return asterisms;
     }
 
+    // return a copy ??
     public List<Integer> asterismIndices( Asterism asterism )
     {
         Preconditions.checkArgument( asterisms.contains( asterism ) );
-        return List.copyOf( index.get( asterism ) ) ;
+        return List.copyOf( indices.get( asterism ) ) ;
     }
 
     public final static class Builder
     {
 
-        private List< Star > stars;
-        private List< Asterism > asterisms;
+        private List<Star> stars;
+        private List<Asterism> asterisms;
 
-        Builder() {
-            stars = new ArrayList<>();
-            asterisms = new ArrayList<>();
+        public Builder()
+        {
+            this.stars = new ArrayList<>();
+            this.asterisms = new ArrayList<>();
         }
 
-        Builder addStar( Star star ) {
-            stars.add(star);
+
+        public Builder addStar( Star star )
+        {
+            stars.add( star );
             return this;
         }
 
-        List<Star> stars() { return Collections.unmodifiableList(stars()); }
+        public List<Star> stars() { return Collections.unmodifiableList( stars ); }
 
-        Builder addAsterism( Asterism asterism ) {
+
+        public Builder addAsterism( Asterism asterism )
+        {
             asterisms.add(asterism);
             return this;
         }
 
-        List<Asterism> asterisms() { return Collections.unmodifiableList(asterisms()); }
+        public List<Asterism> asterisms() { return Collections.unmodifiableList( asterisms ); }
 
-        Builder loadFrom( InputStream inputStream, Loader loader )
+
+        public Builder loadFrom( InputStream inputStream, Loader loader ) throws IOException
         {
-            try {
-                loader.load( inputStream, this );
-            } catch( IOException e )
-            {
-                e.printStackTrace();
-            }
+            loader.load( inputStream, this );
             return this;
         }
 
-        StarCatalogue build()
+        public StarCatalogue build()
         {
             return new StarCatalogue( stars, asterisms );
         }

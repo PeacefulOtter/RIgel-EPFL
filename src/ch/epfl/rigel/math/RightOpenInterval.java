@@ -10,7 +10,7 @@ public class RightOpenInterval extends Interval
      */
     protected RightOpenInterval( double lowerBound, double upperBound )
     {
-        super(lowerBound, upperBound);
+        super( lowerBound, upperBound );
     }
 
     /**
@@ -19,7 +19,8 @@ public class RightOpenInterval extends Interval
      * @param high : the upper bound
      * @return the new interval
      */
-    public static RightOpenInterval of( double low, double high ) {
+    public static RightOpenInterval of( double low, double high )
+    {
         if ( low >= high ) { throw new IllegalArgumentException(); }
         return new RightOpenInterval( low, high );
     }
@@ -29,7 +30,8 @@ public class RightOpenInterval extends Interval
      * @param size
      * @return
      */
-    public static RightOpenInterval symmetric( double size ) {
+    public static RightOpenInterval symmetric( double size )
+    {
         if ( size <= 0 ) { throw new IllegalArgumentException(); }
         return new RightOpenInterval( -size/2, size/2 );
     }
