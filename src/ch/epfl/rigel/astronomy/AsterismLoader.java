@@ -18,20 +18,27 @@ public enum AsterismLoader implements StarCatalogue.Loader{
         try ( BufferedReader stream = new BufferedReader( new InputStreamReader( inputStream, US_ASCII ) ) )
         {
             String line ; 
-            String[] starInfo;
+            String[] fileHip;
+            List<Star> asterism;
 
             while( ( line = stream.readLine() ) != null )
             {
-                List<Star> asterism = new ArrayList<>();
-                starInfo = line.split( "," );
-                for ( String hip : starInfo ) {
-                    for ( Star star : builder.stars() ) {
-                        if( star.hipparcosId() == Integer.parseInt(hip)){
+                asterism = new ArrayList<>();
+                fileHip = line.split( "," );
+
+                for ( String hip : fileHip )
+                {
+                    for ( Star star : builder.stars() )
+                    {
+                        if( star.hipparcosId() == Integer.parseInt( hip ) )
+                        {
                             asterism.add(star);
                         }
                     }
                 }
-                builder.addAsterism(new Asterism(asterism));
+                //System.out.println(builder.stars());
+                //System.out.println(asterism);
+                builder.addAsterism( new Asterism( asterism ) );
             }
         }
     }
