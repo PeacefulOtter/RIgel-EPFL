@@ -38,7 +38,7 @@ public enum HygDatabaseLoader implements StarCatalogue.Loader
                 int hipparcosId = ( starInfo[ HIP_INDEX ].equals( "" ) ) ? 0 : Integer.parseInt( starInfo[ HIP_INDEX ] );
 
                 String name = ( starInfo[ PROPER_INDEX ].equals( "" ) ) ?
-                        starInfo[ BAYER_INDEX ] + " " + starInfo[ CON_INDEX ] :
+                        ( starInfo[ BAYER_INDEX ].equals( "" ) ? "?" : starInfo[ BAYER_INDEX ] ) + " " + starInfo[ CON_INDEX ] :
                         starInfo[ PROPER_INDEX ];
 
                 EquatorialCoordinates equatorialPos = EquatorialCoordinates.of(
