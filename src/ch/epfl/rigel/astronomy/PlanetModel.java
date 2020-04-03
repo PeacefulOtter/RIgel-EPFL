@@ -4,7 +4,6 @@ import ch.epfl.rigel.coordinates.EclipticCoordinates;
 import ch.epfl.rigel.coordinates.EclipticToEquatorialConversion;
 import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 import ch.epfl.rigel.math.Angle;
-import ch.epfl.rigel.math.ClosedInterval;
 import ch.epfl.rigel.math.RightOpenInterval;
 
 import java.util.Arrays;
@@ -78,15 +77,12 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
             EclipticToEquatorialConversion eclipticToEquatorialConversion )
     {
         double meanAnomaly = ANGULAR_SPEED * ( daysSinceJ2010 / revolutionPeriod ) + deltaLon;
-        System.out.println("meanAnomaly : " + meanAnomaly);
         double trueAnomaly = meanAnomaly + 2 * orbitEccentricity * Math.sin( meanAnomaly );
-        System.out.println("trueAnomaly : " + trueAnomaly);
+
         /** r **/
         double radius = ( halfOrbitMajorAxis * ( 1 - eccentricitySquared ) )  /  ( 1 + orbitEccentricity * Math.cos( trueAnomaly ) );
-        System.out.println("radius : " + radius);
         /** l **/
         double longitude = trueAnomaly + lonPerigee;
-        System.out.println("longitude : " + longitude);
 
         double deltaLonSin = Math.sin( longitude - lonAscendingNode );
         double deltaLonCos = Math.cos( longitude - lonAscendingNode );
@@ -95,50 +91,39 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
 
         /** Psi **/
         double psi = Math.asin( deltaLonSin * inclinationSin );
-        System.out.println("psi : " + psi);
         double cosPsi = Math.cos( psi );
 
         /** r' **/
         double projectedRadius = radius * cosPsi;
-        System.out.println("pRadius : " + projectedRadius);
         /** l' **/
         double projectedLongitude = lonInterval.reduce(
                 Math.atan2( deltaLonSin * inclinationCos, deltaLonCos ) + lonAscendingNode
         );
-        System.out.println( "projectedLongitude : " + projectedLongitude);
 
         /* Earth constants 0: earthRad, 1: earthLon */
         double[] earthConstants = getEarthConstants( daysSinceJ2010 );
         double earthRadius = earthConstants[ 0 ];
-        System.out.println(" earthRadius : " + earthRadius);
         double earthLongitude = earthConstants[ 1 ];
-        System.out.println("earthLongitude : " + earthLongitude);
 
         /* EQUATORIAL POS */
         /** lambda **/
         double eclipticLon;
         if ( this == MERCURY || this == VENUS )
         {
-            System.out.println("inner");
             eclipticLon = getInnerLon( projectedRadius, projectedLongitude, earthRadius, earthLongitude );
         } else {
-            System.out.println("outer");
             eclipticLon = getOuterLon( projectedRadius, projectedLongitude, earthRadius, earthLongitude );
         }
         eclipticLon = lonInterval.reduce( eclipticLon );
-        System.out.println("eclipticLon : " + eclipticLon);
 
         /** beta **/
         double eclipticLat = Math.atan(
                 ( projectedRadius * Math.tan( psi ) * Math.sin( eclipticLon - projectedLongitude ) ) /
                 ( earthRadius * Math.sin( projectedLongitude - earthLongitude ) )
         );
-        System.out.println(eclipticLat);
 
         EclipticCoordinates eclipticPos = EclipticCoordinates.of( eclipticLon, eclipticLat );
-        System.out.println(eclipticPos);
         EquatorialCoordinates equatorialPos = eclipticToEquatorialConversion.apply( eclipticPos );
-        System.out.println(equatorialPos);
         /* END OF EQUATORIAL POS */
 
 
@@ -193,9 +178,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
     private double[] getEarthConstants( double daysSinceJ2010 )
     {
         double earthMeanAnomaly = ANGULAR_SPEED * daysSinceJ2010 / EARTH.revolutionPeriod + EARTH.deltaLon;
-        System.out.println("earth anomaly : " + earthMeanAnomaly );
         double earthTrueAnomaly = earthMeanAnomaly + 2 * EARTH.orbitEccentricity * Math.sin( earthMeanAnomaly );
-        System.out.println( "earthTrueAnomaly : " + earthTrueAnomaly);
         /** R **/
         double earthRad = ( EARTH.halfOrbitMajorAxis * ( 1 - EARTH.eccentricitySquared ) )  /  ( 1 + EARTH.orbitEccentricity * Math.cos( earthTrueAnomaly ) );
         /** L **/
