@@ -38,7 +38,7 @@ public final class BlackBodyColor
         {
             throw new UncheckedIOException( e );
         }
-        
+
         return Color.web( hexColor );
     }
 }
