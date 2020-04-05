@@ -30,7 +30,7 @@ public class ObservedSky
         EclipticToEquatorialConversion conversion = new EclipticToEquatorialConversion( moment );
         double daysUntil = Epoch.J2000.daysUntil( moment );
 
-        Sun sun = SunModel.SUN.at( daysUntil, conversion );
+        sun = SunModel.SUN.at( daysUntil, conversion );
 
         celestialObjects = new HashSet<>();
         EclipticToEquatorialConversion p = new EclipticToEquatorialConversion( moment );
