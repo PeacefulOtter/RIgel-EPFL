@@ -14,12 +14,11 @@ public enum MoonModel implements CelestialObjectModel<Moon>
 
     private static final double averageLongitude = Angle.ofDeg( 91.929336 );
     private static final double perigeeAverageLongitude = Angle.ofDeg( 130.143076 );
-    private static final double ascendingNodeLongitude = Angle.ofDeg( 291.682457 );
+    private static final double ascendingNodeLongitude = Angle.ofDeg( 291.682547 );
     private static final double inclinationOrbit = Angle.ofDeg( 5.145396 );
     private static final double orbitalEccentricity = 0.0549;
 
     private static final RightOpenInterval lonInterval = RightOpenInterval.of( 0, Angle.TAU );
-    private static final ClosedInterval latInterval = ClosedInterval.of( -Angle.TAU / 4, Angle.TAU / 4 );
     private static final ClosedInterval moonPhaseInterval = ClosedInterval.of( 0, 1 );
 
 
@@ -66,7 +65,7 @@ public enum MoonModel implements CelestialObjectModel<Moon>
                 sinDeltaLon * Math.cos( inclinationOrbit ),
                 Math.cos( deltaLon )
         ) + Nprime );
-        double betam = latInterval.clip( Math.asin( sinDeltaLon  * Math.sin( inclinationOrbit ) ) );
+        double betam = Math.asin( sinDeltaLon  * Math.sin( inclinationOrbit ) );
 
         EquatorialCoordinates equatorialPos = eclipticToEquatorialConversion.apply( EclipticCoordinates.of( lambdam, betam ) );
 
