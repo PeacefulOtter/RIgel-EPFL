@@ -36,8 +36,7 @@ public enum AsterismLoader implements StarCatalogue.Loader{
                         }
                     }
                 }
-                //System.out.println(builder.stars());
-                //System.out.println(asterism);
+
                 builder.addAsterism( new Asterism( asterism ) );
             }
         }

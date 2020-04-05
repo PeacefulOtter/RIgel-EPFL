@@ -38,25 +38,19 @@ public final class StarCatalogue
         }
     }
 
-    // return a copy ??
-    public List<Star> stars(){
-        return stars;
-    }
-    // return a copy ??
-    public Set<Asterism> asterisms(){
-        return asterisms;
-    }
+    public List<Star> stars() { return List.copyOf( stars ); }
 
-    // return a copy ??
+    public Set<Asterism> asterisms() { return Set.copyOf( asterisms ); }
+
     public List<Integer> asterismIndices( Asterism asterism )
     {
         Preconditions.checkArgument( asterisms.contains( asterism ) );
         return List.copyOf( indices.get( asterism ) ) ;
     }
 
+
     public final static class Builder
     {
-
         private List<Star> stars;
         private List<Asterism> asterisms;
 
@@ -96,6 +90,7 @@ public final class StarCatalogue
             return new StarCatalogue( stars, asterisms );
         }
     }
+
 
     public interface Loader
     {

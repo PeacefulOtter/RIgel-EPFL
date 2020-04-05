@@ -4,7 +4,6 @@ import ch.epfl.rigel.coordinates.EclipticCoordinates;
 import ch.epfl.rigel.coordinates.EclipticToEquatorialConversion;
 import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 import ch.epfl.rigel.math.Angle;
-import ch.epfl.rigel.math.ClosedInterval;
 import ch.epfl.rigel.math.RightOpenInterval;
 
 import java.util.Arrays;
@@ -31,7 +30,6 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
             30.1985, 1.7673, 131.879, 62.20, -6.87 );
 
     private static final double ANGULAR_SPEED = Angle.TAU / 365.242191;
-    private static final ClosedInterval latInterval = ClosedInterval.of( -Angle.TAU / 4, Angle.TAU / 4 );
     private static final RightOpenInterval lonInterval = RightOpenInterval.of( 0, Angle.TAU );
 
     public final static List<PlanetModel> ALL = Arrays.asList(
@@ -80,6 +78,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
     {
         double meanAnomaly = ANGULAR_SPEED * ( daysSinceJ2010 / revolutionPeriod ) + deltaLon;
         double trueAnomaly = meanAnomaly + 2 * orbitEccentricity * Math.sin( meanAnomaly );
+
         /** r **/
         double radius = ( halfOrbitMajorAxis * ( 1 - eccentricitySquared ) )  /  ( 1 + orbitEccentricity * Math.cos( trueAnomaly ) );
         /** l **/
@@ -118,11 +117,9 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         eclipticLon = lonInterval.reduce( eclipticLon );
 
         /** beta **/
-        double eclipticLat = latInterval.clip(
-                Math.atan2(
-                    projectedRadius * Math.tan( psi ) * Math.sin( eclipticLon - projectedLongitude ),
-                    earthRadius * Math.sin( eclipticLon - earthLongitude )
-                )
+        double eclipticLat = Math.atan(
+                ( projectedRadius * Math.tan( psi ) * Math.sin( eclipticLon - projectedLongitude ) ) /
+                ( earthRadius * Math.sin( projectedLongitude - earthLongitude ) )
         );
 
         EclipticCoordinates eclipticPos = EclipticCoordinates.of( eclipticLon, eclipticLat );
@@ -173,8 +170,8 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
     private double getOuterLon( double planetRadius, double planetLon, double earthRad, double earthLon )
     {
         double delta = planetLon - earthLon;
-        return planetLon + Math.atan(
-                ( earthRad * Math.sin( delta ) )  /  ( planetRadius - earthRad * Math.cos( delta ) )
+        return planetLon + Math.atan2(
+                ( earthRad * Math.sin( delta ) ), ( planetRadius - earthRad * Math.cos( delta ) )
         );
     }
 
