@@ -12,6 +12,7 @@ public class ObservedSky
     private final List< Planet > planetsWithoutEarth;
     private final HashMap< CelestialObject, CartesianCoordinates > planetCartesianCoordinates;
     private final Set<CelestialObject> celestialObjects;
+    private StarCatalogue catalogue;
     private final Sun sun;
     private final Moon moon;
 
@@ -21,6 +22,7 @@ public class ObservedSky
             StereographicProjection projection,
             StarCatalogue catalogue )
     {
+        this.catalogue = catalogue;
         planetsWithoutEarth = new ArrayList<>();
         planetCartesianCoordinates = new HashMap<>();
         planetsModelWithoutEarth = PlanetModel.ALL;
@@ -87,4 +89,37 @@ public class ObservedSky
         }
         return cartesianCoordinates;
     }
+
+    public Set< Asterism > getAsterism(){
+        return catalogue.asterisms();
+    }
+
+    public List< Integer > asterismIndices( Asterism asterism ){
+        return catalogue.asterismIndices( asterism );
+    }
+
+    public Optional< CelestialObject > objectClosestTo(CartesianCoordinates coordinates, double maximalDistance ){
+        double distance = maximalDistance;
+        double distanceBetween;
+        CelestialObject currentObject = null;
+        for (CelestialObject object: celestialObjects) {
+            distanceBetween = distanceBetween(planetCartesianCoordinates.get(object), coordinates);
+            if( distance > distanceBetween ){
+                distance = distanceBetween;
+                currentObject = object;
+            }
+        }
+
+        if(distance == maximalDistance){
+            return Optional.empty();
+        }
+        else{
+            return Optional.of( currentObject );
+        }
+    }
+
+    private double distanceBetween(CartesianCoordinates point1, CartesianCoordinates point2){
+        return Math.sqrt(point1.x()*point2.x() + point1.y()*point2.y());
+    }
+
 }
