@@ -26,27 +26,23 @@ public class ObservedSky
     {
         planetsWithoutEarth = PlanetModel.ALL;
         planetsWithoutEarth.remove( PlanetModel.EARTH );
+        celestialObjects = new HashSet<>();
 
         EclipticToEquatorialConversion conversion = new EclipticToEquatorialConversion( moment );
         double daysUntil = Epoch.J2000.daysUntil( moment );
 
         sun = SunModel.SUN.at( daysUntil, conversion );
+        moon = MoonModel.MOON.at( daysUntil, conversion );
+        celestialObjects.add( sun );
+        celestialObjects.add( moon );
 
-        celestialObjects = new HashSet<>();
-        EclipticToEquatorialConversion p = new EclipticToEquatorialConversion( moment );
-        double m = Epoch.J2000.daysUntil(moment);
-
-        sun = SunModel.SUN.at(m, p);
-        moon = MoonModel.MOON.at(m, p);
-        celestialObjects.add(sun);
-        celestialObjects.add(moon);
-        for ( PlanetModel planet: PlanetModel.ALL ) {
-            if ( planet.equals(PlanetModel.EARTH)) continue;
-            celestialObjects.add(planet.at(m, p));
+        for ( PlanetModel planet: planetsWithoutEarth)
+        {
+            celestialObjects.add( planet.at( daysUntil, conversion ) );
         }
-
-        for (Star star : catalogue.stars()) {
-            celestialObjects.add(star);
+        for ( Star star : catalogue.stars() )
+        {
+            celestialObjects.add( star );
         }
     }
 
