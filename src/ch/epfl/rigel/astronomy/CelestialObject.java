@@ -65,8 +65,9 @@ public abstract class CelestialObject
         return magnitude;
     }
 
-    /*
-    String info(), qui retourne un (court) texte informatif au sujet de l'objet, destiné à être montré à l'utilisateur.
+
+    /**
+     * @return an information message about the Celestial Object, by default returns its name
      */
     public String info()
     {

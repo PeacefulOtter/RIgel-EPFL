@@ -7,7 +7,7 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
 /**
- * set two astronomique Epoch
+ * Represents an astronomical epoch. Its values represent the two epochs we use as reference for the calculations
  */
 public enum Epoch {
     J2000( LocalDateTime.of( 2000, Month.JANUARY, 1, 12, 0 ) ),
@@ -18,14 +18,14 @@ public enum Epoch {
     /**
      * @param date : LocalDateTime
      */
-    private Epoch( LocalDateTime date )
+    Epoch( LocalDateTime date )
     {
         this.date = date;
     }
 
     /**
-     * @param when: the actual time
-     * @return the number of days between the Epoch where is apply and the actual time (when)
+     * @param when: the date and time with time zones
+     * @return the number of days between the Epoch where is apply and the parameter when
      */
     public double daysUntil( ZonedDateTime when )
     {
@@ -34,8 +34,8 @@ public enum Epoch {
     }
 
     /**
-     * @param when : the actual time
-     * @return the number of julians century between the Epoch where is apply and the actual time (when)
+     * @param when : the date and time with time zones
+     * @return the number of julians century between the Epoch where is apply and the parameter when
      */
     public double julianCenturiesUntil( ZonedDateTime when )
     {

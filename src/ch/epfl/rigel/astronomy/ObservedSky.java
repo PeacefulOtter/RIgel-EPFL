@@ -47,7 +47,8 @@ public class ObservedSky
     }
 
 
-    public Sun sun(){
+    public Sun sun()
+    {
         return new Sun(null , null, 0, 0);
     }
 
