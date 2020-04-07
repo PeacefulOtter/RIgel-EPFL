@@ -6,6 +6,7 @@ import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 
 public final class Sun extends CelestialObject
 {
+    // magnitude of the sun
     private static final float MAGNITUDE = -26.7f;
 
     // save the ecliptic position and the mean anomaly
@@ -27,8 +28,13 @@ public final class Sun extends CelestialObject
         this.meanAnomaly = meanAnomaly;
     }
 
-    // ecliptic position getter
+    /**
+     * @return the ecplictic position
+     */
     public EclipticCoordinates eclipticPos() { return eclipticPos; }
-    // mean anomaly getter
+
+    /**
+     * @return the mean anomaly
+     */
     public double meanAnomaly() { return meanAnomaly; }
 }

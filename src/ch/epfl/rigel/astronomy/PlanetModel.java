@@ -32,16 +32,22 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
     private static final double ANGULAR_SPEED = Angle.TAU / 365.242191;
     private static final RightOpenInterval lonInterval = RightOpenInterval.of( 0, Angle.TAU );
 
+
     public final static List<PlanetModel> ALL = Arrays.asList(
             MERCURY, VENUS, EARTH, MARS, JUPITER, SATURN, URANUS, NEPTUNE );
 
     private final String name;
+    // revolution period
     private final double revolutionPeriod;
+    // longitude at J2010
     private final double lonJ2010;
+    // longitude at perigee
     private final double lonPerigee;
     private final double orbitEccentricity;
     private final double halfOrbitMajorAxis;
+    // Inclination of the orbit to the ecliptic
     private final double inclinationOrbit;
+    // Longitude of the ascending node
     private final double lonAscendingNode;
     private final double angularSize;
     private final double magnitude;
@@ -71,6 +77,13 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         this.eccentricitySquared = Math.pow( orbitEccentricity, 2 );
     }
 
+    /**
+     *
+     * @param daysSinceJ2010 : number of days after the J2010 (possibly negative)
+     * @param eclipticToEquatorialConversion : Conversion used to get its equatorial coordinates from its ecliptic coordinates
+     * @return returns the object modeled by the model for the (possibly negative) number of days after
+     *         the given J2010 epoch, using the given conversion to obtain its equatorial coordinates from its ecliptic coordinates
+     */
     @Override
     public Planet at(
             double daysSinceJ2010,
@@ -175,6 +188,10 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         );
     }
 
+    /**
+     * @param daysSinceJ2010: the day since J2010
+     * @return the Earth Constants, the radius and the longitude
+     */
     private double[] getEarthConstants( double daysSinceJ2010 )
     {
         double earthMeanAnomaly = ANGULAR_SPEED * daysSinceJ2010 / EARTH.revolutionPeriod + EARTH.deltaLon;
