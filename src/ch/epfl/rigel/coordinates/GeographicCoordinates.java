@@ -9,9 +9,9 @@ import java.util.Locale;
 public final class GeographicCoordinates extends SphericalCoordinates
 {
     // Interval of the longitude in degrees
-    private static final RightOpenInterval lonDegInterval = RightOpenInterval.of( -180, 180 );
+    private static final RightOpenInterval LONDEG_INTERVAL = RightOpenInterval.of( -180, 180 );
     // Interval of the latitude in degrees
-    private static final ClosedInterval latDegInterval = ClosedInterval.of( -90, 90 );
+    private static final ClosedInterval LATDEG_INTERVAL = ClosedInterval.of( -90, 90 );
 
 
     private GeographicCoordinates( double lonDeg, double latDeg )
@@ -37,23 +37,23 @@ public final class GeographicCoordinates extends SphericalCoordinates
     }
 
     /**
-     * Check if the longitude is contained in the lonDegInterval
+     * Check if the longitude is contained in the LONDEG_INTERVAL
      * @param lonDeg : the longitude in degrees
      * @return true if contained, false if not
      */
     public static boolean isValidLonDeg( double lonDeg )
     {
-        return lonDegInterval.contains( lonDeg );
+        return LONDEG_INTERVAL.contains( lonDeg );
     }
 
     /**
-     * Check if the latitude is contained in the latDegInterval
+     * Check if the latitude is contained in the LATDEG_INTERVAL
      * @param latDeg : the latitude in degrees
      * @return true if contained, false if not
      */
     public static boolean isValidLatDeg( double latDeg )
     {
-        return latDegInterval.contains( latDeg );
+        return LATDEG_INTERVAL.contains( latDeg );
     }
 
     @Override

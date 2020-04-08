@@ -1,5 +1,6 @@
 package ch.epfl.rigel.coordinates;
 
+import ch.epfl.rigel.Preconditions;
 import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.ClosedInterval;
 import ch.epfl.rigel.math.RightOpenInterval;
@@ -9,9 +10,9 @@ import java.util.Locale;
 public final class HorizontalCoordinates extends SphericalCoordinates
 {
     // Interval of the longitude in radians
-    private static final RightOpenInterval azInterval =  RightOpenInterval.of( 0, Angle.TAU );
+    private static final RightOpenInterval AZ_INTERVAL =  RightOpenInterval.of( 0, Angle.TAU );
     // Interval of the latitude in radians
-    private static final ClosedInterval altInterval = ClosedInterval.of( -Math.PI / 2, Math.PI / 2 );
+    private static final ClosedInterval ALT_INTERVAL = ClosedInterval.of( -Math.PI / 2, Math.PI / 2 );
 
     private HorizontalCoordinates( double az, double alt )
     {
@@ -27,9 +28,8 @@ public final class HorizontalCoordinates extends SphericalCoordinates
      */
     public static HorizontalCoordinates of( double az, double alt )
     {
-        if ( !azInterval.contains( az ) || !altInterval.contains( alt ) ) {
-            throw new IllegalArgumentException();
-        }
+        Preconditions.checkInInterval(AZ_INTERVAL, az);
+        Preconditions.checkInInterval(ALT_INTERVAL, alt);
         return new HorizontalCoordinates( az, alt );
     }
 
@@ -43,9 +43,8 @@ public final class HorizontalCoordinates extends SphericalCoordinates
     public static HorizontalCoordinates ofDeg( double azDeg, double altDeg )
     {
         double az = Angle.ofDeg( azDeg ), alt = Angle.ofDeg( altDeg );
-        if ( !azInterval.contains( az ) || !altInterval.contains( alt ) ) {
-            throw new IllegalArgumentException();
-        }
+        Preconditions.checkInInterval(AZ_INTERVAL, az);
+        Preconditions.checkInInterval(ALT_INTERVAL, alt);
         return new HorizontalCoordinates( az, alt );
     }
 
