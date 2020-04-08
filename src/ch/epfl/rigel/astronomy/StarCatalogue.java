@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
+/**
+ * Represents a Catalogue of stars and asterisms
+ */
 public final class StarCatalogue
 {
     // HashMap containing Asterisms and there star index
@@ -59,7 +62,7 @@ public final class StarCatalogue
     public Set<Asterism> asterisms() { return Set.copyOf( asterisms ); }
 
     /**
-     * @param asterism
+     * @param asterism : an asterism
      * @return the list of indexes in the catalogue of the stars constituting the given asterism,
      *         or throw IllegalArgumentException if the given asterism is not part of the catalogue
      */
@@ -69,7 +72,10 @@ public final class StarCatalogue
         return List.copyOf( indices.get( asterism ) ) ;
     }
 
-
+    /**
+     * Represents a builder for the catalogue
+     * Use this class to create a catalogue
+     */
     public final static class Builder
     {
         private List<Star> stars;
@@ -112,10 +118,11 @@ public final class StarCatalogue
         public List<Asterism> asterisms() { return Collections.unmodifiableList( asterisms ); }
 
         /**
-         * @param inputStream
-         * @param loader
-         * @return asks the loader to add to the catalog the stars and/or asterisms it obtains from the inputStream, and returns the builder
-         * @throws IOException
+         * Asks the loader to add to the catalog the stars and/or asterisms it obtains from the inputStream
+         * @param inputStream : a stream that reads a file
+         * @param loader : an instance of the Loader class
+         * @return the updated builder itself
+         * @throws IOException if an exception is thrown from the stream
          */
         public Builder loadFrom( InputStream inputStream, Loader loader ) throws IOException
         {
@@ -133,6 +140,9 @@ public final class StarCatalogue
     }
 
 
+    /**
+     * Represents a Catalogue Loader, used by the Builder
+     */
     public interface Loader
     {
         /**

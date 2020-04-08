@@ -4,6 +4,9 @@ import ch.epfl.rigel.Preconditions;
 import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 import ch.epfl.rigel.math.ClosedInterval;
 
+/**
+ * Represents a Star as a CelestialObject
+ */
 public final class Star extends CelestialObject
 {
     private final static ClosedInterval COLOR_INTERVAL = ClosedInterval.of( -0.5, 5.5 );
@@ -14,11 +17,11 @@ public final class Star extends CelestialObject
 
     /**
      * @param hipparcosId: Hipparcos number of the Star
-     * @param name
-     * @param equatorialPos
-     * @param magnitude
-     * @param colorIndex
-     * Throw IllegalArgumentException if the Hipparcos number is negative, or if the colour index is not in the range [-0.5, 5.5].
+     * @param name : star name
+     * @param equatorialPos : star equatorial position
+     * @param magnitude : star magnitude
+     * @param colorIndex : star color index
+     * Throw IllegalArgumentException if the Hipparcos number is negative, or if the color index is not in the range [-0.5, 5.5].
      */
     public Star( int hipparcosId, String name, EquatorialCoordinates equatorialPos, float magnitude, float colorIndex )
     {
@@ -31,7 +34,7 @@ public final class Star extends CelestialObject
     }
 
     /**
-     * @return the hipparcos number of the star
+     * @return the hipparcos id of the star
      */
     public int hipparcosId() { return  hipparcosId; }
 

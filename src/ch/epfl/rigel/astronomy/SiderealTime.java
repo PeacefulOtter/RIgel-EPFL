@@ -9,9 +9,13 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
+/**
+ * Contains two static methods used to calculate the sidereal time
+ */
 public final class SiderealTime
 {
     private final static RightOpenInterval HOURS_INTERVAL = RightOpenInterval.of( 0, 24 );
+    // a polynomial to calculate the delta between a ZonedDateTime and J2000
     private final static Polynomial CENTURY_POLY = Polynomial.of( 0.000025862, 2400.051336, 6.697374558 );
     private final static Polynomial HOURS_POLY = Polynomial.of( 1.002737909, 0 );
 
@@ -25,13 +29,17 @@ public final class SiderealTime
     {
         ZonedDateTime dayStart = when.withZoneSameInstant( ZoneOffset.UTC )
                 .truncatedTo( ChronoUnit.DAYS );
+
         double T = Epoch.J2000.julianCenturiesUntil( dayStart );
         double t = dayStart.until( when, ChronoUnit.MILLIS );
-        t = t / (1000*3600);
-        double S0 = HOURS_INTERVAL.reduce( CENTURY_POLY.at( T ) );
-        double S1 = HOURS_POLY.at( t );
-        double Sg = S0 + S1;
-        return Angle.normalizePositive( Angle.ofHr( Sg ) );
+        t = t / ( 1000 * 3600 );
+
+        double deltaJulianCentury = HOURS_INTERVAL.reduce( CENTURY_POLY.at( T ) );
+        double hoursStartOfDay = HOURS_POLY.at( t );
+
+        double greenwichSiderealTime = deltaJulianCentury + hoursStartOfDay;
+
+        return Angle.normalizePositive( Angle.ofHr( greenwichSiderealTime ) );
     }
 
     /**

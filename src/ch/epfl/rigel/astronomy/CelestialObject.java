@@ -1,5 +1,6 @@
 package ch.epfl.rigel.astronomy;
 
+import ch.epfl.rigel.Preconditions;
 import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 
 import java.util.Objects;
@@ -17,16 +18,15 @@ public abstract class CelestialObject
 
     /**
      * throw IllegalArgumentException if the angular size is negative
-     * throw NullPointerException if the name or the position are null
+     * throw NullPointerException if the name or the position is null
      */
     CelestialObject( String name, EquatorialCoordinates equatorialPos, float angularSize, float magnitude )
     {
         Objects.requireNonNull( name );
         Objects.requireNonNull( equatorialPos );
-        if ( angularSize < 0 )
-        {
-            throw new IllegalArgumentException( "angular size must be positive or 0" );
-        }
+
+        Preconditions.checkArgument( angularSize >= 0 );
+
         this.name = name;
         this.equatorialPos = equatorialPos;
         this.angularSize = angularSize;
@@ -36,34 +36,22 @@ public abstract class CelestialObject
     /**
      * @return the name of the object
      */
-    public String name()
-    {
-        return name;
-    }
+    public String name() { return name; }
 
     /**
      * @return the equatorial position of the object
      */
-    public EquatorialCoordinates equatorialPos()
-    {
-        return equatorialPos;
-    }
+    public EquatorialCoordinates equatorialPos() { return equatorialPos; }
 
     /**
      * @return the angular size of the object
      */
-    public double angularSize()
-    {
-        return angularSize;
-    }
+    public double angularSize() { return angularSize; }
 
     /**
      * @return the magnitude of the object
      */
-    public double magnitude()
-    {
-        return magnitude;
-    }
+    public double magnitude() { return magnitude; }
 
 
     /**
