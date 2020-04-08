@@ -3,7 +3,9 @@ package ch.epfl.rigel.astronomy;
 import ch.epfl.rigel.coordinates.EclipticCoordinates;
 import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 
-
+/**
+ * Represents the Sun at a given moment
+ */
 public final class Sun extends CelestialObject
 {
     // magnitude of the sun
@@ -29,7 +31,7 @@ public final class Sun extends CelestialObject
     }
 
     /**
-     * @return the ecplictic position
+     * @return the ecliptic position
      */
     public EclipticCoordinates eclipticPos() { return eclipticPos; }
 

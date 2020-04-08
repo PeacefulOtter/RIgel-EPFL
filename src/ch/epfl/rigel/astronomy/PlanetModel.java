@@ -9,6 +9,9 @@ import ch.epfl.rigel.math.RightOpenInterval;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Represents a Model for the eight planets of the Solar System
+ */
 public enum PlanetModel implements CelestialObjectModel<Planet> {
 
 
@@ -29,31 +32,26 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
     NEPTUNE("Neptune", 165.84539, 326.895127, 23.07, 0.010483,
             30.1985, 1.7673, 131.879, 62.20, -6.87 );
 
+
     private static final double ANGULAR_SPEED = Angle.TAU / 365.242191;
     private static final RightOpenInterval lonInterval = RightOpenInterval.of( 0, Angle.TAU );
 
-
-    public final static List<PlanetModel> ALL = Arrays.asList(
+    public static final List<PlanetModel> ALL = Arrays.asList(
             MERCURY, VENUS, EARTH, MARS, JUPITER, SATURN, URANUS, NEPTUNE );
 
     private final String name;
-    // revolution period
-    private final double revolutionPeriod;
-    // longitude at J2010
-    private final double lonJ2010;
-    // longitude at perigee
-    private final double lonPerigee;
+    private final double revolutionPeriod; // revolution period
+    private final double lonJ2010; // longitude at J2010
+    private final double lonPerigee; // longitude at perigee
     private final double orbitEccentricity;
     private final double halfOrbitMajorAxis;
-    // Inclination of the orbit to the ecliptic
-    private final double inclinationOrbit;
-    // Longitude of the ascending node
-    private final double lonAscendingNode;
+    private final double inclinationOrbit; // inclination orbit to the ecliptic
+    private final double lonAscendingNode; // longitude of the ascending node
     private final double angularSize;
     private final double magnitude;
 
-    private final double deltaLon;
-    private final double eccentricitySquared;
+    private final double deltaLon; // a delta between lonJ2010 and lonPerigee
+    private final double eccentricitySquared; // eccentricity raised to the power of 2
 
 
     PlanetModel(
@@ -78,7 +76,6 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
     }
 
     /**
-     *
      * @param daysSinceJ2010 : number of days after the J2010 (possibly negative)
      * @param eclipticToEquatorialConversion : Conversion used to get its equatorial coordinates from its ecliptic coordinates
      * @return returns the object modeled by the model for the (possibly negative) number of days after
@@ -92,9 +89,8 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         double meanAnomaly = ANGULAR_SPEED * ( daysSinceJ2010 / revolutionPeriod ) + deltaLon;
         double trueAnomaly = meanAnomaly + 2 * orbitEccentricity * Math.sin( meanAnomaly );
 
-        /** r **/
+
         double radius = ( halfOrbitMajorAxis * ( 1 - eccentricitySquared ) )  /  ( 1 + orbitEccentricity * Math.cos( trueAnomaly ) );
-        /** l **/
         double longitude = trueAnomaly + lonPerigee;
 
         double deltaLonSin = Math.sin( longitude - lonAscendingNode );
@@ -102,24 +98,20 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         double inclinationCos = Math.cos( inclinationOrbit );
         double inclinationSin = Math.sin( inclinationOrbit );
 
-        /** Psi **/
         double psi = Math.asin( deltaLonSin * inclinationSin );
         double cosPsi = Math.cos( psi );
 
-        /** r' **/
         double projectedRadius = radius * cosPsi;
-        /** l' **/
         double projectedLongitude = lonInterval.reduce(
                 Math.atan2( deltaLonSin * inclinationCos, deltaLonCos ) + lonAscendingNode
         );
 
-        /* Earth constants 0: earthRad, 1: earthLon */
+        /* Earth constants -> 0: earthRad, 1: earthLon */
         double[] earthConstants = getEarthConstants( daysSinceJ2010 );
         double earthRadius = earthConstants[ 0 ];
         double earthLongitude = earthConstants[ 1 ];
 
         /* EQUATORIAL POS */
-        /** lambda **/
         double eclipticLon;
         if ( this == MERCURY || this == VENUS )
         {
@@ -129,7 +121,6 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         }
         eclipticLon = lonInterval.reduce( eclipticLon );
 
-        /** beta **/
         double eclipticLat = Math.atan(
                 ( projectedRadius * Math.tan( psi ) * Math.sin( eclipticLon - projectedLongitude ) ) /
                 ( earthRadius * Math.sin( projectedLongitude - earthLongitude ) )
@@ -149,9 +140,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
 
 
         /* MAGNITUDE */
-        /** F **/
         double phase = ( 1 + Math.cos( eclipticLon - longitude ) ) / 2;
-        /** m **/
         double planetMagnitude =  magnitude + 5 * Math.log10( radius * distance / Math.sqrt( phase ) );
         /* END OF MAGNITUDE */
 
@@ -196,9 +185,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
     {
         double earthMeanAnomaly = ANGULAR_SPEED * daysSinceJ2010 / EARTH.revolutionPeriod + EARTH.deltaLon;
         double earthTrueAnomaly = earthMeanAnomaly + 2 * EARTH.orbitEccentricity * Math.sin( earthMeanAnomaly );
-        /** R **/
         double earthRad = ( EARTH.halfOrbitMajorAxis * ( 1 - EARTH.eccentricitySquared ) )  /  ( 1 + EARTH.orbitEccentricity * Math.cos( earthTrueAnomaly ) );
-        /** L **/
         double earthLon = earthTrueAnomaly + EARTH.lonPerigee;
         return new double[] { earthRad, earthLon };
     }

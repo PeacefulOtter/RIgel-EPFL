@@ -7,22 +7,32 @@ import ch.epfl.rigel.math.RightOpenInterval;
 import java.util.Locale;
 import java.util.function.Function;
 
+/**
+ * Represents a Stereographic Projection of Horizontal Coordinates
+ */
 public final class StereographicProjection implements Function<HorizontalCoordinates, CartesianCoordinates>
 {
     // Interval of the longitude in radians
-    private static final RightOpenInterval azInterval =  RightOpenInterval.of( 0, Angle.TAU );
+    private static final RightOpenInterval AZ_INTERVAL =  RightOpenInterval.of( 0, Angle.TAU );
     // Interval of the latitude in radians
-    private static final ClosedInterval altInterval = ClosedInterval.of( -Math.PI / 2, Math.PI / 2 );
-    // Horiyontal Cooordinates of the center
+    private static final ClosedInterval ALT_INTERVAL = ClosedInterval.of( -Math.PI / 2, Math.PI / 2 );
+
+    // Horizontal Coordinates of the center
     private final HorizontalCoordinates center;
+
     private final double lambda0;
     private final double phi1;
     private final double cosPhi1;
     private final double sinPhi1;
 
+    /**
+     * Returns a stereographic projection centered in "center"
+     * @param center : the center of the stereographic projection
+     */
     public StereographicProjection( HorizontalCoordinates center )
     {
         this.center = center;
+        // store some variables we will need for calculations
         lambda0 = center.lon();
         phi1 = center.lat();
         cosPhi1 = Math.cos( phi1 );
@@ -35,7 +45,8 @@ public final class StereographicProjection implements Function<HorizontalCoordin
      */
     public CartesianCoordinates circleCenterForParallel( HorizontalCoordinates hor )
     {
-        if ( ( Math.sin( hor.alt() ) + sinPhi1 ) == 0){
+        if ( ( Math.sin( hor.alt() ) + sinPhi1 ) == 0 )
+        {
             return CartesianCoordinates.of(0, Double.POSITIVE_INFINITY );
         }
         double cy = cosPhi1 / ( Math.sin( hor.alt() ) + sinPhi1 );
@@ -49,7 +60,8 @@ public final class StereographicProjection implements Function<HorizontalCoordin
      */
     public double circleRadiusForParallel( HorizontalCoordinates parallel )
     {
-        if ( Math.sin( parallel.lon() ) + sinPhi1 == 0){
+        if ( Math.sin( parallel.lon() ) + sinPhi1 == 0 )
+        {
             return Double.POSITIVE_INFINITY;
         }
         return Math.cos( parallel.lat() ) / ( Math.sin( parallel.lat() ) + sinPhi1 );
@@ -99,20 +111,15 @@ public final class StereographicProjection implements Function<HorizontalCoordin
 
         double lambda = Math.atan2( x * sinC, p * cosPhi1 * cosC - y * sinPhi1 * sinC ) + lambda0;
         double phi = Math.asin( cosC * sinPhi1 + ( y * sinC * cosPhi1 / p ) );
-        return HorizontalCoordinates.of( azInterval.reduce( lambda ), altInterval.clip( phi ) );
+
+        return HorizontalCoordinates.of( AZ_INTERVAL.reduce( lambda ), ALT_INTERVAL.clip( phi ) );
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        throw new UnsupportedOperationException();
-    }
+    public boolean equals( Object o ) { throw new UnsupportedOperationException(); }
 
     @Override
-    public int hashCode()
-    {
-        throw new UnsupportedOperationException();
-    }
+    public int hashCode() { throw new UnsupportedOperationException(); }
 
     @Override
     public String toString()
