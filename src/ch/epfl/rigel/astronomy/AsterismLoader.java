@@ -12,6 +12,12 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
 public enum AsterismLoader implements StarCatalogue.Loader{
     INSTANCE();
 
+    /**
+     * @param inputStream : the stream who reads a file
+     * @param builder : the StarCatalogue builder used to build the set of asterisms
+     * @throws IOException
+     * loads asterisms of the inputStream and adds them to the builder, or lifts IOException in case of input/output error
+     */
     @Override
     public void load(InputStream inputStream, StarCatalogue.Builder builder) throws IOException
     {
