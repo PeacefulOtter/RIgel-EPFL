@@ -45,10 +45,7 @@ public class ObservedSky
             planetsWithoutEarth.add( solarPlanet );
         }
 
-        for ( Star star : catalogue.stars() )
-        {
-            celestialObjects.add( star );
-        }
+        celestialObjects.addAll( catalogue.stars() );
 
         for ( CelestialObject planet : celestialObjects )
         {
@@ -63,10 +60,7 @@ public class ObservedSky
 
     public CartesianCoordinates sunPosition() { return planetCartesianCoordinates.get( sun ); }
 
-    public Moon moon()
-    {
-        return moon;
-    }
+    public Moon moon() { return moon; }
 
     public CartesianCoordinates moonPosition()
     {
@@ -115,6 +109,7 @@ public class ObservedSky
         }
         else
         {
+            assert currentObject != null;
             return Optional.of( currentObject );
         }
     }
