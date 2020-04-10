@@ -29,7 +29,6 @@ public final class GeographicCoordinates extends SphericalCoordinates
      */
     public static GeographicCoordinates ofDeg( double lonDeg, double latDeg )
     {
-
         if ( !isValidLonDeg( lonDeg ) || !isValidLatDeg( latDeg ) )
         {
             throw new IllegalArgumentException( "Invalid longitude or latitude" );
@@ -38,7 +37,7 @@ public final class GeographicCoordinates extends SphericalCoordinates
     }
 
     /**
-     * Check if the longitude is contained in the lonDegInterval
+     * Check if the longitude is contained in the LON_DEG_INTERVAL
      * @param lonDeg : the longitude in degrees
      * @return true if contained, false if not
      */
@@ -48,7 +47,7 @@ public final class GeographicCoordinates extends SphericalCoordinates
     }
 
     /**
-     * Check if the latitude is contained in the latDegInterval
+     * Check if the latitude is contained in the LAT_DEG_INTERVAL
      * @param latDeg : the latitude in degrees
      * @return true if contained, false if not
      */
