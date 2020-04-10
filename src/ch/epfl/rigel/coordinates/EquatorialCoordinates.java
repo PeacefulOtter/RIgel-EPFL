@@ -1,5 +1,6 @@
 package ch.epfl.rigel.coordinates;
 
+import ch.epfl.rigel.Preconditions;
 import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.ClosedInterval;
 import ch.epfl.rigel.math.RightOpenInterval;
@@ -9,9 +10,9 @@ import java.util.Locale;
 public final class EquatorialCoordinates extends SphericalCoordinates
 {
     // Interval of the longitude
-    private static final RightOpenInterval raInterval = RightOpenInterval.of( 0, Angle.TAU );
+    private static final RightOpenInterval RA_INTERVAL = RightOpenInterval.of( 0, Angle.TAU );
     // Interval of the latitude
-    private static final ClosedInterval decInterval = ClosedInterval.of( -Angle.TAU / 4, Angle.TAU / 4);
+    private static final ClosedInterval DEC_INTERVAL = ClosedInterval.of( -Angle.TAU / 4, Angle.TAU / 4);
 
     private EquatorialCoordinates( double ra, double dec )
     {
@@ -27,38 +28,35 @@ public final class EquatorialCoordinates extends SphericalCoordinates
      */
     public static EquatorialCoordinates of( double ra, double dec )
     {
-        if ( !raInterval.contains(ra) || !decInterval.contains(dec) )
-        {
-            throw new IllegalArgumentException();
-        }
+        Preconditions.checkInInterval( RA_INTERVAL, ra );
+        Preconditions.checkInInterval( DEC_INTERVAL, dec );
         return new EquatorialCoordinates( ra, dec );
     }
 
-    public double ra()
-    {
-        return lon();
-    }
+    /**
+     * @return longitude in radians
+     */
+    public double ra() { return lon(); }
 
-    public double raDeg()
-    {
-        return lonDeg();
-    }
+    /**
+     * @return longitude in degrees
+     */
+    public double raDeg() { return lonDeg(); }
 
-    // converts the right ascension to hours
-    public double raHr()
-    {
-        return Angle.toHr( lon() );
-    }
+    /**
+     * @return longitude in hours
+     */
+    public double raHr() { return Angle.toHr( lon() ); }
 
-    public double dec()
-    {
-        return lat();
-    }
+    /**
+     * @return latitude in radians
+     */
+    public double dec() { return lat(); }
 
-    public double decDeg()
-    {
-        return latDeg();
-    }
+    /**
+     * @return latitude in degrees
+     */
+    public double decDeg() { return latDeg(); }
 
 
     @Override

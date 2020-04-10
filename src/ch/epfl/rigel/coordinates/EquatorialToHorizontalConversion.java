@@ -8,6 +8,9 @@ import ch.epfl.rigel.math.RightOpenInterval;
 import java.time.ZonedDateTime;
 import java.util.function.Function;
 
+/**
+ * Represents a conversion from Equatorial coordinates to Horizontal coordinates
+ */
 public final class EquatorialToHorizontalConversion implements Function<EquatorialCoordinates, HorizontalCoordinates>
 {
 
@@ -38,14 +41,14 @@ public final class EquatorialToHorizontalConversion implements Function<Equatori
     @Override
     public HorizontalCoordinates apply( EquatorialCoordinates equ )
     {
-        double declination = equ.dec(); // declination equatorial coordinates
+        double declination = equ.dec(); // equatorial coordinates declination
         double H = localTime - equ.ra(); // hour angle
 
         double sinDelta = Math.sin( declination );
         double cosDelta = Math.cos( declination );
 
-        double height = Math.asin( sinDelta * sinPhi + cosDelta * cosPhi * Math.cos( H ) ); // hauteur coord horizontale
-        double azimut = Math.atan2( ( -cosDelta * cosPhi * Math.sin( H ) ), ( sinDelta - sinPhi * Math.sin( height ) ) ); // azimut coord horizontale
+        double height = Math.asin( sinDelta * sinPhi + cosDelta * cosPhi * Math.cos( H ) ); // Horizontal coordinates height
+        double azimut = Math.atan2( ( -cosDelta * cosPhi * Math.sin( H ) ), ( sinDelta - sinPhi * Math.sin( height ) ) ); // Horizontal coordinates azimut
 
         return HorizontalCoordinates.of( LON_INTERVAL.reduce( azimut ), LAT_INTERVAL.clip( height ) );
     }
@@ -56,7 +59,7 @@ public final class EquatorialToHorizontalConversion implements Function<Equatori
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals( Object obj ) {
         throw new UnsupportedOperationException();
     }
 }

@@ -42,7 +42,7 @@ public class RightOpenInterval extends Interval
      * @return boolean : true if inside, false if not
      */
     @Override
-    public boolean contains(double v)
+    public boolean contains( double v )
     {
         return ( v >= low() && v < high() );
     }

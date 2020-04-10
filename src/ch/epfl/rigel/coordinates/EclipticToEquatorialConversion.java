@@ -9,6 +9,9 @@ import ch.epfl.rigel.math.RightOpenInterval;
 import java.time.ZonedDateTime;
 import java.util.function.Function;
 
+/**
+ * Represents a conversion from Ecliptic coordinates to Equatorial coordinates
+ */
 public final class EclipticToEquatorialConversion implements Function<EclipticCoordinates, EquatorialCoordinates>
 {
     private static final RightOpenInterval LON_INTERVAL = RightOpenInterval.of( 0, Angle.TAU );

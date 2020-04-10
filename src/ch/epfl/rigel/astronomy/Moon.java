@@ -5,7 +5,9 @@ import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 import ch.epfl.rigel.math.ClosedInterval;
 
 import java.util.Locale;
-
+/**
+ * Represents the Moon at a given moment
+ */
 public class Moon extends CelestialObject
 {
     // phase Interval

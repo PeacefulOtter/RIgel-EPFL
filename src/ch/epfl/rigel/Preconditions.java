@@ -19,7 +19,7 @@ public final class Preconditions
 
     public static double checkInInterval( Interval interval, double value )
     {
-        if ( value < interval.low() || value > interval.high() )
+        if ( !interval.contains( value ) )
         {
             throw new IllegalArgumentException();
         }
