@@ -25,7 +25,7 @@ public class ObservedSky
         this.catalogue = catalogue;
         planetsWithoutEarth = new ArrayList<>();
         planetCartesianCoordinates = new HashMap<>();
-        planetsModelWithoutEarth = PlanetModel.ALL;
+        planetsModelWithoutEarth = new ArrayList<>( PlanetModel.ALL );
         planetsModelWithoutEarth.remove(PlanetModel.EARTH);
         celestialObjects = new HashSet<>();
 
@@ -116,7 +116,7 @@ public class ObservedSky
 
     private double distanceBetween( CartesianCoordinates point1, CartesianCoordinates point2 )
     {
-        return Math.sqrt( point1.x() * point2.x() + point1.y() * point2.y() );
+        return Math.sqrt( Math.pow( point2.x() - point1.x(), 2 ) + Math.pow( point2.y() - point1.y(), 2 ) );
     }
 
 }
