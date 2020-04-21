@@ -48,7 +48,9 @@ public class SkyCanvasPainter
 
     public void clear()
     {
-
+        ctx.setFill( Color.BLACK );
+        ctx.fillRect( 0, 0, canvas.getWidth(), canvas.getHeight() );
+        ctx.fill();
     }
 
     public void drawStars( ObservedSky sky, StereographicProjection projection, Transform planeToCanvas )
@@ -66,7 +68,7 @@ public class SkyCanvasPainter
                 // ASTERISM DRAWING
                 ctx.setFill( BLUE_COLOR );
                 ctx.setLineWidth(1);
-                if ( !firstAsterism )
+                if ( firstAsterism )
                 {
                     ctx.lineTo( equatorialPos.ra(), equatorialPos.ra() );
                     firstAsterism = false;

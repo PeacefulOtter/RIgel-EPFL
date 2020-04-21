@@ -1,8 +1,6 @@
 package ch.epfl.sigcheck_part6;
 
 import ch.epfl.rigel.astronomy.*;
-import ch.epfl.rigel.coordinates.EclipticToEquatorialConversion;
-import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
