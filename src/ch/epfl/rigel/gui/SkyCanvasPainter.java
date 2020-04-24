@@ -3,11 +3,9 @@ package ch.epfl.rigel.gui;
 import ch.epfl.rigel.astronomy.Asterism;
 import ch.epfl.rigel.astronomy.ObservedSky;
 import ch.epfl.rigel.astronomy.Star;
-import ch.epfl.rigel.coordinates.CartesianCoordinates;
-import ch.epfl.rigel.coordinates.EquatorialCoordinates;
-import ch.epfl.rigel.coordinates.EquatorialToHorizontalConversion;
-import ch.epfl.rigel.coordinates.StereographicProjection;
+import ch.epfl.rigel.coordinates.*;
 import ch.epfl.rigel.math.ClosedInterval;
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -64,6 +62,9 @@ public class SkyCanvasPainter
             for ( Star star: stars )
             {
                 EquatorialCoordinates equatorialPos = star.equatorialPos();
+                // projection.apply( equatorialPos ); ?? 
+                Point2D canvasPoint = planeToCanvas.transform( equatorialPos.ra(), equatorialPos.dec() );
+
 
                 // ASTERISM DRAWING
                 ctx.setFill( BLUE_COLOR );
@@ -79,7 +80,7 @@ public class SkyCanvasPainter
                 Color starColor = BlackBodyColor.colorForTemperature( star.colorTemperature() );
                 double starDiameter = magnitudeDiameter( star.magnitude() );
                 ctx.setFill( starColor );
-                ctx.fillOval( equatorialPos.ra(), equatorialPos.dec(), starDiameter, starDiameter );
+                ctx.fillOval( canvasPoint.getX(), canvasPoint.getY(), starDiameter, starDiameter );
             }
 
         }
