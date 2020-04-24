@@ -5,6 +5,9 @@ import ch.epfl.rigel.astronomy.ObservedSky;
 import ch.epfl.rigel.astronomy.Star;
 import ch.epfl.rigel.coordinates.*;
 import ch.epfl.rigel.math.Angle;
+import ch.epfl.rigel.astronomy.*;
+import ch.epfl.rigel.coordinates.EquatorialCoordinates;
+import ch.epfl.rigel.coordinates.StereographicProjection;
 import ch.epfl.rigel.math.ClosedInterval;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
@@ -51,6 +54,7 @@ public class SkyCanvasPainter
         ctx.fillRect( 0, 0, canvas.getWidth(), canvas.getHeight() );
         ctx.fill();
     }
+
 
     public void drawStars( ObservedSky sky, StereographicProjection projection, Transform planeToCanvas )
     {
@@ -109,11 +113,52 @@ public class SkyCanvasPainter
         System.out.println(canvas.getWidth() + " " + canvas.getHeight() );
     }
 
-    public void drawPlanets( ObservedSky sky, StereographicProjection projection, Transform planeToCanvas ) {}
+    public void drawPlanets( ObservedSky sky, StereographicProjection projection, Transform planeToCanvas ) {
+        List<Planet> planets = sky.planets();
+        double[] planetCartesianCoordinates = sky.planetPosition();
+        int index = 0;
+        for (Planet planet : planets)
+        {
+            double planetDiameter = magnitudeDiameter( planet.magnitude() );
+            planetDiameter = projection.applyToAngle(planetDiameter);
+            planetDiameter = planeToCanvas.transform( planetDiameter, 0 ).getX();
+            Point2D planetPoint = planeToCanvas.transform(planetCartesianCoordinates[index], planetCartesianCoordinates[index + 1]);
+            index += 2;
 
-    public void drawSun( ObservedSky sky, StereographicProjection projection, Transform planeToCanvas ) {}
+            ctx.setFill( LIGHTGRAY_COLOR );
+            ctx.fillOval( planetPoint.getX(), planetPoint.getY(), planetDiameter, planetDiameter );
+        }
+    }
 
-    public void drawMoon( ObservedSky sky, StereographicProjection projection, Transform planeToCanvas ) {}
+    public void drawSun( ObservedSky sky, StereographicProjection projection, Transform planeToCanvas ) {
+        Sun sun = sky.sun();
+        double sunDiameter = magnitudeDiameter(sun.magnitude());
+        sunDiameter = projection.applyToAngle(sunDiameter);
+        sunDiameter = planeToCanvas.transform(sunDiameter, 0).getX();
+        Point2D sunPoint = planeToCanvas.transform(sky.sunPosition().x(), sky.sunPosition().y());
 
-    public void drawHorizon() {}
+        ctx.setFill(Color.color(YELLOW_COLOR.getRed(), YELLOW_COLOR.getGreen(), YELLOW_COLOR.getBlue(), 0.25));
+        ctx.fillOval( sunPoint.getX(), sunPoint.getY(), sunDiameter * 2.2, sunDiameter * 2.2 );
+
+        ctx.setFill(YELLOW_COLOR);
+        ctx.fillOval(sunPoint.getX(), sunPoint.getY(), sunDiameter + 2, sunDiameter +2);
+
+        ctx.setFill( WHITE_COLOR );
+        ctx.fillOval( sunPoint.getX(), sunPoint.getY(), sunDiameter, sunDiameter );
+
+    }
+
+    public void drawMoon( ObservedSky sky, StereographicProjection projection, Transform planeToCanvas ) {
+        Moon moon = sky.moon();
+        double moonDiameter = magnitudeDiameter(moon.magnitude());
+        moonDiameter = projection.applyToAngle(moonDiameter);
+        moonDiameter = planeToCanvas.transform(moonDiameter, 0).getX();
+        Point2D moonPoint = planeToCanvas.transform(sky.moonPosition().x(), sky.moonPosition().y());
+
+        ctx.setFill( WHITE_COLOR );
+        ctx.fillOval(moonPoint.getX(), moonPoint.getY(), moonDiameter, moonDiameter );
+    }
+
+    public void drawHorizon(StereographicProjection projection) {
+    }
 }
