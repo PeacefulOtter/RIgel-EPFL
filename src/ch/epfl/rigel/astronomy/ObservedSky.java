@@ -12,9 +12,11 @@ public class ObservedSky
     private final List<Planet> planetsWithoutEarth;
     private final HashMap<CelestialObject, CartesianCoordinates> planetCartesianCoordinates;
     private final Set<CelestialObject> celestialObjects;
-    private StarCatalogue catalogue;
+    private final EquatorialToHorizontalConversion conversionToHorizontal;
+    private final StereographicProjection projection;
     private final Sun sun;
     private final Moon moon;
+    private StarCatalogue catalogue;
 
     public ObservedSky(
             ZonedDateTime moment,
@@ -23,6 +25,7 @@ public class ObservedSky
             StarCatalogue catalogue)
     {
         this.catalogue = catalogue;
+        this.projection = projection;
         planetsWithoutEarth = new ArrayList<>();
         planetCartesianCoordinates = new HashMap<>();
         planetsModelWithoutEarth = new ArrayList<>( PlanetModel.ALL );
@@ -30,7 +33,7 @@ public class ObservedSky
         celestialObjects = new HashSet<>();
 
         EclipticToEquatorialConversion conversionToEquatorial = new EclipticToEquatorialConversion( moment );
-        EquatorialToHorizontalConversion conversionToHorizontal = new EquatorialToHorizontalConversion( moment, position );
+        this.conversionToHorizontal = new EquatorialToHorizontalConversion( moment, position );
         double daysUntil = Epoch.J2000.daysUntil(moment);
 
         sun = SunModel.SUN.at( daysUntil, conversionToEquatorial );
@@ -55,6 +58,19 @@ public class ObservedSky
         }
     }
 
+    public List<Star> stars() { return List.copyOf( this.catalogue.stars() ); }
+
+    public List<CartesianCoordinates> starPosition()
+    {
+        List<Star> allStars = stars();
+        List<CartesianCoordinates> cartesianCoordinates = new ArrayList<>();
+        for ( Star star: allStars )
+        {
+            // convert coordinates to horizontal and then apply the projection
+            cartesianCoordinates.add( this.projection.apply( conversionToHorizontal.apply( star.equatorialPos() ) ) );
+        }
+        return cartesianCoordinates;
+    }
 
     public Sun sun() { return sun; }
 

@@ -1,5 +1,6 @@
 package ch.epfl.sigcheck_part8;
 
+import ch.epfl.rigel.astronomy.AsterismLoader;
 import ch.epfl.rigel.astronomy.HygDatabaseLoader;
 import ch.epfl.rigel.astronomy.ObservedSky;
 import ch.epfl.rigel.astronomy.StarCatalogue;
@@ -31,10 +32,15 @@ public final class DrawSKy extends Application
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        try (InputStream hs = resourceStream("/hygdata_v3.csv")){
-            StarCatalogue catalogue = new StarCatalogue.Builder()
-                    .loadFrom(hs, HygDatabaseLoader.INSTANCE)
-                    .build();
+        StarCatalogue.Builder builder = new StarCatalogue.Builder();
+        try (InputStream hs = resourceStream("/hygdata_v3.csv"))
+        {
+            builder.loadFrom( hs, HygDatabaseLoader.INSTANCE );
+        }
+        try (InputStream hs = resourceStream( "/asterisms.txt" ) )
+        {
+            builder.loadFrom( hs, AsterismLoader.INSTANCE );
+            StarCatalogue catalogue = builder.build();
 
             ZonedDateTime when =
                     ZonedDateTime.parse("2020-02-17T20:15:00+01:00");

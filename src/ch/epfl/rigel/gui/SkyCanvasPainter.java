@@ -4,6 +4,7 @@ import ch.epfl.rigel.astronomy.Asterism;
 import ch.epfl.rigel.astronomy.ObservedSky;
 import ch.epfl.rigel.astronomy.Star;
 import ch.epfl.rigel.coordinates.*;
+import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.ClosedInterval;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
@@ -41,7 +42,7 @@ public class SkyCanvasPainter
     {
         double clippedMagnitude = MAGNITUDE_INTERVAL.clip( magnitude );
         double sizeFactor = ( 99 - 17 * clippedMagnitude ) / 140;
-        return sizeFactor * 2 * Math.tan( 0.5 / 4 );
+        return sizeFactor * 2 * Math.tan( Angle.ofDeg( 0.5 ) / 4 );
     }
 
     public void clear()
@@ -54,37 +55,58 @@ public class SkyCanvasPainter
     public void drawStars( ObservedSky sky, StereographicProjection projection, Transform planeToCanvas )
     {
         Set<Asterism> asterisms = sky.getAsterism();
-        ctx.beginPath();
-        for ( Asterism asterism: asterisms )
+        List<Star> stars = sky.stars();
+        List<CartesianCoordinates> cartesianCoordinates = sky.starPosition();
+
+        /*for ( Asterism asterism: asterisms )
         {
-            List<Star> stars = asterism.stars();
+            List<Integer> asterismIndice = sky.asterismIndices( asterism );
             boolean firstAsterism = true;
-            for ( Star star: stars )
+
+            // ASTERISM DRAWING
+            ctx.beginPath();
+            for ( Integer indice : asterismIndice )
             {
-                EquatorialCoordinates equatorialPos = star.equatorialPos();
-                // projection.apply( equatorialPos ); ?? 
-                Point2D canvasPoint = planeToCanvas.transform( equatorialPos.ra(), equatorialPos.dec() );
+                CartesianCoordinates cartesianCoords = cartesianCoordinates.get( indice );
+                Point2D canvasPoint = planeToCanvas.transform( cartesianCoords.x(), cartesianCoords.y() );
 
+                // avoid drawing the asterism branches outside the canvas
+                if ( !ctx.getCanvas().getBoundsInLocal().contains( canvasPoint ) ) continue;
 
-                // ASTERISM DRAWING
-                ctx.setFill( BLUE_COLOR );
                 ctx.setLineWidth(1);
+                ctx.setStroke( BLUE_COLOR );
                 if ( firstAsterism )
                 {
-                    ctx.lineTo( equatorialPos.ra(), equatorialPos.ra() );
+                    ctx.moveTo( canvasPoint.getX(), canvasPoint.getY() );
                     firstAsterism = false;
+                } else
+                {
+                    ctx.lineTo( canvasPoint.getX(), canvasPoint.getY() );
                 }
-                ctx.moveTo( equatorialPos.ra(), equatorialPos.dec() );
-
-                // STAR DRAWING
-                Color starColor = BlackBodyColor.colorForTemperature( star.colorTemperature() );
-                double starDiameter = magnitudeDiameter( star.magnitude() );
-                ctx.setFill( starColor );
-                ctx.fillOval( canvasPoint.getX(), canvasPoint.getY(), starDiameter, starDiameter );
+                ctx.stroke();
             }
+            ctx.closePath();
+        }*/
 
+        for ( int i = 0; i < stars.size(); i++ )
+        {
+            Star star = stars.get( i );
+            CartesianCoordinates cartesianCoords = cartesianCoordinates.get( i );
+            Point2D canvasPoint = planeToCanvas.transform( cartesianCoords.x(), cartesianCoords.y() );
+
+            int roundedColor = ( ( ( star.colorTemperature() + 499 ) / 500 ) * 500 ); // round to the nearest 500
+            Color starColor = BlackBodyColor.colorForTemperature( roundedColor );
+            double starDiameter = magnitudeDiameter( star.magnitude() );
+            double projectedDiameter = projection.applyToAngle( starDiameter );
+            double finalDiameter = planeToCanvas.deltaTransform( projectedDiameter, 0 ).getX();
+
+            // DEBUG : System.out.println( canvasPoint + " " + starDiameter +" " + projectedDiameter + " " + finalDiameter );
+
+            ctx.setFill( starColor );
+            ctx.fillOval( canvasPoint.getX(), canvasPoint.getY(), finalDiameter, finalDiameter );
         }
-        ctx.closePath();
+
+        System.out.println(canvas.getWidth() + " " + canvas.getHeight() );
     }
 
     public void drawPlanets( ObservedSky sky, StereographicProjection projection, Transform planeToCanvas ) {}

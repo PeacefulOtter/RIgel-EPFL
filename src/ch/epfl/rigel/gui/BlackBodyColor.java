@@ -5,6 +5,7 @@ import ch.epfl.rigel.math.ClosedInterval;
 import javafx.scene.paint.Color;
 
 import java.io.*;
+import java.util.Arrays;
 
 public final class BlackBodyColor
 {
@@ -24,6 +25,7 @@ public final class BlackBodyColor
             while ( ( line = stream.readLine() ) != null )
             {
                 lineSplit = line.split( "\\s+" );
+
 
                 if ( lineSplit[ 0 ].equals( "#" ) || lineSplit[ 3 ].equals( "2deg" ) ) continue;
 
