@@ -62,10 +62,11 @@ public class SkyCanvasPainter
         List<Star> stars = sky.stars();
         List<CartesianCoordinates> cartesianCoordinates = sky.starPosition();
 
-        /*for ( Asterism asterism: asterisms )
+        for ( Asterism asterism: asterisms )
         {
             List<Integer> asterismIndice = sky.asterismIndices( asterism );
             boolean firstAsterism = true;
+            boolean lastStarOutsideCanvas = false;
 
             // ASTERISM DRAWING
             ctx.beginPath();
@@ -75,7 +76,16 @@ public class SkyCanvasPainter
                 Point2D canvasPoint = planeToCanvas.transform( cartesianCoords.x(), cartesianCoords.y() );
 
                 // avoid drawing the asterism branches outside the canvas
-                if ( !ctx.getCanvas().getBoundsInLocal().contains( canvasPoint ) ) continue;
+                if ( !ctx.getCanvas().getBoundsInLocal().contains( canvasPoint ) )
+                {
+                    if ( !lastStarOutsideCanvas ) { lastStarOutsideCanvas = true; }
+                    else
+                    {
+                        ctx.moveTo( canvasPoint.getX(), canvasPoint.getY() );
+                        lastStarOutsideCanvas = false;
+                        continue;
+                    }
+                }
 
                 ctx.setLineWidth(1);
                 ctx.setStroke( BLUE_COLOR );
@@ -90,7 +100,7 @@ public class SkyCanvasPainter
                 ctx.stroke();
             }
             ctx.closePath();
-        }*/
+        }
 
         for ( int i = 0; i < stars.size(); i++ )
         {
