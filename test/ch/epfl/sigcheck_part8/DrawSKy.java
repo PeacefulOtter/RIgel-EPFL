@@ -24,50 +24,55 @@ import java.time.ZonedDateTime;
 
 public final class DrawSKy extends Application
 {
-    public static void main(String[] args) { launch(args); }
+    public static void main( String[] args )
+    {
+        launch( args );
+    }
 
-    private InputStream resourceStream(String resourceName) {
-        return getClass().getResourceAsStream(resourceName);
+    private InputStream resourceStream( String resourceName )
+    {
+        return getClass().getResourceAsStream( resourceName );
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start( Stage primaryStage ) throws Exception
+    {
         StarCatalogue.Builder builder = new StarCatalogue.Builder();
-        try (InputStream hs = resourceStream("/hygdata_v3.csv"))
+        try ( InputStream hs = resourceStream( "/hygdata_v3.csv" ) )
         {
             builder.loadFrom( hs, HygDatabaseLoader.INSTANCE );
         }
-        try (InputStream hs = resourceStream( "/asterisms.txt" ) )
+        try ( InputStream hs = resourceStream( "/asterisms.txt" ) )
         {
             builder.loadFrom( hs, AsterismLoader.INSTANCE );
             StarCatalogue catalogue = builder.build();
 
             ZonedDateTime when =
-                    ZonedDateTime.parse("2020-02-17T20:15:00+01:00");
+                    ZonedDateTime.parse( "2020-02-17T20:15:00+01:00" );
             GeographicCoordinates where =
-                    GeographicCoordinates.ofDeg(6.57, 46.52);
+                    GeographicCoordinates.ofDeg( 6.57, 46.52 );
             HorizontalCoordinates projCenter =
-                    HorizontalCoordinates.ofDeg(180, 45);
+                    HorizontalCoordinates.ofDeg( 180, 45 );
             StereographicProjection projection =
-                    new StereographicProjection(projCenter);
+                    new StereographicProjection( projCenter );
             ObservedSky sky =
-                    new ObservedSky(when, where, projection, catalogue);
+                    new ObservedSky( when, where, projection, catalogue );
 
-            Canvas canvas =
-                    new Canvas(800, 600);
-            Transform planeToCanvas =
-                    Transform.affine(1300, 0, 0, -1300, 400, 300);
-            SkyCanvasPainter painter =
-                    new SkyCanvasPainter(canvas);
+            Canvas canvas = new Canvas( 800, 600 );
+            Transform planeToCanvas = Transform.affine( 1300, 0, 0, -1300, 400, 300 );
+            SkyCanvasPainter painter = new SkyCanvasPainter( canvas );
 
             painter.clear();
-            painter.drawStars(sky, projection, planeToCanvas);
+            painter.drawStars( sky, projection, planeToCanvas );
+            painter.drawPlanets( sky, projection, planeToCanvas );
+            painter.drawSun( sky, projection, planeToCanvas );
+            painter.drawMoon( sky, projection, planeToCanvas );
 
             WritableImage fxImage =
-                    canvas.snapshot(null, null);
+                    canvas.snapshot( null, null );
             BufferedImage swingImage =
-                    SwingFXUtils.fromFXImage(fxImage, null);
-            ImageIO.write(swingImage, "png", new File("sky.png"));
+                    SwingFXUtils.fromFXImage( fxImage, null );
+            ImageIO.write( swingImage, "png", new File( "sky.png" ) );
         }
         Platform.exit();
     }
