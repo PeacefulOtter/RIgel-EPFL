@@ -44,9 +44,12 @@ public class SkyCanvasPainter
     }
 
     public void clear()
-    {
+        {
+            ctx.setFill(Color.BLACK);
+            ctx.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+            ctx.fill();
+        }
 
-    }
 
     public void drawStars( ObservedSky sky, StereographicProjection projection, Transform planeToCanvas )
     {
@@ -59,11 +62,14 @@ public class SkyCanvasPainter
             for ( Star star: stars )
             {
                 EquatorialCoordinates equatorialPos = star.equatorialPos();
+                // projection.apply( equatorialPos ); ??
+                Point2D canvasPoint = planeToCanvas.transform( equatorialPos.ra(), equatorialPos.dec() );
+
 
                 // ASTERISM DRAWING
                 ctx.setFill( BLUE_COLOR );
                 ctx.setLineWidth(1);
-                if ( !firstAsterism )
+                if ( firstAsterism )
                 {
                     ctx.lineTo( equatorialPos.ra(), equatorialPos.ra() );
                     firstAsterism = false;
@@ -74,7 +80,7 @@ public class SkyCanvasPainter
                 Color starColor = BlackBodyColor.colorForTemperature( star.colorTemperature() );
                 double starDiameter = magnitudeDiameter( star.magnitude() );
                 ctx.setFill( starColor );
-                ctx.fillOval( equatorialPos.ra(), equatorialPos.dec(), starDiameter, starDiameter );
+                ctx.fillOval( canvasPoint.getX(), canvasPoint.getY(), starDiameter, starDiameter );
             }
 
         }

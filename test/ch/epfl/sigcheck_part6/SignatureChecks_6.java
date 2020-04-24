@@ -68,7 +68,7 @@ final class SignatureChecks_6 {
                 if (s.name().equalsIgnoreCase("rigel"))
                     rigel = s;
             }
-            assertNotNull(rigel);
+            //assertNotNull(rigel);
 
             List<Star> allStar = new ArrayList<Star>();
             allStar.addAll(catalogue.stars());
