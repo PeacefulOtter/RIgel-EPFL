@@ -54,7 +54,6 @@ public final class StereographicProjection implements Function<HorizontalCoordin
     }
 
     /**
-     *
      * @param parallel
      * @return : the radius of the circle corresponding to the projection of the parallel passing through the coordinate point hor
      */
