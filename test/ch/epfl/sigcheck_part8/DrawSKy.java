@@ -54,14 +54,14 @@ public final class DrawSKy extends Application
             // MOON : HorizontalCoordinates.ofDeg(3.7, -65);
             // VIEW ALL :  HorizontalCoordinates.ofDeg(0, 90);
             // NORTH AT BOTTOM : HorizontalCoordinates.ofDeg(0, 23);
-            HorizontalCoordinates projCenter = HorizontalCoordinates.ofDeg(3.7, -65);
+            HorizontalCoordinates projCenter = HorizontalCoordinates.ofDeg(0, 90);
             StereographicProjection projection = new StereographicProjection( projCenter );
             ObservedSky sky = new ObservedSky( when, where, projection, catalogue );
 
             Canvas canvas = new Canvas( 800, 600 );
             // DEFAULT : Transform.affine( 1300, 0, 0, -1300, 400, 300 );
             // VIEW ALL : Transform.affine(260, 0, 0, -260, 400, 300);
-            Transform planeToCanvas = Transform.affine( 1300, 0, 0, -1300, 400, 300 );
+            Transform planeToCanvas = Transform.affine(260, 0, 0, -260, 400, 300);
             SkyCanvasPainter painter = new SkyCanvasPainter( canvas );
 
             painter.clear();

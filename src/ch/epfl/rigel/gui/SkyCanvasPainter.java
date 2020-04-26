@@ -30,6 +30,7 @@ public class SkyCanvasPainter
     private static final Color WHITE_COLOR = Color.WHITE;
     private static final Color RED_COLOR = Color.RED;
     private static final Color YELLOW_COLOR = Color.YELLOW;
+    private static final Color YELLOW_COLOR_HALO = YELLOW_COLOR.deriveColor( 0, 1, 1, 0.25 );
     private static final ClosedInterval MAGNITUDE_INTERVAL = ClosedInterval.of( -2, 5 );
 
     private final Canvas canvas;
@@ -84,7 +85,7 @@ public class SkyCanvasPainter
                 Point2D canvasPoint = planeToCanvas.transform( cartesianCoords.x(), cartesianCoords.y() );
 
                 // avoid drawing the asterism branches outside the canvas
-                if ( !ctx.getCanvas().getBoundsInLocal().contains( canvasPoint ) )
+                if ( !canvas.getBoundsInLocal().contains( canvasPoint ) )
                 {
                     if ( !lastStarOutsideCanvas ) { lastStarOutsideCanvas = true; }
                     else
@@ -158,7 +159,7 @@ public class SkyCanvasPainter
         double sunDiameter = projection.applyToAngle( Angle.ofDeg( 0.5 ) );
         double finalDiameter = planeToCanvas.deltaTransform( sunDiameter, 0 ).getX();
 
-        ctx.setFill( YELLOW_COLOR.deriveColor( 0, 1, 1, 0.25 ) );
+        ctx.setFill( YELLOW_COLOR_HALO );
         double haloRadius = ( finalDiameter * 2.2 ) / 2;
         ctx.fillOval( sunPoint.getX() - haloRadius, sunPoint.getY() - haloRadius, finalDiameter * 2.2, finalDiameter * 2.2 );
 
@@ -174,13 +175,13 @@ public class SkyCanvasPainter
 
     public void drawMoon( ObservedSky sky, StereographicProjection projection, Transform planeToCanvas )
     {
-        Moon moon = sky.moon();
         CartesianCoordinates moonPos = sky.moonPosition();
+        System.out.println(moonPos);
         Point2D moonPoint = planeToCanvas.transform( moonPos.x(), moonPos.y() );
         System.out.println(moonPoint);
 
         //double moonDiameter = magnitudeDiameter( moon.magnitude(), projection );
-        double projectedDiameter = projection.applyToAngle( Angle.ofDeg( moon.angularSize() ) );
+        double projectedDiameter = projection.applyToAngle( Angle.ofDeg( 0.5 ) );
         double finalDiameter = planeToCanvas.deltaTransform( projectedDiameter, 0 ).getX();
         double radius = finalDiameter / 2;
 
