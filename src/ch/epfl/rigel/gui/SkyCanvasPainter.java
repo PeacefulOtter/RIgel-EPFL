@@ -45,7 +45,7 @@ public class SkyCanvasPainter
     {
         double clippedMagnitude = MAGNITUDE_INTERVAL.clip( magnitude );
         double sizeFactor = ( 99 - 17 * clippedMagnitude ) / 140;
-        return sizeFactor * 2 * projection.applyToAngle( Angle.ofDeg( 0.5 ) );
+        return sizeFactor * projection.applyToAngle( Angle.ofDeg( 0.5 ) );
     }
 
     public void clear()
@@ -119,13 +119,11 @@ public class SkyCanvasPainter
             int roundedColor = ( ( ( star.colorTemperature() + 499 ) / 500 ) * 500 ); // round to the nearest 500
             Color starColor = BlackBodyColor.colorForTemperature( roundedColor );
             double starDiameter = magnitudeDiameter( star.magnitude(), projection );
-            double projectedDiameter = projection.applyToAngle( starDiameter );
-            double finalDiameter = planeToCanvas.deltaTransform( projectedDiameter, 0 ).getX();
-
-            // DEBUG : System.out.println( canvasPoint + " " + starDiameter +" " + projectedDiameter + " " + finalDiameter );
+            double finalDiameter = planeToCanvas.deltaTransform( starDiameter, 0 ).getX();
+            double radius = finalDiameter / 2;
 
             ctx.setFill( starColor );
-            ctx.fillOval( canvasPoint.getX(), canvasPoint.getY(), finalDiameter, finalDiameter );
+            ctx.fillOval( canvasPoint.getX() - radius, canvasPoint.getY() - radius, finalDiameter, finalDiameter );
         }
     }
 
@@ -139,11 +137,10 @@ public class SkyCanvasPainter
             Point2D planetPoint = planeToCanvas.transform( planetCartesianCoordinates[ index ], planetCartesianCoordinates[ index + 1 ] );
 
             double planetDiameter = magnitudeDiameter( planet.magnitude(), projection );
-            double projectedDiameter = projection.applyToAngle( planetDiameter );
-            double finalDiameter = planeToCanvas.deltaTransform( projectedDiameter, 0 ).getX();
+            double finalDiameter = planeToCanvas.deltaTransform( planetDiameter, 0 ).getX();
             double radius = finalDiameter / 2;
 
-            System.out.println(planetPoint + " " + finalDiameter);
+            // System.out.println(planetPoint + " " + finalDiameter);
 
             // delta transform ???
             ctx.setFill( LIGHTGRAY_COLOR );
@@ -180,14 +177,14 @@ public class SkyCanvasPainter
         Moon moon = sky.moon();
         CartesianCoordinates moonPos = sky.moonPosition();
         Point2D moonPoint = planeToCanvas.transform( moonPos.x(), moonPos.y() );
-        // System.out.println(moonPoint);
+        System.out.println(moonPoint);
 
-        double moonDiameter = magnitudeDiameter( moon.magnitude(), projection );
-        double projectedDiameter = projection.applyToAngle( moonDiameter );
+        //double moonDiameter = magnitudeDiameter( moon.magnitude(), projection );
+        double projectedDiameter = projection.applyToAngle( Angle.ofDeg( moon.angularSize() ) );
         double finalDiameter = planeToCanvas.deltaTransform( projectedDiameter, 0 ).getX();
         double radius = finalDiameter / 2;
 
-        // System.out.println(finalDiameter);
+        System.out.println(finalDiameter);
         ctx.setFill( WHITE_COLOR );
         ctx.fillOval( moonPoint.getX() - radius, moonPoint.getY() - radius, finalDiameter, finalDiameter );
     }

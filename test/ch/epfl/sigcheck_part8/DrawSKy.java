@@ -54,7 +54,7 @@ public final class DrawSKy extends Application
             // MOON : HorizontalCoordinates.ofDeg(3.7, -65);
             // VIEW ALL :  HorizontalCoordinates.ofDeg(0, 90);
             // NORTH AT BOTTOM : HorizontalCoordinates.ofDeg(0, 23);
-            HorizontalCoordinates projCenter = HorizontalCoordinates.ofDeg(277, -23);
+            HorizontalCoordinates projCenter = HorizontalCoordinates.ofDeg(3.7, -65);
             StereographicProjection projection = new StereographicProjection( projCenter );
             ObservedSky sky = new ObservedSky( when, where, projection, catalogue );
 
