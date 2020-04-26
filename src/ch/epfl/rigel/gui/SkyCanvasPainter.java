@@ -10,11 +10,16 @@ import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 import ch.epfl.rigel.coordinates.StereographicProjection;
 import ch.epfl.rigel.math.ClosedInterval;
 import javafx.geometry.Point2D;
+import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.FillRule;
+import javafx.scene.text.TextAlignment;
 import javafx.scene.transform.Transform;
 
+import javax.swing.*;
+import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import java.util.List;
 import java.util.Set;
 
@@ -36,16 +41,11 @@ public class SkyCanvasPainter
         ctx = canvas.getGraphicsContext2D();
     }
 
-    private static double angularSizeDiameter( double angularSize )
-    {
-        return 2 * Math.tan( angularSize / 4 );
-    }
-
-    private static double magnitudeDiameter( double magnitude )
+    private static double magnitudeDiameter( double magnitude, StereographicProjection projection )
     {
         double clippedMagnitude = MAGNITUDE_INTERVAL.clip( magnitude );
         double sizeFactor = ( 99 - 17 * clippedMagnitude ) / 140;
-        return sizeFactor * 2 * Math.tan( Angle.ofDeg( 0.5 ) / 4 );
+        return sizeFactor * 2 * projection.applyToAngle( Angle.ofDeg( 0.5 ) );
     }
 
     public void clear()
@@ -55,6 +55,14 @@ public class SkyCanvasPainter
         ctx.fill();
     }
 
+    public void drawSky( ObservedSky sky, StereographicProjection projection, Transform planeToCanvas )
+    {
+        this.drawStars( sky, projection, planeToCanvas );
+        this.drawPlanets( sky, projection, planeToCanvas );
+        this.drawSun( sky, projection, planeToCanvas );
+        this.drawMoon( sky, projection, planeToCanvas );
+    }
+
 
     public void drawStars( ObservedSky sky, StereographicProjection projection, Transform planeToCanvas )
     {
@@ -62,10 +70,11 @@ public class SkyCanvasPainter
         List<Star> stars = sky.stars();
         List<CartesianCoordinates> cartesianCoordinates = sky.starPosition();
 
-        /*for ( Asterism asterism: asterisms )
+        for ( Asterism asterism: asterisms )
         {
             List<Integer> asterismIndice = sky.asterismIndices( asterism );
             boolean firstAsterism = true;
+            boolean lastStarOutsideCanvas = false;
 
             // ASTERISM DRAWING
             ctx.beginPath();
@@ -75,7 +84,16 @@ public class SkyCanvasPainter
                 Point2D canvasPoint = planeToCanvas.transform( cartesianCoords.x(), cartesianCoords.y() );
 
                 // avoid drawing the asterism branches outside the canvas
-                if ( !ctx.getCanvas().getBoundsInLocal().contains( canvasPoint ) ) continue;
+                if ( !ctx.getCanvas().getBoundsInLocal().contains( canvasPoint ) )
+                {
+                    if ( !lastStarOutsideCanvas ) { lastStarOutsideCanvas = true; }
+                    else
+                    {
+                        ctx.moveTo( canvasPoint.getX(), canvasPoint.getY() );
+                        lastStarOutsideCanvas = false;
+                        continue;
+                    }
+                }
 
                 ctx.setLineWidth(1);
                 ctx.setStroke( BLUE_COLOR );
@@ -90,7 +108,7 @@ public class SkyCanvasPainter
                 ctx.stroke();
             }
             ctx.closePath();
-        }*/
+        }
 
         for ( int i = 0; i < stars.size(); i++ )
         {
@@ -100,7 +118,7 @@ public class SkyCanvasPainter
 
             int roundedColor = ( ( ( star.colorTemperature() + 499 ) / 500 ) * 500 ); // round to the nearest 500
             Color starColor = BlackBodyColor.colorForTemperature( roundedColor );
-            double starDiameter = magnitudeDiameter( star.magnitude() );
+            double starDiameter = magnitudeDiameter( star.magnitude(), projection );
             double projectedDiameter = projection.applyToAngle( starDiameter );
             double finalDiameter = planeToCanvas.deltaTransform( projectedDiameter, 0 ).getX();
 
@@ -109,56 +127,89 @@ public class SkyCanvasPainter
             ctx.setFill( starColor );
             ctx.fillOval( canvasPoint.getX(), canvasPoint.getY(), finalDiameter, finalDiameter );
         }
-
-        System.out.println(canvas.getWidth() + " " + canvas.getHeight() );
     }
 
-    public void drawPlanets( ObservedSky sky, StereographicProjection projection, Transform planeToCanvas ) {
+    public void drawPlanets( ObservedSky sky, StereographicProjection projection, Transform planeToCanvas )
+    {
         List<Planet> planets = sky.planets();
         double[] planetCartesianCoordinates = sky.planetPosition();
         int index = 0;
-        for (Planet planet : planets)
+        for ( Planet planet : planets )
         {
-            double planetDiameter = magnitudeDiameter( planet.magnitude() );
-            planetDiameter = projection.applyToAngle(planetDiameter);
-            planetDiameter = planeToCanvas.transform( planetDiameter, 0 ).getX();
-            Point2D planetPoint = planeToCanvas.transform(planetCartesianCoordinates[index], planetCartesianCoordinates[index + 1]);
-            index += 2;
+            Point2D planetPoint = planeToCanvas.transform( planetCartesianCoordinates[ index ], planetCartesianCoordinates[ index + 1 ] );
 
+            double planetDiameter = magnitudeDiameter( planet.magnitude(), projection );
+            double projectedDiameter = projection.applyToAngle( planetDiameter );
+            double finalDiameter = planeToCanvas.deltaTransform( projectedDiameter, 0 ).getX();
+            double radius = finalDiameter / 2;
+
+            System.out.println(planetPoint + " " + finalDiameter);
+
+            // delta transform ???
             ctx.setFill( LIGHTGRAY_COLOR );
-            ctx.fillOval( planetPoint.getX(), planetPoint.getY(), planetDiameter, planetDiameter );
+            ctx.fillOval( planetPoint.getX() - radius, planetPoint.getY() - radius, finalDiameter, finalDiameter );
+
+            index += 2;
         }
     }
 
-    public void drawSun( ObservedSky sky, StereographicProjection projection, Transform planeToCanvas ) {
-        Sun sun = sky.sun();
-        double sunDiameter = magnitudeDiameter(sun.magnitude());
-        sunDiameter = projection.applyToAngle(sunDiameter);
-        sunDiameter = planeToCanvas.transform(sunDiameter, 0).getX();
-        Point2D sunPoint = planeToCanvas.transform(sky.sunPosition().x(), sky.sunPosition().y());
+    public void drawSun( ObservedSky sky, StereographicProjection projection, Transform planeToCanvas )
+    {
+        CartesianCoordinates sunPos = sky.sunPosition();
+        Point2D sunPoint = planeToCanvas.transform( sunPos.x(), sunPos.y() );
 
-        ctx.setFill(Color.color(YELLOW_COLOR.getRed(), YELLOW_COLOR.getGreen(), YELLOW_COLOR.getBlue(), 0.25));
-        ctx.fillOval( sunPoint.getX(), sunPoint.getY(), sunDiameter * 2.2, sunDiameter * 2.2 );
+        double sunDiameter = projection.applyToAngle( Angle.ofDeg( 0.5 ) );
+        double finalDiameter = planeToCanvas.deltaTransform( sunDiameter, 0 ).getX();
 
-        ctx.setFill(YELLOW_COLOR);
-        ctx.fillOval(sunPoint.getX(), sunPoint.getY(), sunDiameter + 2, sunDiameter +2);
+        ctx.setFill( YELLOW_COLOR.deriveColor( 0, 1, 1, 0.25 ) );
+        double haloRadius = ( finalDiameter * 2.2 ) / 2;
+        ctx.fillOval( sunPoint.getX() - haloRadius, sunPoint.getY() - haloRadius, finalDiameter * 2.2, finalDiameter * 2.2 );
+
+        ctx.setFill( YELLOW_COLOR );
+        double yellowRadius = ( finalDiameter + 2 ) / 2;
+        ctx.fillOval( sunPoint.getX() - yellowRadius, sunPoint.getY() - yellowRadius, finalDiameter + 2, finalDiameter + 2 );
 
         ctx.setFill( WHITE_COLOR );
-        ctx.fillOval( sunPoint.getX(), sunPoint.getY(), sunDiameter, sunDiameter );
+        double whiteRadius = finalDiameter / 2;
+        ctx.fillOval( sunPoint.getX() - whiteRadius, sunPoint.getY() - whiteRadius, finalDiameter, finalDiameter );
 
     }
 
-    public void drawMoon( ObservedSky sky, StereographicProjection projection, Transform planeToCanvas ) {
+    public void drawMoon( ObservedSky sky, StereographicProjection projection, Transform planeToCanvas )
+    {
         Moon moon = sky.moon();
-        double moonDiameter = magnitudeDiameter(moon.magnitude());
-        moonDiameter = projection.applyToAngle(moonDiameter);
-        moonDiameter = planeToCanvas.transform(moonDiameter, 0).getX();
-        Point2D moonPoint = planeToCanvas.transform(sky.moonPosition().x(), sky.moonPosition().y());
+        CartesianCoordinates moonPos = sky.moonPosition();
+        Point2D moonPoint = planeToCanvas.transform( moonPos.x(), moonPos.y() );
+        // System.out.println(moonPoint);
 
+        double moonDiameter = magnitudeDiameter( moon.magnitude(), projection );
+        double projectedDiameter = projection.applyToAngle( moonDiameter );
+        double finalDiameter = planeToCanvas.deltaTransform( projectedDiameter, 0 ).getX();
+        double radius = finalDiameter / 2;
+
+        // System.out.println(finalDiameter);
         ctx.setFill( WHITE_COLOR );
-        ctx.fillOval(moonPoint.getX(), moonPoint.getY(), moonDiameter, moonDiameter );
+        ctx.fillOval( moonPoint.getX() - radius, moonPoint.getY() - radius, finalDiameter, finalDiameter );
     }
 
-    public void drawHorizon(StereographicProjection projection) {
+    public void drawHorizon( StereographicProjection projection, HorizontalCoordinates projCenter, Transform planeToCanvas )
+    {
+        HorizontalCoordinates hor = HorizontalCoordinates.ofDeg( 0, 0 );
+        CartesianCoordinates center = projection.circleCenterForParallel( hor );
+        Point2D transformedCenter = planeToCanvas.transform( center.x(), center.y() );
+        double radius = projection.circleRadiusForParallel( hor );
+        double transformedRadius = Math.abs( planeToCanvas.deltaTransform( radius, 0 ).getX() );
+
+        // System.out.println(transformedCenter + " " + transformedRadius);
+        ctx.setStroke( RED_COLOR );
+        ctx.setLineWidth( 2 );
+        ctx.strokeOval(
+                transformedCenter.getX() - transformedRadius,
+                transformedCenter.getY() - transformedRadius,
+                transformedRadius * 2, transformedRadius * 2 );
+
+        ctx.setTextAlign( TextAlignment.CENTER );
+        ctx.setTextBaseline( VPos.TOP );
+        // System.out.println( projCenter.azOctantName( "N", "E", "S", "W" ) );
     }
 }
