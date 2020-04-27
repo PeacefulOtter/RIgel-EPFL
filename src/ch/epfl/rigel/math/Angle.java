@@ -1,5 +1,7 @@
 package ch.epfl.rigel.math;
 
+import ch.epfl.rigel.Preconditions;
+
 public final class Angle
 {
     // The TAU constant
@@ -40,6 +42,7 @@ public final class Angle
      */
     public static double ofDMS( int deg, int min, double sec )
     {
+        Preconditions.checkArgument( deg >= 0 && min >= 0 && sec >= 0 );
         if ( min < 0 || min >= 60 || sec < 0 || sec >= 60 )
         {
             throw new IllegalArgumentException();
