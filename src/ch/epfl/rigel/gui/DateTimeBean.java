@@ -4,6 +4,9 @@ import javafx.beans.property.ObjectProperty;
 
 import java.time.*;
 
+/**
+ * Represents a JavaFX bean containing the instant of observation, i.e. the triplet (date, time, time zone) of observation.
+ */
 public final class DateTimeBean
 {
     private ObjectProperty<LocalDate> dateProperty = null;
