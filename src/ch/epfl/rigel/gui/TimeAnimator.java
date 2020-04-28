@@ -5,46 +5,56 @@ import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+
 public final class TimeAnimator extends AnimationTimer
 {
-    private TimeAccelerator accelerator;
-    private SimpleBooleanProperty running;
-    private DateTimeBean dateTimeB;
-    private long timer;
+    // ReadOnlyBooleanProperty running = ...
+    private final SimpleBooleanProperty running = new SimpleBooleanProperty( false );
+    private final DateTimeBean simulatedTimeBean;
+    private final ZonedDateTime simulatedStart;
 
-    public TimeAnimator( DateTimeBean dateTimeB )
+    private TimeAccelerator accelerator = null;
+
+    private boolean firstTimeHandle = true;
+    private long simulatedStartTime;
+
+
+    public TimeAnimator( DateTimeBean simulatedStartBean )
     {
-        this.dateTimeB = dateTimeB;
-        accelerator = null;
-        running = new SimpleBooleanProperty( false );
+        this.simulatedTimeBean = simulatedStartBean;
+        this.simulatedStart = simulatedStartBean.getZonedDateTime();
     }
 
-    public void setAccelerator( TimeAccelerator accelerator )
-    {
-        this.accelerator = accelerator;
-    }
+    public void setAccelerator( TimeAccelerator accelerator ) { this.accelerator = accelerator; }
+
 
     @Override
-    public void handle(long l) {
-        timer += l;
-        dateTimeB.setZonedDateTime( accelerator.adjust(dateTimeB.getZonedDateTime(), timer) );
+    public void handle( long now )
+    {
+        if ( firstTimeHandle )
+        {
+            simulatedStartTime = now;
+            firstTimeHandle = false;
+        }
+        long deltaRealTime = now - simulatedStartTime;
+        simulatedTimeBean.setZonedDateTime( accelerator.adjust( simulatedStart, deltaRealTime ) );
     }
 
     public void start()
     {
-        if( accelerator == null ) throw new IllegalArgumentException();
+        if ( accelerator == null ) throw new IllegalArgumentException();
         super.start();
         running.setValue( true );
-        timer = 0;
+        firstTimeHandle = true;
     }
 
-    public BooleanExpression isRunning(){
-        return ReadOnlyBooleanProperty.booleanExpression(running);
-    }
+    public BooleanExpression isRunning() { return ReadOnlyBooleanProperty.booleanExpression( running ); }
 
-    public void stop(){
+    public void stop()
+    {
         super.stop();
         running.setValue( false );
-        timer = 0;
     }
 }

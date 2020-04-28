@@ -23,19 +23,7 @@ public interface TimeAccelerator
     static TimeAccelerator continous( int acceleratorFactor )
     {
         return ( initialSimulatedTime, deltaRealTime ) ->
-        {
             initialSimulatedTime.plusNanos( acceleratorFactor * deltaRealTime );
-            return ZonedDateTime.of(
-                    initialSimulatedTime.getYear(),
-                    initialSimulatedTime.getMonthValue(),
-                    initialSimulatedTime.getDayOfMonth(),
-                    initialSimulatedTime.getHour(),
-                    initialSimulatedTime.getMinute(),
-                    initialSimulatedTime.getSecond(),
-                    initialSimulatedTime.getNano(),
-                    initialSimulatedTime.getZone()
-            );
-        };
     }
 
     /**
@@ -46,18 +34,8 @@ public interface TimeAccelerator
     static TimeAccelerator discrete( int advancementFrequency, Duration steps )
     {
         return ( initialSimulatedTime, deltaRealTime ) ->
-        {
-            initialSimulatedTime.plusNanos( (long) ( Math.floor( advancementFrequency * deltaRealTime ) * steps.toNanos() ) );
-            return ZonedDateTime.of(
-                    initialSimulatedTime.getYear(),
-                    initialSimulatedTime.getMonthValue(),
-                    initialSimulatedTime.getDayOfMonth(),
-                    initialSimulatedTime.getHour(),
-                    initialSimulatedTime.getMinute(),
-                    initialSimulatedTime.getSecond(),
-                    initialSimulatedTime.getNano(),
-                    initialSimulatedTime.getZone()
+            initialSimulatedTime.plusNanos(
+                (long) ( Math.floor( advancementFrequency * deltaRealTime ) * steps.toNanos() )
             );
-        };
     }
 }

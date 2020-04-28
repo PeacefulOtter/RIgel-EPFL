@@ -1,6 +1,5 @@
 package ch.epfl.rigel.gui;
 
-import ch.epfl.rigel.coordinates.CartesianCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
@@ -10,8 +9,8 @@ import javafx.beans.property.SimpleObjectProperty;
 
 public class ViewingParametersBean
 {
-    private IntegerProperty fieldOfViewDeg = null;
-    private ObjectProperty<HorizontalCoordinates> center = null;
+    private final IntegerProperty fieldOfViewDeg = new SimpleIntegerProperty( 0 );
+    private final ObjectProperty<HorizontalCoordinates> center = new SimpleObjectProperty<>( null );
 
 
     public IntegerProperty fieldOfViewDegProperty() { return fieldOfViewDeg; }
