@@ -11,14 +11,12 @@ public final class TimeAnimator extends AnimationTimer
     private SimpleBooleanProperty running;
     private DateTimeBean dateTimeB;
     private long timer;
-    private final static SimpleBooleanProperty TRUE = new SimpleBooleanProperty( true );
-    private final static SimpleBooleanProperty FALSE = new SimpleBooleanProperty( false );
 
     public TimeAnimator( DateTimeBean dateTimeB )
     {
         this.dateTimeB = dateTimeB;
         accelerator = null;
-        running = FALSE;
+        running = new SimpleBooleanProperty( false );
     }
 
     public void setAccelerator( TimeAccelerator accelerator )
@@ -36,17 +34,17 @@ public final class TimeAnimator extends AnimationTimer
     {
         if( accelerator == null ) throw new IllegalArgumentException();
         super.start();
-        running = TRUE;
+        running.setValue( true );
         timer = 0;
     }
 
-    public BooleanExpression isRunnig(){
+    public BooleanExpression isRunning(){
         return ReadOnlyBooleanProperty.booleanExpression(running);
     }
 
     public void stop(){
         super.stop();
-        running = FALSE;
+        running.setValue( false );
         timer = 0;
     }
 }
