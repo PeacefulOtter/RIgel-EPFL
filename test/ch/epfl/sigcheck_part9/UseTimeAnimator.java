@@ -9,7 +9,7 @@ import javafx.application.Platform;
 import javafx.stage.Stage;
 
 import java.time.ZonedDateTime;
-
+/*
 public final class UseTimeAnimator extends Application
 {
     public static void main(String[] args) { launch(args); }
@@ -37,3 +37,4 @@ public final class UseTimeAnimator extends Application
         timeAnimator.start();
     }
 }
+*/
