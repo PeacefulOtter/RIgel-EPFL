@@ -7,9 +7,7 @@ import ch.epfl.rigel.coordinates.CartesianCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import ch.epfl.rigel.coordinates.StereographicProjection;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableObjectValue;
@@ -22,9 +20,9 @@ import java.util.Optional;
 public class SkyCanvasManager
 {
     Canvas canvas = new Canvas( 800, 600 );
-    public DoubleProperty mouseAzDeg = new SimpleDoubleProperty( 0 );
-    public DoubleProperty mouseAltDeg = new SimpleDoubleProperty( 0 );
-    public ObservableObjectValue<CelestialObject> objectUnderMouse = new SimpleObjectProperty<>( null );
+    public ObservableDoubleValue mouseAzDeg, mouseAltDeg;
+    public ObservableObjectValue<Optional<CelestialObject>> objectUnderMouse;
+
 
     public SkyCanvasManager(
             StarCatalogue catalogue,
@@ -86,25 +84,11 @@ public class SkyCanvasManager
     }
 
 
-    public DoubleProperty mouseAzDegProperty() { return mouseAzDeg; }
-
     public double getMouseAzDeg() { return mouseAzDeg.get(); }
-
-    public void setMouseAzDeg( double mouseAzDeg ) { this.mouseAzDeg.set( mouseAzDeg ); }
-
-
-    public DoubleProperty mouseAltDegProperty() { return mouseAltDeg; }
 
     public double getMouseAltDeg() { return mouseAltDeg.get(); }
 
-    public void setMouseAltDeg( double mouseAltDeg ) { this.mouseAltDeg.set( mouseAltDeg ); }
-
-
     public ObservableObjectValue objectUnderMouseProperty() { return objectUnderMouse; }
-
-    public CelestialObject getObjectUnderMouse() { return objectUnderMouse.get(); }
-
-
 
     public Canvas canvas() { return canvas; }
 }
