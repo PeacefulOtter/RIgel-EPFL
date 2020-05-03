@@ -8,7 +8,7 @@ import java.util.Locale;
 /**
  * Represents the Moon at a given moment
  */
-public class Moon extends CelestialObject
+public final class Moon extends CelestialObject
 {
     // phase Interval
     private static final ClosedInterval PHASE_INTERVAL = ClosedInterval.of( 0, 1 );

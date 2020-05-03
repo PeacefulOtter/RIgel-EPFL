@@ -8,50 +8,65 @@ import javafx.beans.value.ObservableObjectValue;
 
 public class ObserverLocationBean
 {
-    private DoubleProperty latDeg = new SimpleDoubleProperty(0);
-    private DoubleProperty lonDeg = new SimpleDoubleProperty(0);
-    private ObservableObjectValue<GeographicCoordinates> coordinates = Bindings.createObjectBinding(() ->
-            GeographicCoordinates.ofDeg(lonDeg.doubleValue(), latDeg.doubleValue()), this.lonDeg, this.latDeg);
+    private DoubleProperty lonDegObservator = new SimpleDoubleProperty( 0 );
+    private DoubleProperty latDegObservator = new SimpleDoubleProperty( 0 );
+    private ObservableObjectValue<GeographicCoordinates> coordinates = Bindings.createObjectBinding( () ->
+        GeographicCoordinates.ofDeg( lonDegObservator.getValue(), latDegObservator.getValue() ),
+        this.lonDegObservator, this.latDegObservator );
 
-    public void setObserLocation(double lonDeg, double latDeg){
-        this.latDeg.set(latDeg);
-        this.lonDeg.set(lonDeg);
+
+    public void setObserverLocation( double lonDeg, double latDeg )
+    {
+        this.lonDegObservator.setValue( lonDeg );
+        this.latDegObservator.setValue( latDeg );
     }
 
-    public void setCoordinates( GeographicCoordinates coordinates){
-        this.latDeg.set(coordinates.latDeg());
-        this.lonDeg.set(coordinates.lonDeg());
+
+    public DoubleProperty lonDegProperty()
+    {
+        return lonDegObservator;
     }
 
-    public double getLatDeg() {
-        return latDeg.get();
+    public double getLonDeg()
+    {
+        return lonDegObservator.getValue();
     }
 
-    public void setLatDeg(double latDeg) {
-        this.latDeg.set(latDeg);
+    public void setLonDeg( double lonDeg )
+    {
+        this.lonDegObservator.setValue( lonDeg );
     }
 
-    public void setLonDeg(double lonDeg) {
-        this.lonDeg.set(lonDeg);
+
+    public DoubleProperty latDegProperty()
+    {
+        return latDegObservator;
     }
 
-    public DoubleProperty latDegProperty() {
-        return latDeg;
+    public double getLatDeg()
+    {
+        return latDegObservator.getValue();
     }
 
-    public double getLonDeg() {
-        return lonDeg.get();
+    public void setLatDeg( double latDeg )
+    {
+        this.latDegObservator.setValue( latDeg );
     }
 
-    public DoubleProperty lonDegProperty() {
-        return lonDeg;
+
+    public GeographicCoordinates getCoordinates()
+    {
+        return coordinates.getValue();
     }
 
-    public GeographicCoordinates getCoordinates() {
-        return coordinates.get();
+    public void setCoordinates( GeographicCoordinates geographicCoordinates )
+    {
+        setLonDeg( geographicCoordinates.lonDeg() );
+        setLatDeg( geographicCoordinates.latDeg() );
     }
 
-    public ObservableObjectValue coordinatesProperty() {
+    public ObservableObjectValue coordinatesProperty()
+    {
         return coordinates;
     }
 }

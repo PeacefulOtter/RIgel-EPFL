@@ -20,6 +20,19 @@ public final class GeographicCoordinates extends SphericalCoordinates
         super( Angle.ofDeg( lonDeg ), Angle.ofDeg( latDeg ) );
     }
 
+
+    @Override
+    public double lon() { return super.lon(); }
+
+    @Override
+    public double lonDeg() { return super.lonDeg(); }
+
+    @Override
+    public double lat() { return super.lat(); }
+
+    @Override
+    public double latDeg() { return super.latDeg(); }
+
     /**
      * Creates a Geographic Coordinate
      * @param lonDeg : longitude in degrees

@@ -14,8 +14,6 @@ public final class StereographicProjection implements Function<HorizontalCoordin
 {
     // Interval of the longitude in radians
     private static final RightOpenInterval AZ_INTERVAL =  RightOpenInterval.of( 0, Angle.TAU );
-    // Interval of the latitude in radians
-    private static final ClosedInterval ALT_INTERVAL = ClosedInterval.of( -Math.PI / 2, Math.PI / 2 );
 
     // Horizontal Coordinates of the center
     private final HorizontalCoordinates center;
@@ -45,10 +43,6 @@ public final class StereographicProjection implements Function<HorizontalCoordin
      */
     public CartesianCoordinates circleCenterForParallel( HorizontalCoordinates hor )
     {
-        if ( ( Math.sin( hor.alt() ) + sinPhi1 ) == 0 )
-        {
-            return CartesianCoordinates.of(0, Double.POSITIVE_INFINITY );
-        }
         double cy = cosPhi1 / ( Math.sin( hor.alt() ) + sinPhi1 );
         return CartesianCoordinates.of( 0, cy );
     }
@@ -59,10 +53,6 @@ public final class StereographicProjection implements Function<HorizontalCoordin
      */
     public double circleRadiusForParallel( HorizontalCoordinates parallel )
     {
-        if ( Math.sin( parallel.lon() ) + sinPhi1 == 0 )
-        {
-            return Double.POSITIVE_INFINITY;
-        }
         return Math.cos( parallel.lat() ) / ( Math.sin( parallel.lat() ) + sinPhi1 );
     }
 
@@ -109,13 +99,14 @@ public final class StereographicProjection implements Function<HorizontalCoordin
         double x = xy.x();
         double y = xy.y();
         double p = Math.sqrt( Math.pow( x, 2 ) + Math.pow( y, 2 ) );
-        double cosC = ( 1 - Math.pow( p, 2 ) ) / ( Math.pow( p, 2 ) + 1 );
-        double sinC = ( 2 * p ) / ( Math.pow( p, 2 ) + 1 ) ;
+        double pSquared = Math.pow( p, 2 );
+        double cosC = ( 1 - pSquared ) / ( pSquared + 1 );
+        double sinC = ( 2 * p ) / ( pSquared + 1 ) ;
 
         double lambda = Math.atan2( x * sinC, p * cosPhi1 * cosC - y * sinPhi1 * sinC ) + lambda0;
         double phi = Math.asin( cosC * sinPhi1 + ( y * sinC * cosPhi1 / p ) );
 
-        return HorizontalCoordinates.of( AZ_INTERVAL.reduce( lambda ), ALT_INTERVAL.clip( phi ) );
+        return HorizontalCoordinates.of( AZ_INTERVAL.reduce( lambda ), phi );
     }
 
     @Override

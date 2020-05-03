@@ -15,6 +15,8 @@ public final class Star extends CelestialObject
     // index of the color
     private final float colorIndex;
 
+    private final int colorTemperature;
+
     /**
      * @param hipparcosId: Hipparcos number of the Star
      * @param name : star name
@@ -31,6 +33,9 @@ public final class Star extends CelestialObject
 
         this.colorIndex = colorIndex;
         this.hipparcosId = hipparcosId;
+
+        double d = 0.92 * colorIndex;
+        colorTemperature = (int) Math.floor( 4600 * (  ( 1 / ( d + 1.7 ) ) + ( 1 / ( d + 0.62 ) )  ) );
     }
 
     /**
@@ -41,9 +46,5 @@ public final class Star extends CelestialObject
     /**
      * @return the color Temperature of the Star in Kelvin using the color Index
      */
-    public int colorTemperature()
-    {
-        double d = 0.92 * colorIndex;
-        return (int) Math.floor( 4600 * (  ( 1 / ( d + 1.7 ) ) + ( 1 / ( d + 0.62 ) )  ) );
-    }
+    public int colorTemperature() { return colorTemperature; }
 }

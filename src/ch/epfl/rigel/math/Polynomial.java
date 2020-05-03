@@ -3,7 +3,7 @@ package ch.epfl.rigel.math;
 public final class Polynomial
 {
     // store the polynomial coefficient
-    private double[] coefficients;
+    private final double[] coefficients;
 
     /**
      * Build the polynomial using the coefficients and the last coefficient (N)

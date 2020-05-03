@@ -45,14 +45,20 @@ public enum HygDatabaseLoader implements StarCatalogue.Loader
             while( ( line = stream.readLine() ) != null )
             {
                 starInfo = line.split( "," );
+                String hipIndex = starInfo[ HIP_INDEX ];
+                String properIndex = starInfo[ PROPER_INDEX ];
+                String bayerIndex = starInfo[ BAYER_INDEX ];
+                String magIndex = starInfo[ MAG_INDEX ];
+                String ciIndex = starInfo[ CI_INDEX ];
+
                 // get the hipparcos ID (0 by default)
-                int hipparcosId = ( starInfo[ HIP_INDEX ].equals( "" ) ) ? 0 : Integer.parseInt( starInfo[ HIP_INDEX ] );
+                int hipparcosId = ( hipIndex.equals( "" ) ) ? 0 : Integer.parseInt( hipIndex );
 
                 // get the star name, if the proper name is empty, it consists of a concatenation between
                 // the "Bayer" name and the "Con" name. (? by default)
-                String name = ( starInfo[ PROPER_INDEX ].equals( "" ) ) ?
-                        ( starInfo[ BAYER_INDEX ].equals( "" ) ? "?" : starInfo[ BAYER_INDEX ] ) + " " + starInfo[ CON_INDEX ] :
-                        starInfo[ PROPER_INDEX ];
+                String name = ( properIndex.equals( "" ) ) ?
+                        ( bayerIndex.equals( "" ) ? "?" : bayerIndex ) + " " + starInfo[ CON_INDEX ] :
+                        properIndex;
 
                 // get the star equatorial coordinates
                 EquatorialCoordinates equatorialPos = EquatorialCoordinates.of(
@@ -60,10 +66,10 @@ public enum HygDatabaseLoader implements StarCatalogue.Loader
                         Double.parseDouble( starInfo[ DECRAD_INDEX ] ) );
 
                 // get the star magnitude (0 by default)
-                float magnitude = ( starInfo[ MAG_INDEX ].equals( "" ) ) ? 0 : Float.parseFloat( starInfo[ MAG_INDEX ] );
+                float magnitude = ( magIndex.equals( "" ) ) ? 0 : Float.parseFloat( magIndex );
 
                 // get the star color index (0 by default)
-                float colorIndex = ( starInfo[ CI_INDEX ].equals( "" ) ) ? 0 : Float.parseFloat( starInfo[ CI_INDEX ] );
+                float colorIndex = ( ciIndex.equals( "" ) ) ? 0 : Float.parseFloat( ciIndex );
 
                 // create a new star based on what we read and add it to the list of stars through the builder.
                 builder.addStar( new Star( hipparcosId, name, equatorialPos, magnitude, colorIndex ) );

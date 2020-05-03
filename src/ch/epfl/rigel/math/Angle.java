@@ -11,6 +11,8 @@ public final class Angle
     // One radian per hour
     private static final double RAD_PER_HR = TAU / 24;
 
+    private static final double OF_ARSEC_CONST = TAU / ( 3600 * 360 );
+
     /**
      * Reduce an angle in radian to [0,τ[
      * @param rad : the angle in radian
@@ -28,7 +30,7 @@ public final class Angle
      */
     public static double ofArcsec( double sec )
     {
-        return sec * ( TAU / (3600*360) );
+        return sec * OF_ARSEC_CONST;
     }
 
 

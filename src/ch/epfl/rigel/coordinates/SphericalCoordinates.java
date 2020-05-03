@@ -10,7 +10,7 @@ abstract class SphericalCoordinates
     // longitude and latitude
     private final double lon, lat;
 
-    public SphericalCoordinates( double lon, double lat )
+    SphericalCoordinates( double lon, double lat )
     {
         this.lon = lon;
         this.lat = lat;
@@ -19,22 +19,22 @@ abstract class SphericalCoordinates
     /**
      * @return longitude in radians
      */
-    public double lon() { return lon; }
+    double lon() { return lon; }
 
     /**
      * @return the longitude in degrees
      */
-    public double lonDeg() { return Angle.toDeg( lon ); }
+    double lonDeg() { return Angle.toDeg( lon ); }
 
     /**
      * @return the latitude in radians
      */
-    public double lat() { return lat; }
+    double lat() { return lat; }
 
     /**
      * @return the latitude in degrees
      */
-    public double latDeg() { return Angle.toDeg( lat ); }
+    double latDeg() { return Angle.toDeg( lat ); }
 
     @Override
     public final int hashCode() { throw new UnsupportedOperationException(); }

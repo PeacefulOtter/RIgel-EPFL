@@ -30,7 +30,7 @@ public final class CartesianCoordinates
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals (Object obj )
     {
         throw new UnsupportedOperationException();
     }

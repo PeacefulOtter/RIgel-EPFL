@@ -39,18 +39,18 @@ public abstract class Interval
 
     /**
      * Check if some value is inside the interval or not
-     * @param v
+     * @param v : the value
      * @return boolean
      */
     public abstract boolean contains( double v );
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean equals( Object object ) {
+    public final boolean equals( Object object ) {
         throw new UnsupportedOperationException();
     }
 

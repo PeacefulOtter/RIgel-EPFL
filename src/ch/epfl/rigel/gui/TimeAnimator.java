@@ -5,15 +5,14 @@ import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
+import java.time.*;
 
 public final class TimeAnimator extends AnimationTimer
 {
     // ReadOnlyBooleanProperty running = ...
     private final SimpleBooleanProperty running = new SimpleBooleanProperty( false );
     private final DateTimeBean simulatedTimeBean;
-    private final ZonedDateTime simulatedStart;
+    private ZonedDateTime simulatedStart;
 
     private TimeAccelerator accelerator = null;
 
@@ -37,6 +36,7 @@ public final class TimeAnimator extends AnimationTimer
         {
             simulatedStartTime = now;
             firstTimeHandle = false;
+            return;
         }
         long deltaRealTime = now - simulatedStartTime;
         simulatedTimeBean.setZonedDateTime( accelerator.adjust( simulatedStart, deltaRealTime ) );
@@ -50,11 +50,12 @@ public final class TimeAnimator extends AnimationTimer
         firstTimeHandle = true;
     }
 
-    public BooleanExpression isRunning() { return ReadOnlyBooleanProperty.booleanExpression( running ); }
-
     public void stop()
     {
         super.stop();
         running.setValue( false );
     }
+
+    public BooleanExpression isRunning() { return ReadOnlyBooleanProperty.booleanExpression( running ); }
+
 }

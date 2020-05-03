@@ -23,7 +23,7 @@ public interface TimeAccelerator
     static TimeAccelerator continous( int acceleratorFactor )
     {
         return ( initialSimulatedTime, deltaRealTime ) ->
-            initialSimulatedTime.plusNanos( acceleratorFactor * deltaRealTime );
+            initialSimulatedTime.plusNanos( (long) ( acceleratorFactor * deltaRealTime ) );
     }
 
     /**
@@ -35,7 +35,7 @@ public interface TimeAccelerator
     {
         return ( initialSimulatedTime, deltaRealTime ) ->
             initialSimulatedTime.plusNanos(
-                (long) ( Math.floor( advancementFrequency * deltaRealTime ) * steps.toNanos() )
+                (long) ( Math.floor( advancementFrequency * deltaRealTime * 1e-9 ) * steps.toNanos() )
             );
     }
 }
