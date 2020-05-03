@@ -8,18 +8,31 @@ import javafx.beans.value.ObservableObjectValue;
 
 public class ObserverLocationBean
 {
-    private DoubleProperty latDeg, lonDeg;
+    private DoubleProperty latDeg = new SimpleDoubleProperty(0);
+    private DoubleProperty lonDeg = new SimpleDoubleProperty(0);
+    private ObservableObjectValue<GeographicCoordinates> coordinates = Bindings.createObjectBinding(() ->
+            GeographicCoordinates.ofDeg(lonDeg.doubleValue(), latDeg.doubleValue()), this.lonDeg, this.latDeg);
 
-    private ObservableObjectValue<GeographicCoordinates> coordinates;
-    // peut etre pas mettre de constructeur et mettre des setter comme dans viewingParameters
-    public ObserverLocationBean(double lonDeg, double latDeg) {
-        this.latDeg = new SimpleDoubleProperty( latDeg );
-        this.lonDeg = new SimpleDoubleProperty( lonDeg );
-        coordinates = Bindings.createObjectBinding(() -> GeographicCoordinates.ofDeg(lonDeg, latDeg), this.lonDeg, this.latDeg);
+    public void setObserLocation(double lonDeg, double latDeg){
+        this.latDeg.set(latDeg);
+        this.lonDeg.set(lonDeg);
+    }
+
+    public void setCoordinates( GeographicCoordinates coordinates){
+        this.latDeg.set(coordinates.latDeg());
+        this.lonDeg.set(coordinates.lonDeg());
     }
 
     public double getLatDeg() {
         return latDeg.get();
+    }
+
+    public void setLatDeg(double latDeg) {
+        this.latDeg.set(latDeg);
+    }
+
+    public void setLonDeg(double lonDeg) {
+        this.lonDeg.set(lonDeg);
     }
 
     public DoubleProperty latDegProperty() {
