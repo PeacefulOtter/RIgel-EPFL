@@ -68,7 +68,7 @@ public class SkyCanvasManager
         } );
 
         ObservableObjectValue<HorizontalCoordinates> mouseHorizontalPosition = Bindings.createObjectBinding(() -> {
-//            take the coordinates of the mouse and inverse planeToCanvas to have it on the plane
+            // take the coordinates of the mouse and inverse planeToCanvas to have it on the plane
             Point2D mousePosTransform = planeToCanvas.get().inverseTransform(mousePosition.getValue());
             HorizontalCoordinates mouseHorizontalPos = projection.get().inverseApply(CartesianCoordinates.of(mousePosTransform.getX(), mousePosTransform.getY()));
             return mouseHorizontalPos;
@@ -84,6 +84,11 @@ public class SkyCanvasManager
             return observedSky.get().objectClosestTo(mousePos, 0.5);
         }, observedSky, mousePosition, planeToCanvas);
     }
+
+
+    public DoubleProperty mouseAzDegProperty() { return mouseAzDeg; }
+
+    public double getMouseAzDeg() { return mouseAzDeg.get(); }
 
     public void setMouseAzDeg( double mouseAzDeg ) { this.mouseAzDeg.set( mouseAzDeg ); }
 
