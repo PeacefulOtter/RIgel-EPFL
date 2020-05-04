@@ -74,7 +74,7 @@ public class SkyCanvasPainter
         double[] starsCartesianCoordinates = sky.starsArrayPosition();
         int starsNumber = stars.size();
 
-        double[] dstPts = new double[ starsNumber ];
+        double[] dstPts = new double[ starsNumber * 2 ];
         planeToCanvas.transform2DPoints( starsCartesianCoordinates, 0, dstPts, 0, starsNumber );
 
         int starCoordsIndex = 0;
@@ -97,7 +97,7 @@ public class SkyCanvasPainter
 
 
 
-        
+
         for ( Asterism asterism: asterisms )
         {
             List<Integer> asterismIndice = sky.asterismIndices( asterism );
@@ -227,7 +227,7 @@ public class SkyCanvasPainter
             HorizontalCoordinates textCoords = HorizontalCoordinates.ofDeg( i, -0.5 );
             CartesianCoordinates textCenter = projection.apply( textCoords );
             Point2D transformedTextCenter = planeToCanvas.transform( textCenter.x(), textCenter.y()  );
-            String octant = textCoords.azOctantName( "N", "E", "S", "W" );
+            String octant = textCoords.azOctantName( "N", "E", "S", "O" );
             ctx.fillText( octant, transformedTextCenter.getX(), transformedTextCenter.getY() );
         }
     }
