@@ -20,7 +20,7 @@ public interface TimeAccelerator
      * @param acceleratorFactor : time acceleration factor
      * @return a continuous accelerator as a function of the acceleration factor
      */
-    static TimeAccelerator continous( int acceleratorFactor )
+    static TimeAccelerator continuous( int acceleratorFactor )
     {
         return ( initialSimulatedTime, deltaRealTime ) ->
             initialSimulatedTime.plusNanos( (long) ( acceleratorFactor * deltaRealTime ) );

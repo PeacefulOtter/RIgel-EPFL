@@ -34,7 +34,7 @@ public class ObservedSky
 
         EclipticToEquatorialConversion conversionToEquatorial = new EclipticToEquatorialConversion( moment );
         this.conversionToHorizontal = new EquatorialToHorizontalConversion( moment, position );
-        double daysUntil = Epoch.J2000.daysUntil(moment);
+        double daysUntil = Epoch.J2010.daysUntil( moment );
 
         sun = SunModel.SUN.at( daysUntil, conversionToEquatorial );
         moon = MoonModel.MOON.at( daysUntil, conversionToEquatorial );
@@ -43,7 +43,7 @@ public class ObservedSky
 
         for ( PlanetModel planet : planetsModelWithoutEarth )
         {
-            Planet solarPlanet = planet.at(daysUntil, conversionToEquatorial);
+            Planet solarPlanet = planet.at( daysUntil, conversionToEquatorial );
             celestialObjects.add( solarPlanet );
             planetsWithoutEarth.add( solarPlanet );
         }
@@ -72,6 +72,19 @@ public class ObservedSky
         return cartesianCoordinates;
     }
 
+    public double[] starsArrayPosition()
+    {
+        List<CartesianCoordinates> allStars = starPosition();
+        double[] starsCoordinates = new double[ allStars.size() * 2 ];
+        int i = 0;
+        for ( CartesianCoordinates starCartesianCoordinates : allStars )
+        {
+            starsCoordinates[ i++ ] = starCartesianCoordinates.x();
+            starsCoordinates[ i++ ]  = starCartesianCoordinates.y();
+        }
+        return starsCoordinates;
+    }
+
     public Sun sun() { return sun; }
 
     public CartesianCoordinates sunPosition() { return planetCartesianCoordinates.get( sun ); }
@@ -91,10 +104,8 @@ public class ObservedSky
         int i = 0;
         for ( Planet planet : planetsWithoutEarth )
         {
-            cartesianCoordinates[ i ] = planetCartesianCoordinates.get( planet ).x();
-            i++;
-            cartesianCoordinates[ i ]  = planetCartesianCoordinates.get( planet ).y();
-            i++;
+            cartesianCoordinates[ i++ ] = planetCartesianCoordinates.get( planet ).x();
+            cartesianCoordinates[ i++ ] = planetCartesianCoordinates.get( planet ).y();
         }
         return cartesianCoordinates;
     }

@@ -54,7 +54,7 @@ public final class DrawSKy extends Application
             // MOON : HorizontalCoordinates.ofDeg(3.7, -65);
             // VIEW ALL :  HorizontalCoordinates.ofDeg(0, 90);
             // NORTH AT BOTTOM : HorizontalCoordinates.ofDeg(0, 23);
-            HorizontalCoordinates projCenter = HorizontalCoordinates.ofDeg(3.7, -65);
+            HorizontalCoordinates projCenter = HorizontalCoordinates.ofDeg( 180, 10 );
             StereographicProjection projection = new StereographicProjection( projCenter );
             ObservedSky sky = new ObservedSky( when, where, projection, catalogue );
 
@@ -66,7 +66,6 @@ public final class DrawSKy extends Application
 
             painter.clear();
             painter.drawSky( sky, projection, planeToCanvas );
-            painter.drawHorizon( projection, projCenter, planeToCanvas );
 
             WritableImage fxImage = canvas.snapshot( null, null );
             BufferedImage swingImage = SwingFXUtils.fromFXImage( fxImage, null );

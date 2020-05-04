@@ -62,6 +62,7 @@ public class SkyCanvasPainter
         this.drawPlanets( sky, projection, planeToCanvas );
         this.drawSun( sky, projection, planeToCanvas );
         this.drawMoon( sky, projection, planeToCanvas );
+        this.drawHorizon( projection, planeToCanvas );
     }
 
 
@@ -70,27 +71,63 @@ public class SkyCanvasPainter
         Set<Asterism> asterisms = sky.getAsterism();
         List<Star> stars = sky.stars();
         List<CartesianCoordinates> cartesianCoordinates = sky.starPosition();
+        double[] starsCartesianCoordinates = sky.starsArrayPosition();
+        int starsNumber = stars.size();
 
+        double[] dstPts = new double[ starsNumber ];
+        planeToCanvas.transform2DPoints( starsCartesianCoordinates, 0, dstPts, 0, starsNumber );
+
+        int starCoordsIndex = 0;
+        for ( Star star : stars )
+        {
+            int roundedColor = ( ( ( star.colorTemperature() + 499 ) / 500 ) * 500 ); // round to the nearest 500
+            Color starColor = BlackBodyColor.colorForTemperature( roundedColor );
+            ctx.setFill( starColor );
+
+            double starDiameter = magnitudeDiameter( star.magnitude(), projection );
+            double finalDiameter = planeToCanvas.deltaTransform( starDiameter, 0 ).getX();
+            double radius = finalDiameter / 2;
+
+            double starX = dstPts[ starCoordsIndex++ ] - radius;
+            double starY = dstPts[ starCoordsIndex++ ] - radius;
+
+            ctx.fillOval( starX, starY, finalDiameter, finalDiameter );
+        }
+
+
+
+
+        
         for ( Asterism asterism: asterisms )
         {
             List<Integer> asterismIndice = sky.asterismIndices( asterism );
             boolean firstAsterism = true;
             boolean lastStarOutsideCanvas = false;
 
+            boolean currentOutsideCanvas = false;
+
             // ASTERISM DRAWING
             ctx.beginPath();
             for ( Integer indice : asterismIndice )
             {
                 CartesianCoordinates cartesianCoords = cartesianCoordinates.get( indice );
-                Point2D canvasPoint = planeToCanvas.transform( cartesianCoords.x(), cartesianCoords.y() );
+                Point2D starPoint = planeToCanvas.transform( cartesianCoords.x(), cartesianCoords.y() );
+
+                if ( firstAsterism )
+                {
+                    ctx.moveTo( starPoint.getX(), starPoint.getY() );
+                    firstAsterism = false;
+                    lastStarOutsideCanvas = !canvas.getBoundsInLocal().contains( starPoint );
+                    continue;
+                }
 
                 // avoid drawing the asterism branches outside the canvas
-                if ( !canvas.getBoundsInLocal().contains( canvasPoint ) )
+                if ( !canvas.getBoundsInLocal().contains( starPoint ) )
                 {
                     if ( !lastStarOutsideCanvas ) { lastStarOutsideCanvas = true; }
                     else
                     {
-                        ctx.moveTo( canvasPoint.getX(), canvasPoint.getY() );
+                        ctx.moveTo( starPoint.getX(), starPoint.getY() );
                         lastStarOutsideCanvas = false;
                         continue;
                     }
@@ -98,33 +135,10 @@ public class SkyCanvasPainter
 
                 ctx.setLineWidth(1);
                 ctx.setStroke( BLUE_COLOR );
-                if ( firstAsterism )
-                {
-                    ctx.moveTo( canvasPoint.getX(), canvasPoint.getY() );
-                    firstAsterism = false;
-                } else
-                {
-                    ctx.lineTo( canvasPoint.getX(), canvasPoint.getY() );
-                }
+                ctx.lineTo( starPoint.getX(), starPoint.getY() );
                 ctx.stroke();
             }
             ctx.closePath();
-        }
-
-        for ( int i = 0; i < stars.size(); i++ )
-        {
-            Star star = stars.get( i );
-            CartesianCoordinates cartesianCoords = cartesianCoordinates.get( i );
-            Point2D canvasPoint = planeToCanvas.transform( cartesianCoords.x(), cartesianCoords.y() );
-
-            int roundedColor = ( ( ( star.colorTemperature() + 499 ) / 500 ) * 500 ); // round to the nearest 500
-            Color starColor = BlackBodyColor.colorForTemperature( roundedColor );
-            double starDiameter = magnitudeDiameter( star.magnitude(), projection );
-            double finalDiameter = planeToCanvas.deltaTransform( starDiameter, 0 ).getX();
-            double radius = finalDiameter / 2;
-
-            ctx.setFill( starColor );
-            ctx.fillOval( canvasPoint.getX() - radius, canvasPoint.getY() - radius, finalDiameter, finalDiameter );
         }
     }
 
@@ -133,6 +147,7 @@ public class SkyCanvasPainter
         List<Planet> planets = sky.planets();
         double[] planetCartesianCoordinates = sky.planetPosition();
         int index = 0;
+
         for ( Planet planet : planets )
         {
             Point2D planetPoint = planeToCanvas.transform( planetCartesianCoordinates[ index ], planetCartesianCoordinates[ index + 1 ] );
@@ -143,7 +158,6 @@ public class SkyCanvasPainter
 
             // System.out.println(planetPoint + " " + finalDiameter);
 
-            // delta transform ???
             ctx.setFill( LIGHTGRAY_COLOR );
             ctx.fillOval( planetPoint.getX() - radius, planetPoint.getY() - radius, finalDiameter, finalDiameter );
 
@@ -190,7 +204,7 @@ public class SkyCanvasPainter
         ctx.fillOval( moonPoint.getX() - radius, moonPoint.getY() - radius, finalDiameter, finalDiameter );
     }
 
-    public void drawHorizon( StereographicProjection projection, HorizontalCoordinates projCenter, Transform planeToCanvas )
+    public void drawHorizon( StereographicProjection projection, Transform planeToCanvas )
     {
         HorizontalCoordinates hor = HorizontalCoordinates.ofDeg( 0, 0 );
         CartesianCoordinates center = projection.circleCenterForParallel( hor );
@@ -198,7 +212,6 @@ public class SkyCanvasPainter
         double radius = projection.circleRadiusForParallel( hor );
         double transformedRadius = Math.abs( planeToCanvas.deltaTransform( radius, 0 ).getX() );
 
-        // System.out.println(transformedCenter + " " + transformedRadius);
         ctx.setStroke( RED_COLOR );
         ctx.setLineWidth( 2 );
         ctx.strokeOval(
@@ -208,6 +221,14 @@ public class SkyCanvasPainter
 
         ctx.setTextAlign( TextAlignment.CENTER );
         ctx.setTextBaseline( VPos.TOP );
-        // System.out.println( projCenter.azOctantName( "N", "E", "S", "W" ) );
+        ctx.setFill( RED_COLOR );
+        for ( int i = 0; i < 360; i += 45 )
+        {
+            HorizontalCoordinates textCoords = HorizontalCoordinates.ofDeg( i, -0.5 );
+            CartesianCoordinates textCenter = projection.apply( textCoords );
+            Point2D transformedTextCenter = planeToCanvas.transform( textCenter.x(), textCenter.y()  );
+            String octant = textCoords.azOctantName( "N", "E", "S", "W" );
+            ctx.fillText( octant, transformedTextCenter.getX(), transformedTextCenter.getY() );
+        }
     }
 }

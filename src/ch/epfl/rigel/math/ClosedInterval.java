@@ -25,7 +25,7 @@ public final class ClosedInterval extends Interval
      */
     public static ClosedInterval of( double low, double high )
     {
-        Preconditions.checkArgument(  low >= high );
+        Preconditions.checkArgument(  high >= low );
         return new ClosedInterval( low, high );
     }
 

@@ -9,10 +9,10 @@ import java.time.Duration;
  */
 public enum NamedTimeAccelerator
 {
-    TIMES_1( "1x", TimeAccelerator.continous( 1 ) ),
-    TIMES_30(  "30x", TimeAccelerator.continous( 30 ) ),
-    TIMES_300( "300x", TimeAccelerator.continous( 300 ) ),
-    TIMES_3000( "3000x", TimeAccelerator.continous( 3000 ) ),
+    TIMES_1( "1x", TimeAccelerator.continuous( 1 ) ),
+    TIMES_30(  "30x", TimeAccelerator.continuous( 30 ) ),
+    TIMES_300( "300x", TimeAccelerator.continuous( 300 ) ),
+    TIMES_3000( "3000x", TimeAccelerator.continuous( 3000 ) ),
     DAY( "jour", TimeAccelerator.discrete( 60, Duration.ofHours( 24 ) ) ),
     SIDEREAL_DAY( "jour sidéral", TimeAccelerator.discrete( 60, Duration.ofHours( 23 ).plusMinutes( 56 ).plusSeconds( 4 ) ) );
 

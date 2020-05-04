@@ -32,29 +32,33 @@ public class SkyCanvasManager
     {
         SkyCanvasPainter painter = new SkyCanvasPainter( canvas );
 
-        ObservableObjectValue<StereographicProjection> projection = Bindings.createObjectBinding( () ->
-                new StereographicProjection( viewingParametersBean.getCenter() ),
-                viewingParametersBean.centerProperty() );
 
-        ObservableObjectValue<Transform> planeToCanvas = Bindings.createObjectBinding(() -> {
-            double angleTodouble = projection.get().applyToAngle(viewingParametersBean.getFieldOfViewDeg().doubleValue());
-            double width = canvas.getWidth()/2;
-            double height = canvas.getHeight()/2;
-            return Transform.affine(angleTodouble, 0, 0, - angleTodouble, width, height);
-            } , canvas.widthProperty(), canvas.heightProperty(), projection, viewingParametersBean.fieldOfViewDegProperty());
+        ObservableObjectValue<StereographicProjection> projection = Bindings.createObjectBinding( () ->
+            new StereographicProjection( viewingParametersBean.getCenter() ),
+            viewingParametersBean.centerProperty() );
+
+
+        ObservableObjectValue<Transform> planeToCanvas = Bindings.createObjectBinding( () ->
+        {
+            double angle = projection.get().applyToAngle( viewingParametersBean.getFieldOfViewDeg().doubleValue() );
+            double width = canvas.getWidth() / 2;
+            double height = canvas.getHeight() / 2;
+            return Transform.affine( angle, 0, 0, -angle, width, height );
+        }, canvas.widthProperty(), canvas.heightProperty(), projection, viewingParametersBean.fieldOfViewDegProperty() );
+
 
         ObservableObjectValue<ObservedSky> observedSky = Bindings.createObjectBinding( () ->
-                new ObservedSky( dateTimeBean.getZonedDateTime(), observerLocationBean.getCoordinates(), projection.get(), catalogue ),
-                dateTimeBean.timeProperty(), dateTimeBean.dateProperty(), dateTimeBean.zoneProperty(), projection, observerLocationBean.coordinatesProperty() );
+            new ObservedSky( dateTimeBean.getZonedDateTime(), observerLocationBean.getCoordinates(), projection.get(), catalogue ),
+            dateTimeBean.timeProperty(),
+            dateTimeBean.dateProperty(),
+            dateTimeBean.zoneProperty(),
+            projection,
+            observerLocationBean.coordinatesProperty() );
 
-        // MOUSE POSITION EVENT
-        ObjectProperty<Point2D> mousePosition = new SimpleObjectProperty( null );
-        canvas.setOnMouseMoved( mouseEvent -> {
-            mousePosition.setValue( new Point2D( mouseEvent.getX(), mouseEvent.getY() ) );
-        } );
 
         // SCROLL POSITION EVENT
-        canvas.setOnScroll( scrollEvent -> {
+        canvas.setOnScroll( scrollEvent ->
+        {
             System.out.println( scrollEvent.getDeltaX() );
             System.out.println( scrollEvent.getDeltaY() );
             double deltaX = scrollEvent.getDeltaX();
@@ -65,30 +69,59 @@ public class SkyCanvasManager
             viewingParametersBean.setFieldOfViewDeg( actualFov + (int) maxScrollAxis );
         } );
 
-        ObservableObjectValue<HorizontalCoordinates> mouseHorizontalPosition = Bindings.createObjectBinding(() -> {
+
+        // MOUSE POSITION EVENT
+        ObjectProperty<Point2D> mousePosition = new SimpleObjectProperty( null );
+        canvas.setOnMouseMoved( mouseEvent ->
+        {
+            mousePosition.setValue( new Point2D( mouseEvent.getX(), mouseEvent.getY() ) );
+        } );
+
+
+        // MOUSE HORIZONTAL POSITION EVENT
+        ObservableObjectValue<HorizontalCoordinates> mouseHorizontalPosition = Bindings.createObjectBinding( () ->
+        {
             // take the coordinates of the mouse and inverse planeToCanvas to have it on the plane
-            Point2D mousePosTransform = planeToCanvas.get().inverseTransform(mousePosition.getValue());
-            HorizontalCoordinates mouseHorizontalPos = projection.get().inverseApply(CartesianCoordinates.of(mousePosTransform.getX(), mousePosTransform.getY()));
+            Point2D mousePosTransform = planeToCanvas.get().inverseTransform( mousePosition.getValue() );
+            HorizontalCoordinates mouseHorizontalPos = projection.get().inverseApply(
+                    CartesianCoordinates.of( mousePosTransform.getX(), mousePosTransform.getY() ) );
             return mouseHorizontalPos;
 
-        } , planeToCanvas, projection, mousePosition);
+        }, planeToCanvas, projection, mousePosition );
 
-        this.mouseAzDeg = Bindings.createDoubleBinding(() -> mouseHorizontalPosition.get().altDeg(), mouseHorizontalPosition);
-        this.mouseAltDeg = Bindings.createDoubleBinding(() -> mouseHorizontalPosition.get().altDeg(), mouseHorizontalPosition);
 
-        this.objectUnderMouse = Bindings.createObjectBinding(() -> {
-            Point2D mousePosInPlane = planeToCanvas.get().inverseTransform(mousePosition.getValue());
-            CartesianCoordinates mousePos = CartesianCoordinates.of(mousePosInPlane.getX(), mousePosInPlane.getY());
-            return observedSky.get().objectClosestTo(mousePos, 0.5);
-        }, observedSky, mousePosition, planeToCanvas);
+        this.mouseAzDeg = Bindings.createDoubleBinding( () ->
+                mouseHorizontalPosition.get().altDeg(), mouseHorizontalPosition );
+        this.mouseAltDeg = Bindings.createDoubleBinding( () ->
+                mouseHorizontalPosition.get().altDeg(), mouseHorizontalPosition );
+
+
+        this.objectUnderMouse = Bindings.createObjectBinding( () ->
+        {
+            Point2D mousePosInPlane = planeToCanvas.get().inverseTransform( mousePosition.getValue() );
+            CartesianCoordinates mousePos = CartesianCoordinates.of( mousePosInPlane.getX(), mousePosInPlane.getY() );
+            return observedSky.get().objectClosestTo( mousePos, 0.5 );
+        }, observedSky, mousePosition, planeToCanvas );
     }
 
 
-    public double getMouseAzDeg() { return mouseAzDeg.get(); }
+    public double getMouseAzDeg()
+    {
+        return mouseAzDeg.get();
+    }
 
-    public double getMouseAltDeg() { return mouseAltDeg.get(); }
+    public double getMouseAltDeg()
+    {
+        return mouseAltDeg.get();
+    }
 
-    public ObservableObjectValue objectUnderMouseProperty() { return objectUnderMouse; }
+    public ObservableObjectValue objectUnderMouseProperty()
+    {
+        return objectUnderMouse;
+    }
 
-    public Canvas canvas() { return canvas; }
+    public Canvas canvas()
+    {
+        return canvas;
+    }
 }
