@@ -8,9 +8,9 @@ import javafx.beans.value.ObservableObjectValue;
 
 public class ObserverLocationBean
 {
-    private DoubleProperty lonDegObservator = new SimpleDoubleProperty( 0 );
-    private DoubleProperty latDegObservator = new SimpleDoubleProperty( 0 );
-    private ObservableObjectValue<GeographicCoordinates> coordinates = Bindings.createObjectBinding( () ->
+    private final DoubleProperty lonDegObservator = new SimpleDoubleProperty( 0 );
+    private final DoubleProperty latDegObservator = new SimpleDoubleProperty( 0 );
+    private final ObservableObjectValue<GeographicCoordinates> coordinates = Bindings.createObjectBinding( () ->
         GeographicCoordinates.ofDeg( lonDegObservator.getValue(), latDegObservator.getValue() ),
         this.lonDegObservator, this.latDegObservator );
 
