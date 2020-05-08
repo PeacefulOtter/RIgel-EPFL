@@ -21,9 +21,9 @@ import java.util.Optional;
 public class SkyCanvasManager
 {
     private final Canvas canvas;
-    private final ObservableObjectValue<StereographicProjection> projection;
-    private final ObservableObjectValue<Transform> planeToCanvas;
-    private final ObservableObjectValue<ObservedSky> observedSky;
+    private final ObservableObjectValue<StereographicProjection> projectionBind;
+    private final ObservableObjectValue<Transform> planeToCanvasBind;
+    private final ObservableObjectValue<ObservedSky> observedSkyBind;
     private final ObservableObjectValue<HorizontalCoordinates> mouseHorizontalPosition;
     private final ObjectProperty<Point2D> mousePosition = new SimpleObjectProperty( null );
 
@@ -41,36 +41,36 @@ public class SkyCanvasManager
         SkyCanvasPainter painter = new SkyCanvasPainter( canvas );
 
 
-        projection = Bindings.createObjectBinding( () ->
+        projectionBind = Bindings.createObjectBinding( () ->
             new StereographicProjection( viewingParametersBean.getCenter() ),
             viewingParametersBean.centerProperty()
         );
 
 
-        planeToCanvas = Bindings.createObjectBinding( () ->
+        planeToCanvasBind = Bindings.createObjectBinding( () ->
         {
-            double angle = projection.get().applyToAngle( viewingParametersBean.getFieldOfViewDeg().doubleValue() );
+            double angle = projectionBind.get().applyToAngle( viewingParametersBean.getFieldOfViewDeg().doubleValue() );
             double width = canvas.getWidth() / 2;
             double height = canvas.getHeight() / 2;
             return Transform.affine( angle, 0, 0, -angle, width, height );
         },
                 canvas.widthProperty(),
                 canvas.heightProperty(),
-                projection,
+                projectionBind,
                 viewingParametersBean.fieldOfViewDegProperty()
         );
 
-        observedSky = Bindings.createObjectBinding( () ->
+        observedSkyBind = Bindings.createObjectBinding( () ->
             new ObservedSky(
                     dateTimeBean.getZonedDateTime(),
                     observerLocationBean.getCoordinates(),
-                    projection.get(),
+                    projectionBind.get(),
                     catalogue ),
             dateTimeBean.timeProperty(),
             dateTimeBean.dateProperty(),
             dateTimeBean.zoneProperty(),
             observerLocationBean.coordinatesProperty(),
-            projection
+            projectionBind
         );
 
         // ON KEY PRESSED, MOVE THE CENTER VIEW
@@ -129,10 +129,10 @@ public class SkyCanvasManager
         mouseHorizontalPosition = Bindings.createObjectBinding( () ->
         {
             // take the coordinates of the mouse and inverse planeToCanvas to have it on the plane
-            Point2D mousePosTransform = planeToCanvas.get().inverseTransform( mousePosition.getValue() );
-            return projection.get().inverseApply(
+            Point2D mousePosTransform = planeToCanvasBind.get().inverseTransform( mousePosition.getValue() );
+            return projectionBind.get().inverseApply(
                     CartesianCoordinates.of( mousePosTransform.getX(), mousePosTransform.getY() ) );
-        }, planeToCanvas, projection, mousePosition );
+        }, planeToCanvasBind, projectionBind, mousePosition );
 
 
         this.mouseAzDeg = Bindings.createDoubleBinding( () ->
@@ -143,20 +143,20 @@ public class SkyCanvasManager
 
         this.objectUnderMouse = Bindings.createObjectBinding( () ->
         {
-            Point2D mousePosInPlane = planeToCanvas.get().inverseTransform( mousePosition.getValue() );
+            Point2D mousePosInPlane = planeToCanvasBind.get().inverseTransform( mousePosition.getValue() );
             CartesianCoordinates mousePos = CartesianCoordinates.of( mousePosInPlane.getX(), mousePosInPlane.getY() );
-            return observedSky.get().objectClosestTo( mousePos, 0.5 );
-        }, observedSky, mousePosition, planeToCanvas );
+            return observedSkyBind.get().objectClosestTo( mousePos, 0.5 );
+        }, observedSkyBind, mousePosition, planeToCanvasBind );
 
-
+        
+        painter.drawSky( observedSkyBind.get(), projectionBind.get(), planeToCanvasBind.get() );
+        observedSkyBind.addListener(   ( o, oV, nV ) -> painter.drawSky( nV, projectionBind.get(), planeToCanvasBind.get() ) );
+        projectionBind.addListener(    ( o, oV, nV ) -> painter.drawSky( observedSkyBind.get(), nV, planeToCanvasBind.get() ) );
+        planeToCanvasBind.addListener( ( o, oV, nV ) -> painter.drawSky( observedSkyBind.get(), projectionBind.get(), nV ) );
 
 
         // BIND LE SKY AUX CHANGEMENT DE projection, planeToCanvas et ObservedSky
-        Bindings.createObjectBinding( () ->
-        {
-            painter.drawSky( observedSky.get(), projection.get(), planeToCanvas.get() );
-            return null;
-        }, projection, planeToCanvas, observedSky );
+        // painter.drawSky( observedSky.get(), projection.get(), planeToCanvas.get() );
 
     }
 
