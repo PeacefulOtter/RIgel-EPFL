@@ -54,6 +54,7 @@ public class SkyCanvasPainter
 
     public void drawSky( ObservedSky sky, StereographicProjection projection, Transform planeToCanvas )
     {
+        this.clear();
         this.drawStars( sky, projection, planeToCanvas );
         this.drawPlanets( sky, projection, planeToCanvas );
         this.drawSun( sky, projection, planeToCanvas );
@@ -152,8 +153,6 @@ public class SkyCanvasPainter
             double finalDiameter = planeToCanvas.deltaTransform( planetDiameter, 0 ).getX();
             double radius = finalDiameter / 2;
 
-            // System.out.println(planetPoint + " " + finalDiameter);
-
             ctx.setFill( LIGHTGRAY_COLOR );
             ctx.fillOval( planetPoint.getX() - radius, planetPoint.getY() - radius, finalDiameter, finalDiameter );
 
@@ -186,16 +185,13 @@ public class SkyCanvasPainter
     public void drawMoon( ObservedSky sky, StereographicProjection projection, Transform planeToCanvas )
     {
         CartesianCoordinates moonPos = sky.moonPosition();
-        System.out.println(moonPos);
         Point2D moonPoint = planeToCanvas.transform( moonPos.x(), moonPos.y() );
-        System.out.println(moonPoint);
 
         //double moonDiameter = magnitudeDiameter( moon.magnitude(), projection );
         double projectedDiameter = projection.applyToAngle( Angle.ofDeg( 0.5 ) );
         double finalDiameter = planeToCanvas.deltaTransform( projectedDiameter, 0 ).getX();
         double radius = finalDiameter / 2;
 
-        System.out.println(finalDiameter);
         ctx.setFill( WHITE_COLOR );
         ctx.fillOval( moonPoint.getX() - radius, moonPoint.getY() - radius, finalDiameter, finalDiameter );
     }
