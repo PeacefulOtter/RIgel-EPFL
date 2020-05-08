@@ -110,11 +110,14 @@ public class SkyCanvasManager
             return observedSky.get().objectClosestTo( mousePos, 0.5 );
         }, observedSky, mousePosition, planeToCanvas );
 
-        
+        observedSky.addListener((o, oV, nV) -> painter.drawSky( nV, projection.get(), planeToCanvas.get() ));
+        projection.addListener((o, oV, nV) -> painter.drawSky( observedSky.get(), nV, planeToCanvas.get() ));
+        planeToCanvas.addListener((o, oV, nV) -> painter.drawSky( observedSky.get(), projection.get(), nV ));
 
 
         // BIND LE SKY AUX CHANGEMENT DE projection, planeToCanvas et ObservedSky
         painter.drawSky( observedSky.get(), projection.get(), planeToCanvas.get() );
+
     }
 
 
