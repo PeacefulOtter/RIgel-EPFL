@@ -6,7 +6,6 @@ import ch.epfl.rigel.astronomy.Star;
 import ch.epfl.rigel.coordinates.*;
 import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.astronomy.*;
-import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 import ch.epfl.rigel.coordinates.StereographicProjection;
 import ch.epfl.rigel.math.ClosedInterval;
 import javafx.geometry.Point2D;
@@ -14,12 +13,9 @@ import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.FillRule;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.transform.Transform;
 
-import javax.swing.*;
-import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import java.util.List;
 import java.util.Set;
 

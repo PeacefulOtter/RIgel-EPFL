@@ -129,6 +129,7 @@ public class SkyCanvasManager
         mouseHorizontalPosition = Bindings.createObjectBinding( () ->
         {
             // take the coordinates of the mouse and inverse planeToCanvas to have it on the plane
+            if ( mousePosition.get() == null ) { return null; }
             Point2D mousePosTransform = planeToCanvasBind.get().inverseTransform( mousePosition.getValue() );
             return projectionBind.get().inverseApply(
                     CartesianCoordinates.of( mousePosTransform.getX(), mousePosTransform.getY() ) );
@@ -143,12 +144,13 @@ public class SkyCanvasManager
 
         this.objectUnderMouse = Bindings.createObjectBinding( () ->
         {
+            if ( mousePosition.getValue() == null ) { return null; }
             Point2D mousePosInPlane = planeToCanvasBind.get().inverseTransform( mousePosition.getValue() );
             CartesianCoordinates mousePos = CartesianCoordinates.of( mousePosInPlane.getX(), mousePosInPlane.getY() );
             return observedSkyBind.get().objectClosestTo( mousePos, 0.5 );
         }, observedSkyBind, mousePosition, planeToCanvasBind );
 
-        
+
         painter.drawSky( observedSkyBind.get(), projectionBind.get(), planeToCanvasBind.get() );
         observedSkyBind.addListener(   ( o, oV, nV ) -> painter.drawSky( nV, projectionBind.get(), planeToCanvasBind.get() ) );
         projectionBind.addListener(    ( o, oV, nV ) -> painter.drawSky( observedSkyBind.get(), nV, planeToCanvasBind.get() ) );
