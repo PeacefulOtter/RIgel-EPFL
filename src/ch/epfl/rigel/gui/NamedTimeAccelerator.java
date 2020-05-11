@@ -1,6 +1,8 @@
 package ch.epfl.rigel.gui;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a named time accelerator, i.e. a pair (name, accelerator)
@@ -18,6 +20,18 @@ public enum NamedTimeAccelerator
 
     private final String name;
     private final TimeAccelerator timeAccelerator;
+
+    public final static List<String> ACCELERATOR_NAMES = new ArrayList()
+    {
+        {
+            add( TIMES_1.getName() );
+            add( TIMES_30.getName() );
+            add( TIMES_300.getName() );
+            add( TIMES_3000.getName() );
+            add( DAY.getName() );
+            add( SIDEREAL_DAY.getName() );
+        }
+    };
 
     NamedTimeAccelerator( String name, TimeAccelerator timeAccelerator )
     {

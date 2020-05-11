@@ -88,20 +88,18 @@ public class SkyCanvasPainter
             double starX = dstPts[ starCoordsIndex++ ] - radius;
             double starY = dstPts[ starCoordsIndex++ ] - radius;
 
+            if ( !canvas.getBoundsInLocal().contains( starX, starY ) ) { continue; }
+
             ctx.fillOval( starX, starY, finalDiameter, finalDiameter );
         }
-
-
-
 
 
         for ( Asterism asterism: asterisms )
         {
             List<Integer> asterismIndice = sky.asterismIndices( asterism );
             boolean firstAsterism = true;
-            boolean lastStarOutsideCanvas = false;
-
-            boolean currentOutsideCanvas = false;
+            boolean lastInsideCanvas = true;
+            boolean currentInsideCanvas = true;
 
             // ASTERISM DRAWING
             ctx.beginPath();
@@ -110,30 +108,29 @@ public class SkyCanvasPainter
                 CartesianCoordinates cartesianCoords = cartesianCoordinates.get( indice );
                 Point2D starPoint = planeToCanvas.transform( cartesianCoords.x(), cartesianCoords.y() );
 
+                currentInsideCanvas = canvas.getBoundsInLocal().contains( starPoint );
+
                 if ( firstAsterism )
                 {
                     ctx.moveTo( starPoint.getX(), starPoint.getY() );
                     firstAsterism = false;
-                    lastStarOutsideCanvas = !canvas.getBoundsInLocal().contains( starPoint );
+                    lastInsideCanvas = currentInsideCanvas;
                     continue;
                 }
 
                 // avoid drawing the asterism branches outside the canvas
-                if ( !canvas.getBoundsInLocal().contains( starPoint ) )
+                if ( !currentInsideCanvas && !lastInsideCanvas )
                 {
-                    if ( !lastStarOutsideCanvas ) { lastStarOutsideCanvas = true; }
-                    else
-                    {
-                        ctx.moveTo( starPoint.getX(), starPoint.getY() );
-                        lastStarOutsideCanvas = false;
-                        continue;
-                    }
+                    ctx.moveTo( starPoint.getX(), starPoint.getY() );
+                    continue;
                 }
 
                 ctx.setLineWidth(1);
                 ctx.setStroke( BLUE_COLOR );
                 ctx.lineTo( starPoint.getX(), starPoint.getY() );
                 ctx.stroke();
+
+                lastInsideCanvas = currentInsideCanvas;
             }
             ctx.closePath();
         }

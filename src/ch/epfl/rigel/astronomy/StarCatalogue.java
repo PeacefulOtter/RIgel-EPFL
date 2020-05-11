@@ -27,12 +27,10 @@ public final class StarCatalogue
      */
     public StarCatalogue( List<Star> stars, List<Asterism> asterisms )
     {
-        for ( Asterism asterism : asterisms )
+        Map<Star, Integer> starIndiceMap = new HashMap<>();
+        for ( Star s: stars )
         {
-            for ( Star star : asterism.stars() )
-            {
-                Preconditions.checkArgument( stars.contains( star ) );
-            }
+            starIndiceMap.put( s, starIndiceMap.size() );
         }
 
         this.stars = List.copyOf( stars );
@@ -42,9 +40,10 @@ public final class StarCatalogue
         for ( Asterism asterism : asterisms )
         {
             List<Integer> tempList = new ArrayList<>();
-            for ( Star asterismStar : asterism.stars() )
+            List<Star> asterismStars = asterism.stars();
+            for ( Star asterismStar : asterismStars )
             {
-                tempList.add( stars.indexOf( asterismStar ) );
+                tempList.add( starIndiceMap.get( asterismStar ) );
             }
             indices.put( asterism, tempList );
         }

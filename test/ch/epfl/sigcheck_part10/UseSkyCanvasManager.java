@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.ZonedDateTime;
 
-import static javafx.application.Application.launch;
 
 public final class UseSkyCanvasManager extends Application
 {
@@ -41,19 +40,15 @@ public final class UseSkyCanvasManager extends Application
                     .loadFrom( hs, HygDatabaseLoader.INSTANCE )
                     .build();
 
-            ZonedDateTime when =
-                    ZonedDateTime.parse( "2020-02-17T20:15:00+01:00" );
+            ZonedDateTime when = ZonedDateTime.parse( "2020-02-17T20:15:00+01:00" );
             DateTimeBean dateTimeBean = new DateTimeBean();
             dateTimeBean.setZonedDateTime( when );
 
-            ObserverLocationBean observerLocationBean =
-                    new ObserverLocationBean();
+            ObserverLocationBean observerLocationBean = new ObserverLocationBean();
             observerLocationBean.setCoordinates( GeographicCoordinates.ofDeg( 6.57, 46.52 ) );
 
-            ViewingParametersBean viewingParametersBean =
-                    new ViewingParametersBean();
-            viewingParametersBean.setCenter(
-                    HorizontalCoordinates.ofDeg( 180, 42 ) );
+            ViewingParametersBean viewingParametersBean = new ViewingParametersBean();
+            viewingParametersBean.setCenter( HorizontalCoordinates.ofDeg( 180, 42 ) );
             viewingParametersBean.setFieldOfViewDeg( 70 );
 
             SkyCanvasManager canvasManager = new SkyCanvasManager(
@@ -66,9 +61,10 @@ public final class UseSkyCanvasManager extends Application
 
             Canvas sky = canvasManager.canvas();
             BorderPane root = new BorderPane( sky );
-
+            System.out.println("before");
             sky.widthProperty().bind( root.widthProperty() );
             sky.heightProperty().bind( root.heightProperty() );
+            System.out.println("after");
 
             primaryStage.setMinWidth( 800 );
             primaryStage.setMinHeight( 600 );
