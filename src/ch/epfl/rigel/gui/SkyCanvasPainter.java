@@ -45,12 +45,6 @@ public class SkyCanvasPainter
         return sizeFactor * projection.applyToAngle( Angle.ofDeg( 0.5 ) );
     }
 
-    public void clear()
-    {
-        ctx.setFill( Color.BLACK );
-        ctx.fillRect( 0, 0, canvas.getWidth(), canvas.getHeight() );
-        ctx.fill();
-    }
 
     public void drawSky( ObservedSky sky, StereographicProjection projection, Transform planeToCanvas )
     {
@@ -62,6 +56,13 @@ public class SkyCanvasPainter
         this.drawHorizon( projection, planeToCanvas );
     }
 
+
+    public void clear()
+    {
+        ctx.setFill( Color.BLACK );
+        ctx.fillRect( 0, 0, canvas.getWidth(), canvas.getHeight() );
+        ctx.fill();
+    }
 
     public void drawStars( ObservedSky sky, StereographicProjection projection, Transform planeToCanvas )
     {

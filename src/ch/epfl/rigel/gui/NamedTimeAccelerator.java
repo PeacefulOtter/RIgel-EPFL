@@ -2,7 +2,9 @@ package ch.epfl.rigel.gui;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a named time accelerator, i.e. a pair (name, accelerator)
@@ -21,15 +23,15 @@ public enum NamedTimeAccelerator
     private final String name;
     private final TimeAccelerator timeAccelerator;
 
-    public final static List<String> ACCELERATOR_NAMES = new ArrayList()
+    public final static Map<String, TimeAccelerator> ACCELERATORS = new HashMap<>()
     {
         {
-            add( TIMES_1.getName() );
-            add( TIMES_30.getName() );
-            add( TIMES_300.getName() );
-            add( TIMES_3000.getName() );
-            add( DAY.getName() );
-            add( SIDEREAL_DAY.getName() );
+            put( TIMES_1.getName(), TIMES_1.getAccelerator() );
+            put( TIMES_30.getName(), TIMES_30.getAccelerator() );
+            put( TIMES_300.getName(), TIMES_300.getAccelerator() );
+            put( TIMES_3000.getName(), TIMES_3000.getAccelerator() );
+            put( DAY.getName(), DAY.getAccelerator() );
+            put( SIDEREAL_DAY.getName(), SIDEREAL_DAY.getAccelerator() );
         }
     };
 

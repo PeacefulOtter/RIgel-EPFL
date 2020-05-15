@@ -57,11 +57,11 @@ public class SkyCanvasManager
 
         planeToCanvasBind = Bindings.createObjectBinding( () ->
         {
-            // double angle = projectionBind.get().applyToAngle( viewingParametersBean.getFieldOfViewDeg().doubleValue() );
+            double angle = viewingParametersBean.getFieldOfViewDeg().doubleValue() * 10;
             double width = canvas.getWidth() / 2;
             double height = canvas.getHeight() / 2;
-            System.out.println("planeToCanvas Bind   " + width + " " + height);
-            return Transform.affine( 1300, 0, 0, -1300, width, height );
+            System.out.println("planeToCanvas Bind   " + width + " " + height + " " + angle );
+            return Transform.affine( angle, 0, 0, -angle, width, height );
         },
                 canvas.widthProperty(),
                 canvas.heightProperty(),
@@ -182,25 +182,11 @@ public class SkyCanvasManager
         }, observedSkyBind, mousePosition, planeToCanvasBind );
 
 
-        /*painter.drawSky(
-                new ObservedSky(
-                        dateTimeBean.getZonedDateTime(),
-                        observerLocationBean.getCoordinates(),
-                        new StereographicProjection( viewingParametersBean.getCenter() ),
-                        catalogue
-                ),
-                new StereographicProjection( viewingParametersBean.getCenter() ),
-                Transform.affine( 1300, 0, 0, -1300, 400, 300 ) );*/
-
         observedSkyBind.addListener(   ( o, oV, nV ) -> {
             System.out.println("observedSkyBind LISTENER");
             painter.drawSky( nV, projectionBind.get(), planeToCanvasBind.get() );
         } );
 
-        /*projectionBind.addListener(    ( o, oV, nV ) -> {
-            System.out.println("projectionBind LISTENER");
-            painter.drawSky( observedSkyBind.get(), nV, planeToCanvasBind.get() );
-        } );*/
 
         int[] index = {0};
         planeToCanvasBind.addListener( ( o, oV, nV ) -> {
