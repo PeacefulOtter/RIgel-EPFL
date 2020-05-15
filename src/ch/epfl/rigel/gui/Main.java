@@ -5,13 +5,8 @@ import ch.epfl.rigel.astronomy.StarCatalogue;
 import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import javafx.application.Application;
-import javafx.beans.Observable;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableSet;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -20,6 +15,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.converter.LocalTimeStringConverter;
 import javafx.util.converter.NumberStringConverter;
@@ -296,11 +292,25 @@ public class Main extends Application
     //      III) BOTTOM TAB
     private BorderPane buildBottomTab()
     {
-        // FOV ,0°
+        BorderPane info = new BorderPane();
+        info.setStyle( "-fx-padding: 4;\n" +
+                "-fx-background-color: white;" );
+        Text left = new Text();
+        left.setText(String.format("Champ de vue : <fov>°"));
+        info.setLeft(left);
+
+        Text center = new Text();
+        center.setText("celestial object");
+        info.setCenter(center);
+
+        Text right = new Text();
+        right.setText("Azimut : <az>°, hauteur : <alt>°");
+        info.setRight(right);
+      // FOV ,0°
 
         // star name and info OR empty
 
         // horizontal mouse pos ,00°
-        return null;
+        return info;
     }
 }
