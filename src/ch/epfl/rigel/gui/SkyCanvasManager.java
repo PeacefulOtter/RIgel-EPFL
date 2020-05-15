@@ -133,8 +133,8 @@ public class SkyCanvasManager
             double deltaY = scrollEvent.getDeltaY();
             double maxScrollAxis = Math.round( deltaX ) > Math.round( deltaY ) ? deltaX : deltaY;
             System.out.println(maxScrollAxis);
-            int actualFov = viewingParametersBean.getFieldOfViewDeg();
-            viewingParametersBean.setFieldOfViewDeg( actualFov + (int) maxScrollAxis );
+            double actualFov = viewingParametersBean.getFieldOfViewDeg();
+            viewingParametersBean.setFieldOfViewDeg( actualFov + maxScrollAxis );
             System.out.println("vP : " + viewingParametersBean.fieldOfViewDegProperty().get());
         } );
 

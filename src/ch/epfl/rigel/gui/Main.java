@@ -50,7 +50,7 @@ public class Main extends Application
     private static final double INIT_OBSERVER_LAT = 46.52;
     private static final double INIT_VIEWING_LON = 180.000000000001;
     private static final double INIT_VIEWING_LAT = 15;
-    private static final int INIT_FOV_VALUE = 100;
+    private static final double INIT_FOV_VALUE = 100;
 
     private Canvas sky;
     private LocalTime startTime;
@@ -343,6 +343,7 @@ public class Main extends Application
         Text left = new Text();
         left.setText(String.format("Champ de vue : %.1f°", (double)viewingParametersBean.fieldOfViewDegProperty().get()));
         info.setLeft(left);
+
         viewingParametersBean.fieldOfViewDegProperty().addListener(observable -> {
             left.setText(String.format("Champ de vue : %.1f°", (double) viewingParametersBean.fieldOfViewDegProperty().get()));
             info.setLeft(left);
