@@ -28,6 +28,8 @@ public class SkyCanvasManager
     private static final RightOpenInterval AZ_INTERVAL =  RightOpenInterval.of( 0, 360 );
     // Interval of the latitude in degrees
     private static final ClosedInterval ALT_INTERVAL = ClosedInterval.of( Angle.toDeg( -Math.PI / 2 ), Angle.toDeg( Math.PI / 2 ) );
+    // FOV interval
+    private static final ClosedInterval FOV_INTERVAL = ClosedInterval.of( 50, 200 );
 
     private final Canvas canvas;
     private final ObservableObjectValue<StereographicProjection> projectionBind;
@@ -129,10 +131,10 @@ public class SkyCanvasManager
         {
             double deltaX = scrollEvent.getDeltaX();
             double deltaY = scrollEvent.getDeltaY();
-            double maxScrollAxis = Math.round( deltaX ) > Math.round( deltaY ) ? deltaX : deltaY;
+            double maxScrollAxis = Math.abs( deltaX ) > Math.abs( deltaY ) ? deltaX : deltaY;
             System.out.println(maxScrollAxis);
             double actualFov = viewingParametersBean.getFieldOfViewDeg();
-            viewingParametersBean.setFieldOfViewDeg( actualFov + maxScrollAxis );
+            viewingParametersBean.setFieldOfViewDeg( FOV_INTERVAL.clip(  actualFov + maxScrollAxis ) );
             System.out.println("fov =  " + viewingParametersBean.fieldOfViewDegProperty().get());
         } );
 
@@ -179,13 +181,7 @@ public class SkyCanvasManager
         } );
 
 
-        int[] index = {0};
         planeToCanvasBind.addListener( ( o, oV, nV ) -> {
-            index[0]++;
-            if ( index[0] <= 3)
-            {
-                return;
-            }
             painter.drawSky( observedSkyBind.get(), projectionBind.get(), nV );
         } );
     }

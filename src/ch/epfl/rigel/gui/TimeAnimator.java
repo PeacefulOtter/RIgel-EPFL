@@ -34,6 +34,9 @@ public final class TimeAnimator extends AnimationTimer
 
     public void setAccelerator( TimeAccelerator accelerator ) { this.acceleratorProperty.set( accelerator ); }
 
+    public void setDateTimeBean( DateTimeBean dateTimeBean ) {
+        this.simulatedTimeBean.setZonedDateTime( dateTimeBean.getZonedDateTime() );
+    }
 
     @Override
     public void handle( long now )
