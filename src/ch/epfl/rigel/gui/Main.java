@@ -1,10 +1,16 @@
 package ch.epfl.rigel.gui;
 
+import ch.epfl.rigel.astronomy.AsterismLoader;
 import ch.epfl.rigel.astronomy.HygDatabaseLoader;
 import ch.epfl.rigel.astronomy.StarCatalogue;
 import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import javafx.application.Application;
+import javafx.beans.Observable;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
@@ -33,27 +39,40 @@ import java.util.function.UnaryOperator;
 
 public class Main extends Application
 {
+    private static final String HYG_CATALOGUE_NAME = "/hygdata_v3.csv";
+    private static final String ASTERISM_CATALOGUE_NAME = "/asterisms.txt";
     private static final String RESET_NAME = "\uf0e2";
     private static final String BACKUP_RESET_NAME = "R";
     private static final String PLAY_NAME = "\uf04b";
     private static final String BACKUP_PLAY_NAME = "▶";
     private static final String PAUSE_NAME = "\uf04c";
     private static final String BACKUP_PAUSE_NAME = "\u23F8";
+
     private static final NumberStringConverter TWO_DECIMAL_CONVERTER = new NumberStringConverter("#0.00" );
-    private static final double INIT_POS_LON = 6.57;
-    private static final double INIT_POS_LAT = 46.52;
+
+    private static final double INIT_OBSERVER_LON = 6.57;
+    private static final double INIT_OBSERVER_LAT = 46.52;
+    private static final double INIT_VIEWING_LON = 180.000000000001;
+    private static final double INIT_VIEWING_LAT = 15;
+    private static final int INIT_FOV_VALUE = 100;
 
     private Canvas sky;
     private LocalTime startTime;
     private TimeAnimator timeAnimator;
     private DateTimeBean dateTimeBean;
+    private ObserverLocationBean observerLocationBean;
+    private ViewingParametersBean viewingParametersBean;
+    private SkyCanvasManager canvasManager;
 
     private boolean loadedFont = false;
+    private boolean loadedResources = true;
+
 
     private InputStream resourceStream( String resourceName )
     {
         return getClass().getResourceAsStream( resourceName );
     }
+
 
     public static void main( String[] args )
     {
@@ -69,6 +88,10 @@ public class Main extends Application
         timeAnimator = new TimeAnimator( dateTimeBean );
         TimeAccelerator accelerator = NamedTimeAccelerator.TIMES_3000.getAccelerator();
         timeAnimator.setAccelerator( accelerator );
+        observerLocationBean = new ObserverLocationBean();
+        viewingParametersBean = new ViewingParametersBean();
+
+        initStarsAndAsterisms();
 
         BorderPane wrapper = new BorderPane();
         wrapper.setMinWidth( 800 );
@@ -94,6 +117,45 @@ public class Main extends Application
 
         sky.requestFocus();
     }
+
+
+
+
+    private void initStarsAndAsterisms()
+    {
+        StarCatalogue.Builder builder = new StarCatalogue.Builder();
+        StarCatalogue catalogue;
+
+        try ( InputStream hygStream = resourceStream( HYG_CATALOGUE_NAME ) )
+        {
+            builder.loadFrom( hygStream, HygDatabaseLoader.INSTANCE);
+        } catch ( IOException e )
+        {
+            loadedResources = false;
+            return;
+        }
+
+        try ( InputStream asterismStream = getClass().getResourceAsStream( ASTERISM_CATALOGUE_NAME ) )
+        {
+            builder.loadFrom( asterismStream, AsterismLoader.INSTANCE );
+        }
+        catch ( IOException e )
+        {
+            loadedResources = false;
+            return;
+        }
+
+        catalogue = builder.build();
+        observerLocationBean.setCoordinates( GeographicCoordinates.ofDeg( INIT_OBSERVER_LON, INIT_OBSERVER_LAT ) );
+        viewingParametersBean.setCenter( HorizontalCoordinates.ofDeg( INIT_VIEWING_LON, INIT_VIEWING_LAT ) );
+        viewingParametersBean.setFieldOfViewDeg( INIT_FOV_VALUE );
+
+        canvasManager = new SkyCanvasManager(
+                catalogue, dateTimeBean,
+                observerLocationBean, viewingParametersBean );
+    }
+
+
 
     //      I) TOP TAB
     // TODO : BIND lonTextFormatter.valueProperty()
@@ -122,14 +184,18 @@ public class Main extends Application
         UnaryOperator<TextFormatter.Change> lonFilter = ( change -> {
             try
             {
+                System.out.println(change);
                 String newText = change.getControlNewText();
                 double newLonDeg = TWO_DECIMAL_CONVERTER.fromString( newText ).doubleValue();
                 return GeographicCoordinates.isValidLonDeg( newLonDeg ) ? change : null;
             }
             catch ( Exception e ) { return null; }
         } );
-        TextFormatter<Number> lonTextFormatter = new TextFormatter<>( TWO_DECIMAL_CONVERTER, INIT_POS_LON, lonFilter );
+        TextFormatter<Number> lonTextFormatter = new TextFormatter<>( TWO_DECIMAL_CONVERTER, INIT_OBSERVER_LON, lonFilter );
         posLongitudeField.setTextFormatter( lonTextFormatter );
+        // observerLocationBean.lonDegProperty().bind( lonTextFormatter.valueProperty() );
+
+
 
         // Latitude label and field
         Label posLatitudeLabel = new Label( "Latitude (°) :" );
@@ -145,7 +211,7 @@ public class Main extends Application
             }
             catch ( Exception e ) { return null; }
         } );
-        TextFormatter<Number> latTextFormatter = new TextFormatter<>( TWO_DECIMAL_CONVERTER, INIT_POS_LAT, latFilter );
+        TextFormatter<Number> latTextFormatter = new TextFormatter<>( TWO_DECIMAL_CONVERTER, INIT_OBSERVER_LAT, latFilter );
         posLatitudeField.setTextFormatter( latTextFormatter );
 
         posBox.getChildren().addAll( posLongitudeLabel, posLongitudeField, posLatitudeLabel, posLatitudeField );
@@ -258,34 +324,8 @@ public class Main extends Application
     // TODO : BIND Canvas dimensions to BorderPane dimensions
     private Pane buildSky()
     {
-        try ( InputStream hs = resourceStream( "/hygdata_v3.csv" ) )
-        {
-            StarCatalogue catalogue = new StarCatalogue.Builder()
-                    .loadFrom( hs, HygDatabaseLoader.INSTANCE )
-                    .build();
-
-            ObserverLocationBean observerLocationBean = new ObserverLocationBean();
-            observerLocationBean.setCoordinates( GeographicCoordinates.ofDeg( INIT_POS_LON, INIT_POS_LAT ) );
-
-            ViewingParametersBean viewingParametersBean = new ViewingParametersBean();
-            viewingParametersBean.setCenter( HorizontalCoordinates.ofDeg( 180.000000000001, 15 ) );
-            viewingParametersBean.setFieldOfViewDeg( 100 );
-
-            SkyCanvasManager canvasManager = new SkyCanvasManager(
-                    catalogue, dateTimeBean,
-                    observerLocationBean, viewingParametersBean );
-
-            canvasManager.objectUnderMouseProperty().addListener( ( p, o, n ) ->
-            {
-                if ( n != null ) System.out.println( n );
-            } );
-
-            sky = canvasManager.canvas();
-            return new Pane( sky );
-        } catch ( IOException e )
-        {
-            return new Pane();
-        }
+        sky = canvasManager.canvas();
+        return new Pane( sky );
     }
 
 
