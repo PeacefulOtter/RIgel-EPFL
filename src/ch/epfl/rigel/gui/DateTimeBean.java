@@ -22,7 +22,7 @@ public final class DateTimeBean
 
     public LocalDate getDate() { return dateProperty.getValue(); }
 
-    public void setDate( LocalDate date ) { dateProperty.setValue( date ); }
+    public void setDate( LocalDate date ) { dateProperty.set( date ); }
 
 
     /** Time **/
@@ -46,6 +46,7 @@ public final class DateTimeBean
 
     public void setZonedDateTime( ZonedDateTime zonedDateTime )
     {
+        System.out.println("DateTimeBean class : " + zonedDateTime);
         setDate( zonedDateTime.toLocalDate() );
         setTime( zonedDateTime.toLocalTime() );
         setZone( zonedDateTime.getZone() );

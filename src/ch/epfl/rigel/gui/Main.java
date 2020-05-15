@@ -27,6 +27,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
@@ -50,7 +51,7 @@ public class Main extends Application
     private static final double INIT_OBSERVER_LAT = 46.52;
     private static final double INIT_VIEWING_LON = 180.000000000001;
     private static final double INIT_VIEWING_LAT = 15;
-    private static final double INIT_FOV_VALUE = 100;
+    private static final int INIT_FOV_VALUE = 100;
 
     private Canvas sky;
     private LocalTime startTime;
@@ -60,7 +61,7 @@ public class Main extends Application
     private ViewingParametersBean viewingParametersBean;
     private SkyCanvasManager canvasManager;
 
-    private boolean loadedFont = false;
+    private boolean loadedFont = true;
     private boolean loadedResources = true;
 
 
@@ -78,7 +79,6 @@ public class Main extends Application
     @Override
     public void start( Stage primaryStage ) throws Exception
     {
-        startTime = LocalTime.now();
         dateTimeBean = new DateTimeBean();
         dateTimeBean.setZonedDateTime( ZonedDateTime.now() );
         timeAnimator = new TimeAnimator( dateTimeBean );
@@ -153,13 +153,7 @@ public class Main extends Application
 
 
 
-    //      I) TOP TAB
-    // TODO : BIND lonTextFormatter.valueProperty()
-    // TODO : BIND latTextFormatter.valueProperty()
-    // TODO : BIND datePicker.valueProperty()
-    // TODO : BIND timeFormatter.valueProperty()
-    // TODO : BIND timezoneBox.valueProperty();
-    // TODO : CHANGE TYPE ZoneId.getAvailableZoneIds() to a ObservableList somehow
+    //      I) TOP TAB)
     // TODO : REORDER  ZoneId.getAvailableZoneIds() by alphabetic order
     // TODO : CHANGE TEXT when isRunning changes, problem -> lambda only accepts final variables
     private HBox buildTopTab()
@@ -180,7 +174,6 @@ public class Main extends Application
         UnaryOperator<TextFormatter.Change> lonFilter = ( change -> {
             try
             {
-                System.out.println(change);
                 String newText = change.getControlNewText();
                 double newLonDeg = TWO_DECIMAL_CONVERTER.fromString( newText ).doubleValue();
                 return GeographicCoordinates.isValidLonDeg( newLonDeg ) ? change : null;
@@ -223,6 +216,7 @@ public class Main extends Application
         DatePicker datePicker = new DatePicker();
         datePicker.setStyle( "-fx-pref-width: 120;" );
         datePicker.setValue( dateTimeBean.getDate() );
+        dateTimeBean.dateProperty().bindBidirectional( datePicker.valueProperty() );
 
         // Time
         Label hourLabel = new Label( "Heure :" );
@@ -231,16 +225,21 @@ public class Main extends Application
         // Hour Formatter
         DateTimeFormatter hmsFormatter = DateTimeFormatter.ofPattern( "HH:mm:ss" );
         LocalTimeStringConverter stringConverter = new LocalTimeStringConverter( hmsFormatter, hmsFormatter );
-        TextFormatter<LocalTime> timeFormatter = new TextFormatter<>( stringConverter, startTime );
+        TextFormatter<LocalTime> timeFormatter = new TextFormatter<>( stringConverter, dateTimeBean.getTime() );
         hourField.setTextFormatter( timeFormatter );
         hourField.setText( dateTimeBean.getTime().toString() );
+        dateTimeBean.timeProperty().bindBidirectional( timeFormatter.valueProperty() );
 
         // Time Zone
-        ComboBox timezoneBox = new ComboBox();
-        timezoneBox.setStyle( "-fx-pref-width: 180;" );
         ObservableList zoneIds = FXCollections.observableList( List.of( ZoneId.getAvailableZoneIds().toArray() ) );
-        timezoneBox.setItems( zoneIds );
+        ComboBox timezoneBox = new ComboBox( zoneIds );
+        timezoneBox.setStyle( "-fx-pref-width: 180;" );
         timezoneBox.setValue( ZoneId.systemDefault() );
+        timezoneBox.getSelectionModel().selectedItemProperty().addListener( ( observable, oldValue, newValue ) ->
+             dateTimeBean.setZone( ZoneId.of( newValue.toString() ) )
+        );
+
+
         timeDetailsBox.getChildren().addAll( dateLabel, datePicker, hourLabel, hourField, timezoneBox );
 
 
@@ -248,21 +247,12 @@ public class Main extends Application
         HBox timeManagerBox = new HBox();
         timeManagerBox.setStyle( "-fx-spacing: inherit; -fx-alignment: baseline-right;" );
 
-        ChoiceBox acceleratorChoiceBox = new ChoiceBox();
-        acceleratorChoiceBox.setItems( FXCollections.observableList( NamedTimeAccelerator.ACCELERATOR_NAMES ) );
+        ObservableList acceleratorsName = FXCollections.observableList( new ArrayList<>( NamedTimeAccelerator.ACCELERATORS.keySet() ) );
+        ChoiceBox acceleratorChoiceBox = new ChoiceBox( acceleratorsName );
         acceleratorChoiceBox.setValue( NamedTimeAccelerator.TIMES_300.getName() );
-
-        /*
-        String to Accelerator Binding example
-        ObjectProperty<NamedTimeAccelerator> p1 = new SimpleObjectProperty<>( NamedTimeAccelerator.TIMES_1 );
-        ObjectProperty<String> p2 = new SimpleObjectProperty<>();
-
-        p2.addListener((p, o, n) -> {
-            System.out.printf("old: %s  new: %s%n", o, n);
-        });
-
-        p2.bind( Bindings.select( p1, "name" ) );
-        p1.set( NamedTimeAccelerator.TIMES_300 );*/
+        acceleratorChoiceBox.getSelectionModel().selectedItemProperty().addListener( ( observable, oldValue, newValue ) ->
+                timeAnimator.setAccelerator( NamedTimeAccelerator.ACCELERATORS.get( newValue.toString() ) )
+        );
 
         // Buttons : refresh, play/pause
         Button resetButton, playPauseButton;
@@ -280,26 +270,24 @@ public class Main extends Application
         {
             resetButton = new Button( BACKUP_RESET_NAME );
             playPauseButton = new Button( BACKUP_PLAY_NAME );
+            loadedFont = false;
         }
 
         // play pause logic
         playPauseButton.setOnMouseClicked( mouseEvent -> {
-            if ( mouseEvent.isPrimaryButtonDown() )
+            if ( timeAnimator.isRunning().get() )
             {
-                if ( timeAnimator.isRunning().get() )
-                {
-                    timeAnimator.stop();
-                }
-                else
-                {
-                    timeAnimator.start();
-                }
+                timeAnimator.stop();
+            }
+            else
+            {
+                timeAnimator.start();
             }
         } );
 
         timeManagerBox.getChildren().addAll( acceleratorChoiceBox, resetButton, playPauseButton );
 
-        // disable all inputs if the animation is running
+        // disable all inputs if the animation is running and enable them if not
         timeAnimator.isRunning().addListener( ( o, oV, nV ) -> {
             posLongitudeField.setDisable( nV );
             posLatitudeField.setDisable( nV );
@@ -336,50 +324,36 @@ public class Main extends Application
     //      III) BOTTOM TAB
     private BorderPane buildBottomTab()
     {
-        BorderPane info = new BorderPane();
-        info.setStyle( "-fx-padding: 4;\n" +
+        BorderPane bottomTab = new BorderPane();
+        bottomTab.setStyle( "-fx-padding: 4;\n" +
                 "-fx-background-color: white;" );
 
         Text left = new Text();
         left.setText(String.format("Champ de vue : %.1f°", (double)viewingParametersBean.fieldOfViewDegProperty().get()));
-        info.setLeft(left);
-
         viewingParametersBean.fieldOfViewDegProperty().addListener(observable -> {
             left.setText(String.format("Champ de vue : %.1f°", (double) viewingParametersBean.fieldOfViewDegProperty().get()));
-            info.setLeft(left);
         });
 
 
         Text center = new Text();
         center.setText(canvasManager.objectUnderMouse.getValue());
-        info.setCenter(center);
         canvasManager.objectUnderMouse.addListener(observable -> {
             center.setText(canvasManager.objectUnderMouse.getValue());
-            info.setCenter(center);
         });
 
         Text right = new Text();
-        right.setText("Azimut :<az>°, hauteur : <alt>°");
-        info.setRight(right);
-        try {
-            canvasManager.mouseAltDeg.addListener(observable -> {
-                right.setText(String.format("Azimut : %.2f°, hauteur : %.2f°", canvasManager.mouseAzDeg.get(), canvasManager.mouseAltDeg.get()));
-                info.setRight(right);
-            });
+        right.setText( "Azimut :<az>°, hauteur : <alt>°" );
+        canvasManager.mouseHorizontalPositionProperty().addListener( ( o, oV, nV ) -> {
+            System.out.println(nV);
+            // right.setText(String.format("Azimut : %.2f°, hauteur : %.2f°", nV.az(), nV.alt() ) );
+        } );
 
-            canvasManager.mouseAzDeg.addListener(observable -> {
-                right.setText(String.format("Azimut : %.2f°, hauteur : %.2f°", canvasManager.mouseAzDeg.get(), canvasManager.mouseAltDeg.get()));
-                info.setRight(right);
-            });
-        }catch (Exception e){
 
-        }
+        // add children
+        bottomTab.setLeft(left);
+        bottomTab.setCenter(center);
+        bottomTab.setRight(right);
 
-      // FOV ,0°
-
-        // star name and info OR empty
-
-        // horizontal mouse pos ,00°
-        return info;
+        return bottomTab;
     }
 }

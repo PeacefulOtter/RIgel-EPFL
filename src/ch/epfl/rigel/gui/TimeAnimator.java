@@ -45,6 +45,7 @@ public final class TimeAnimator extends AnimationTimer
             return;
         }
         long deltaRealTime = now - simulatedStartTime; // t - t0
+        System.out.println(simulatedTimeBean.getZonedDateTime());
         simulatedTimeBean.setZonedDateTime( getAccelerator().adjust( simulatedStart, deltaRealTime ) );
     }
 

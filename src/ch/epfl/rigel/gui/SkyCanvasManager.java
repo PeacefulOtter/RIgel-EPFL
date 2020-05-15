@@ -56,11 +56,11 @@ public class SkyCanvasManager
 
         planeToCanvasBind = Bindings.createObjectBinding( () ->
         {
-            // double angle = projectionBind.get().applyToAngle( viewingParametersBean.getFieldOfViewDeg().doubleValue() );
+            double angle = viewingParametersBean.getFieldOfViewDeg().doubleValue() * 10;
             double width = canvas.getWidth() / 2;
             double height = canvas.getHeight() / 2;
-            System.out.println("planeToCanvas Bind   " + width + " " + height);
-            return Transform.affine( 1300, 0, 0, -1300, width, height );
+            System.out.println("planeToCanvas Bind   " + width + " " + height + " " + angle );
+            return Transform.affine( angle, 0, 0, -angle, width, height );
         },
                 canvas.widthProperty(),
                 canvas.heightProperty(),
@@ -133,8 +133,8 @@ public class SkyCanvasManager
             double deltaY = scrollEvent.getDeltaY();
             double maxScrollAxis = Math.round( deltaX ) > Math.round( deltaY ) ? deltaX : deltaY;
             System.out.println(maxScrollAxis);
-            double actualFov = viewingParametersBean.getFieldOfViewDeg();
-            viewingParametersBean.setFieldOfViewDeg( actualFov + maxScrollAxis );
+            int actualFov = viewingParametersBean.getFieldOfViewDeg();
+            viewingParametersBean.setFieldOfViewDeg( actualFov + (int)maxScrollAxis );
             System.out.println("vP : " + viewingParametersBean.fieldOfViewDegProperty().get());
         } );
 
@@ -182,25 +182,11 @@ public class SkyCanvasManager
         }, observedSkyBind, mousePosition, planeToCanvasBind );
 
 
-        /*painter.drawSky(
-                new ObservedSky(
-                        dateTimeBean.getZonedDateTime(),
-                        observerLocationBean.getCoordinates(),
-                        new StereographicProjection( viewingParametersBean.getCenter() ),
-                        catalogue
-                ),
-                new StereographicProjection( viewingParametersBean.getCenter() ),
-                Transform.affine( 1300, 0, 0, -1300, 400, 300 ) );*/
-
         observedSkyBind.addListener(   ( o, oV, nV ) -> {
             System.out.println("observedSkyBind LISTENER");
             painter.drawSky( nV, projectionBind.get(), planeToCanvasBind.get() );
         } );
 
-        /*projectionBind.addListener(    ( o, oV, nV ) -> {
-            System.out.println("projectionBind LISTENER");
-            painter.drawSky( observedSkyBind.get(), nV, planeToCanvasBind.get() );
-        } );*/
 
         int[] index = {0};
         planeToCanvasBind.addListener( ( o, oV, nV ) -> {
@@ -224,6 +210,8 @@ public class SkyCanvasManager
     {
         return mouseAltDeg.get();
     }
+
+    public ObservableObjectValue<HorizontalCoordinates> mouseHorizontalPositionProperty() { return mouseHorizontalPosition; }
 
     public ObservableObjectValue objectUnderMouseProperty()
     {
