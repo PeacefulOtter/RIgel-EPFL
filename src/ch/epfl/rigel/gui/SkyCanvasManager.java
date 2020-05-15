@@ -211,6 +211,8 @@ public class SkyCanvasManager
         return mouseAltDeg.get();
     }
 
+    public ObservableObjectValue<HorizontalCoordinates> mouseHorizontalPositionProperty() { return mouseHorizontalPosition; }
+
     public ObservableObjectValue objectUnderMouseProperty()
     {
         return objectUnderMouse;

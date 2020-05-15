@@ -6,6 +6,7 @@ import ch.epfl.rigel.astronomy.StarCatalogue;
 import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
@@ -21,6 +22,7 @@ import javafx.stage.Stage;
 import javafx.util.converter.LocalTimeStringConverter;
 import javafx.util.converter.NumberStringConverter;
 
+import javax.naming.Binding;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalTime;
@@ -322,49 +324,36 @@ public class Main extends Application
     //      III) BOTTOM TAB
     private BorderPane buildBottomTab()
     {
-        BorderPane info = new BorderPane();
-        info.setStyle( "-fx-padding: 4;\n" +
+        BorderPane bottomTab = new BorderPane();
+        bottomTab.setStyle( "-fx-padding: 4;\n" +
                 "-fx-background-color: white;" );
 
         Text left = new Text();
         left.setText(String.format("Champ de vue : %.1f°", (double)viewingParametersBean.fieldOfViewDegProperty().get()));
-        info.setLeft(left);
         viewingParametersBean.fieldOfViewDegProperty().addListener(observable -> {
             left.setText(String.format("Champ de vue : %.1f°", (double) viewingParametersBean.fieldOfViewDegProperty().get()));
-            info.setLeft(left);
         });
 
 
         Text center = new Text();
         center.setText(canvasManager.objectUnderMouse.getValue());
-        info.setCenter(center);
         canvasManager.objectUnderMouse.addListener(observable -> {
             center.setText(canvasManager.objectUnderMouse.getValue());
-            info.setCenter(center);
         });
 
         Text right = new Text();
-        right.setText("Azimut :<az>°, hauteur : <alt>°");
-        info.setRight(right);
-        try {
-            canvasManager.mouseAltDeg.addListener(observable -> {
-                right.setText(String.format("Azimut : %.2f°, hauteur : %.2f°", canvasManager.mouseAzDeg.get(), canvasManager.mouseAltDeg.get()));
-                info.setRight(right);
-            });
+        right.setText( "Azimut :<az>°, hauteur : <alt>°" );
+        canvasManager.mouseHorizontalPositionProperty().addListener( ( o, oV, nV ) -> {
+            System.out.println(nV);
+            // right.setText(String.format("Azimut : %.2f°, hauteur : %.2f°", nV.az(), nV.alt() ) );
+        } );
 
-            canvasManager.mouseAzDeg.addListener(observable -> {
-                right.setText(String.format("Azimut : %.2f°, hauteur : %.2f°", canvasManager.mouseAzDeg.get(), canvasManager.mouseAltDeg.get()));
-                info.setRight(right);
-            });
-        }catch (Exception e){
 
-        }
+        // add children
+        bottomTab.setLeft(left);
+        bottomTab.setCenter(center);
+        bottomTab.setRight(right);
 
-      // FOV ,0°
-
-        // star name and info OR empty
-
-        // horizontal mouse pos ,00°
-        return info;
+        return bottomTab;
     }
 }
