@@ -339,17 +339,41 @@ public class Main extends Application
         BorderPane info = new BorderPane();
         info.setStyle( "-fx-padding: 4;\n" +
                 "-fx-background-color: white;" );
+
         Text left = new Text();
-        left.setText(String.format("Champ de vue : <fov>°"));
+        left.setText(String.format("Champ de vue : %.1f°", (double)viewingParametersBean.fieldOfViewDegProperty().get()));
         info.setLeft(left);
+        viewingParametersBean.fieldOfViewDegProperty().addListener(observable -> {
+            left.setText(String.format("Champ de vue : %.1f°", (double) viewingParametersBean.fieldOfViewDegProperty().get()));
+            info.setLeft(left);
+        });
+
 
         Text center = new Text();
-        center.setText("celestial object");
+        center.setText(canvasManager.objectUnderMouse.getValue());
         info.setCenter(center);
+        canvasManager.objectUnderMouse.addListener(observable -> {
+            center.setText(canvasManager.objectUnderMouse.getValue());
+            info.setCenter(center);
+        });
 
         Text right = new Text();
-        right.setText("Azimut : <az>°, hauteur : <alt>°");
+        right.setText("Azimut :<az>°, hauteur : <alt>°");
         info.setRight(right);
+        try {
+            canvasManager.mouseAltDeg.addListener(observable -> {
+                right.setText(String.format("Azimut : %.2f°, hauteur : %.2f°", canvasManager.mouseAzDeg.get(), canvasManager.mouseAltDeg.get()));
+                info.setRight(right);
+            });
+
+            canvasManager.mouseAzDeg.addListener(observable -> {
+                right.setText(String.format("Azimut : %.2f°, hauteur : %.2f°", canvasManager.mouseAzDeg.get(), canvasManager.mouseAltDeg.get()));
+                info.setRight(right);
+            });
+        }catch (Exception e){
+
+        }
+
       // FOV ,0°
 
         // star name and info OR empty

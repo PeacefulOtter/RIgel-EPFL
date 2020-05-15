@@ -1,6 +1,5 @@
 package ch.epfl.rigel.gui;
 
-import ch.epfl.rigel.astronomy.CelestialObject;
 import ch.epfl.rigel.astronomy.ObservedSky;
 import ch.epfl.rigel.astronomy.StarCatalogue;
 import ch.epfl.rigel.coordinates.CartesianCoordinates;
@@ -136,6 +135,7 @@ public class SkyCanvasManager
             System.out.println(maxScrollAxis);
             int actualFov = viewingParametersBean.getFieldOfViewDeg();
             viewingParametersBean.setFieldOfViewDeg( actualFov + (int) maxScrollAxis );
+            System.out.println("vP : " + viewingParametersBean.fieldOfViewDegProperty().get());
         } );
 
 
