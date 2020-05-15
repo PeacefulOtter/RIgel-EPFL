@@ -80,19 +80,6 @@ public class SkyCanvasPainter
         planeToCanvas.transform2DPoints( starsCartesianCoordinates, 0, dstPts, 0, starsNumber );
 
         int starCoordsIndex = 0;
-        for ( Star star : stars )
-        {
-            int roundedColor = ( ( ( star.colorTemperature() + 499 ) / 500 ) * 500 ); // round to the nearest 500
-            Color starColor = blackBodyColor.colorForTemperature( roundedColor );
-            ctx.setFill( starColor );
-            double starDiameter = magnitudeDiameter( star.magnitude(), projection );
-            double finalDiameter = planeToCanvas.deltaTransform( starDiameter, 0 ).getX();
-            double radius = finalDiameter / 2;
-            double starX = dstPts[ starCoordsIndex++ ] - radius;
-            double starY = dstPts[ starCoordsIndex++ ] - radius;
-            ctx.fillOval( starX, starY, finalDiameter, finalDiameter );
-        }
-
         for ( Asterism asterism: asterisms )
         {
             List<Integer> asterismIndice = sky.asterismIndices( asterism );
@@ -132,6 +119,19 @@ public class SkyCanvasPainter
                 lastInsideCanvas = currentInsideCanvas;
             }
             ctx.closePath();
+        }
+
+        for ( Star star : stars )
+        {
+            int roundedColor = ( ( ( star.colorTemperature() + 499 ) / 500 ) * 500 ); // round to the nearest 500
+            Color starColor = blackBodyColor.colorForTemperature( roundedColor );
+            ctx.setFill( starColor );
+            double starDiameter = magnitudeDiameter( star.magnitude(), projection );
+            double finalDiameter = planeToCanvas.deltaTransform( starDiameter, 0 ).getX();
+            double radius = finalDiameter / 2;
+            double starX = dstPts[ starCoordsIndex++ ] - radius;
+            double starY = dstPts[ starCoordsIndex++ ] - radius;
+            ctx.fillOval( starX, starY, finalDiameter, finalDiameter );
         }
     }
 

@@ -153,13 +153,8 @@ public class SkyCanvasManager
         }, planeToCanvasBind, projectionBind, mousePosition );
 
 
-        // REQUEST FOCUS
-        canvas.setOnMouseClicked( mouseEvent -> {
-            if ( mouseEvent.isPrimaryButtonDown() )
-            {
-                canvas.requestFocus();
-            }
-        } );
+        // REQUEST FOCUS on canvas click
+        canvas.setOnMouseClicked( mouseEvent -> canvas.requestFocus() );
 
 
         this.mouseAzDeg = Bindings.createDoubleBinding( () ->
