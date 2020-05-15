@@ -6,6 +6,8 @@ import ch.epfl.rigel.astronomy.StarCatalogue;
 import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.StringExpression;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
@@ -29,6 +31,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.UnaryOperator;
 
 
@@ -51,7 +54,7 @@ public class Main extends Application
     private static final double INIT_OBSERVER_LAT = 46.52;
     private static final double INIT_VIEWING_LON = 180.000000000001;
     private static final double INIT_VIEWING_LAT = 15;
-    private static final int INIT_FOV_VALUE = 100;
+    private static final double INIT_FOV_VALUE = 100;
 
     private Canvas sky;
     private LocalTime startTime;
@@ -329,24 +332,16 @@ public class Main extends Application
                 "-fx-background-color: white;" );
 
         Text left = new Text();
-        left.setText(String.format("Champ de vue : %.1f°", (double)viewingParametersBean.fieldOfViewDegProperty().get()));
-        viewingParametersBean.fieldOfViewDegProperty().addListener(observable -> {
-            left.setText(String.format("Champ de vue : %.1f°", (double) viewingParametersBean.fieldOfViewDegProperty().get()));
-        });
-
+        StringExpression fov = Bindings.format(Locale.ROOT,"Champ de vue : %.1f°", viewingParametersBean.fieldOfViewDegProperty());
+        left.textProperty().bind(fov);
 
         Text center = new Text();
-        center.setText(canvasManager.objectUnderMouse.getValue());
-        canvasManager.objectUnderMouse.addListener(observable -> {
-            center.setText(canvasManager.objectUnderMouse.getValue());
-        });
+        center.textProperty().bind(canvasManager.objectUnderMouse);
+
 
         Text right = new Text();
-        right.setText( "Azimut :<az>°, hauteur : <alt>°" );
-        canvasManager.mouseHorizontalPositionProperty().addListener( ( o, oV, nV ) -> {
-            System.out.println(nV);
-            // right.setText(String.format("Azimut : %.2f°, hauteur : %.2f°", nV.az(), nV.alt() ) );
-        } );
+        StringExpression mouseHorizontal = Bindings.format( Locale.ROOT, "Azimut : %.2f°, hauteur : %.2f°", canvasManager.mouseAzDeg, canvasManager.mouseAltDeg );
+        right.textProperty().bind(mouseHorizontal);
 
 
         // add children

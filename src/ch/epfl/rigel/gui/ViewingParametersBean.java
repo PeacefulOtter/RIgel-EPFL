@@ -1,23 +1,20 @@
 package ch.epfl.rigel.gui;
 
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 
 
 public class ViewingParametersBean
 {
-    private final IntegerProperty fieldOfViewDeg = new SimpleIntegerProperty( 0 );
+    private final DoubleProperty fieldOfViewDeg = new SimpleDoubleProperty( 0 );
     private final ObjectProperty<HorizontalCoordinates> center = new SimpleObjectProperty<>( null );
 
 
-    public IntegerProperty fieldOfViewDegProperty() { return fieldOfViewDeg; }
+    public DoubleProperty fieldOfViewDegProperty() { return fieldOfViewDeg; }
 
-    public Integer getFieldOfViewDeg() { return fieldOfViewDeg.getValue(); }
+    public Double getFieldOfViewDeg() { return fieldOfViewDeg.getValue(); }
 
-    public void setFieldOfViewDeg( Integer newFieldOfViewDeg )
+    public void setFieldOfViewDeg( Double newFieldOfViewDeg )
     {
         fieldOfViewDeg.setValue( newFieldOfViewDeg );
     }
