@@ -13,6 +13,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableObjectValue;
+import javafx.beans.value.ObservableStringValue;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyCode;
@@ -36,7 +37,7 @@ public class SkyCanvasManager
     private final ObjectProperty<Point2D> mousePosition = new SimpleObjectProperty( null );
 
     public final ObservableDoubleValue mouseAzDeg, mouseAltDeg;
-    public final ObservableObjectValue<String> objectUnderMouse;
+    public final ObservableStringValue objectUnderMouse;
 
 
     public SkyCanvasManager(
@@ -130,9 +131,9 @@ public class SkyCanvasManager
             double deltaY = scrollEvent.getDeltaY();
             double maxScrollAxis = Math.round( deltaX ) > Math.round( deltaY ) ? deltaX : deltaY;
             System.out.println(maxScrollAxis);
-            int actualFov = viewingParametersBean.getFieldOfViewDeg();
-            viewingParametersBean.setFieldOfViewDeg( actualFov + (int) maxScrollAxis );
-            System.out.println("vP : " + viewingParametersBean.fieldOfViewDegProperty().get());
+            double actualFov = viewingParametersBean.getFieldOfViewDeg();
+            viewingParametersBean.setFieldOfViewDeg( actualFov + maxScrollAxis );
+            System.out.println("fov =  " + viewingParametersBean.fieldOfViewDegProperty().get());
         } );
 
 
@@ -167,7 +168,7 @@ public class SkyCanvasManager
                 mouseHorizontalPosition.get().altDeg(), mouseHorizontalPosition );
 
 
-        this.objectUnderMouse = Bindings.createObjectBinding( () ->
+        this.objectUnderMouse = Bindings.createStringBinding( () ->
         {
             if ( mousePosition.getValue() == null ) { return null; }
             Point2D mousePosInPlane = planeToCanvasBind.get().inverseTransform( mousePosition.getValue() );
