@@ -48,6 +48,7 @@ public class Main extends Application
     private static final String PAUSE_NAME = "\uf04c";
     private static final String BACKUP_PAUSE_NAME = "\u23F8";
 
+    private static final NumberStringConverter ONE_DECIMAL_CONVERTER = new NumberStringConverter("#0.0" );
     private static final NumberStringConverter TWO_DECIMAL_CONVERTER = new NumberStringConverter("#0.00" );
 
     private static final double INIT_OBSERVER_LON = 6.57;
@@ -193,7 +194,7 @@ public class Main extends Application
         } );
         TextFormatter<Number> lonTextFormatter = new TextFormatter<>( TWO_DECIMAL_CONVERTER, INIT_OBSERVER_LON, lonFilter );
         posLongitudeField.setTextFormatter( lonTextFormatter );
-        // observerLocationBean.lonDegProperty().bind( lonTextFormatter.valueProperty() );
+        observerLocationBean.lonDegProperty().bind( lonTextFormatter.valueProperty() );
 
 
 
@@ -213,6 +214,7 @@ public class Main extends Application
         } );
         TextFormatter<Number> latTextFormatter = new TextFormatter<>( TWO_DECIMAL_CONVERTER, INIT_OBSERVER_LAT, latFilter );
         posLatitudeField.setTextFormatter( latTextFormatter );
+        observerLocationBean.latDegProperty().bind( latTextFormatter.valueProperty() );
 
         posBox.getChildren().addAll( posLongitudeLabel, posLongitudeField, posLatitudeLabel, posLatitudeField );
 
@@ -324,8 +326,15 @@ public class Main extends Application
     // TODO : BIND Canvas dimensions to BorderPane dimensions
     private Pane buildSky()
     {
-        sky = canvasManager.canvas();
-        return new Pane( sky );
+        if ( loadedResources )
+        {
+            sky = canvasManager.canvas();
+            return new Pane( sky );
+        }
+        else
+        {
+            return new Pane();
+        }
     }
 
 
