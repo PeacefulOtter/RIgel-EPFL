@@ -18,6 +18,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyCode;
 import javafx.scene.transform.Transform;
 
+import java.time.LocalTime;
 import java.util.Optional;
 
 public class SkyCanvasManager
@@ -48,10 +49,9 @@ public class SkyCanvasManager
         SkyCanvasPainter painter = new SkyCanvasPainter( canvas );
 
 
-        projectionBind = Bindings.createObjectBinding( () ->
-            new StereographicProjection( viewingParametersBean.getCenter() ),
-            viewingParametersBean.centerProperty()
-        );
+        projectionBind = Bindings.createObjectBinding( () -> {
+            return new StereographicProjection( viewingParametersBean.getCenter() );
+        }, viewingParametersBean.centerProperty() );
 
 
         planeToCanvasBind = Bindings.createObjectBinding( () ->
@@ -69,13 +69,12 @@ public class SkyCanvasManager
         );
 
         observedSkyBind = Bindings.createObjectBinding( () ->
-        {
-            System.out.println("observedSky Bind");
-            return new ObservedSky(
+
+            new ObservedSky(
                     dateTimeBean.getZonedDateTime(),
                     observerLocationBean.getCoordinates(),
                     projectionBind.get(),
-                    catalogue ); },
+                    catalogue ),
             dateTimeBean.timeProperty(),
             dateTimeBean.dateProperty(),
             dateTimeBean.zoneProperty(),
@@ -86,7 +85,6 @@ public class SkyCanvasManager
         // ON KEY PRESSED, MOVE THE CENTER VIEW
         canvas.setOnKeyPressed( keyEvent ->
         {
-            System.out.println("keyPressed");
             keyEvent.consume();
             KeyCode key = keyEvent.getCode();
             if (
@@ -128,7 +126,6 @@ public class SkyCanvasManager
         // SCROLL POSITION EVENT
         canvas.setOnScroll( scrollEvent ->
         {
-            System.out.println("on scroll");
             double deltaX = scrollEvent.getDeltaX();
             double deltaY = scrollEvent.getDeltaY();
             double maxScrollAxis = Math.round( deltaX ) > Math.round( deltaY ) ? deltaX : deltaY;
@@ -149,7 +146,6 @@ public class SkyCanvasManager
         {
             if ( mousePosition.get() == null ) { return null; }
             // take the coordinates of the mouse and inverse planeToCanvas to have it on the plane
-            System.out.println("mouseHorizontalPosition");
             Point2D mousePosTransform = planeToCanvasBind.get().inverseTransform( mousePosition.getValue() );
             return projectionBind.get().inverseApply(
                     CartesianCoordinates.of( mousePosTransform.getX(), mousePosTransform.getY() ) );
@@ -183,7 +179,6 @@ public class SkyCanvasManager
 
 
         observedSkyBind.addListener(   ( o, oV, nV ) -> {
-            System.out.println("observedSkyBind LISTENER");
             painter.drawSky( nV, projectionBind.get(), planeToCanvasBind.get() );
         } );
 
@@ -195,7 +190,6 @@ public class SkyCanvasManager
             {
                 return;
             }
-            System.out.println("planeToCanvasBind LISTENER");
             painter.drawSky( observedSkyBind.get(), projectionBind.get(), nV );
         } );
     }

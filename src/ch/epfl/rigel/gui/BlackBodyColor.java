@@ -6,19 +6,21 @@ import javafx.scene.paint.Color;
 
 import java.io.*;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
-public final class BlackBodyColor
+public class BlackBodyColor
 {
     private static final String COLOR_FILE_NAME = "/bbr_color.txt";
     private static final ClosedInterval KELVIN_INTERVAL = ClosedInterval.of( 1000, 40000 );
+    private final Map<Integer, Color> colorMap = new HashMap<>();
 
-    public static Color colorForTemperature( int kelvin )
+    public BlackBodyColor() { initColorMap(); }
+
+    private void initColorMap()
     {
-        Preconditions.checkInInterval( KELVIN_INTERVAL, kelvin );
-
         String line;
         String[] lineSplit;
-        String hexColor = "";
 
         try ( BufferedReader stream = new BufferedReader( new InputStreamReader( BlackBodyColor.class.getResourceAsStream( COLOR_FILE_NAME ) ) ) )
         {
@@ -26,21 +28,20 @@ public final class BlackBodyColor
             {
                 lineSplit = line.split( "\\s+" );
 
-
                 if ( lineSplit[ 0 ].equals( "#" ) || lineSplit[ 3 ].equals( "2deg" ) ) continue;
 
-                if ( Integer.parseInt( lineSplit[ 1 ] ) == kelvin )
-                {
-                    hexColor = lineSplit[ 13 ];
-                    break;
-                }
+                colorMap.put( Integer.parseInt( lineSplit[ 1 ] ), Color.web( lineSplit[ 13 ] ) );
             }
         }
         catch( IOException e )
         {
             throw new UncheckedIOException( e );
         }
+    }
 
-        return Color.web( hexColor );
+    public Color colorForTemperature( int kelvin )
+    {
+        Preconditions.checkInInterval( KELVIN_INTERVAL, kelvin );
+        return colorMap.get( kelvin );
     }
 }

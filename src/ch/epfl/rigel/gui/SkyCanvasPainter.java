@@ -16,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.transform.Transform;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 
@@ -31,11 +32,13 @@ public class SkyCanvasPainter
 
     private final Canvas canvas;
     private final GraphicsContext ctx;
+    private final BlackBodyColor blackBodyColor;
 
     public SkyCanvasPainter( Canvas canvas )
     {
         this.canvas = canvas;
         ctx = canvas.getGraphicsContext2D();
+        blackBodyColor = new BlackBodyColor();
     }
 
     private static double magnitudeDiameter( double magnitude, StereographicProjection projection )
@@ -59,6 +62,7 @@ public class SkyCanvasPainter
 
     public void clear()
     {
+        ctx.clearRect( 0, 0, canvas.getWidth(), canvas.getHeight() );
         ctx.setFill( Color.BLACK );
         ctx.fillRect( 0, 0, canvas.getWidth(), canvas.getHeight() );
         ctx.fill();
@@ -79,21 +83,15 @@ public class SkyCanvasPainter
         for ( Star star : stars )
         {
             int roundedColor = ( ( ( star.colorTemperature() + 499 ) / 500 ) * 500 ); // round to the nearest 500
-            Color starColor = BlackBodyColor.colorForTemperature( roundedColor );
+            Color starColor = blackBodyColor.colorForTemperature( roundedColor );
             ctx.setFill( starColor );
-
             double starDiameter = magnitudeDiameter( star.magnitude(), projection );
             double finalDiameter = planeToCanvas.deltaTransform( starDiameter, 0 ).getX();
             double radius = finalDiameter / 2;
-
             double starX = dstPts[ starCoordsIndex++ ] - radius;
             double starY = dstPts[ starCoordsIndex++ ] - radius;
-
-            if ( !canvas.getBoundsInLocal().contains( starX, starY ) ) { continue; }
-
             ctx.fillOval( starX, starY, finalDiameter, finalDiameter );
         }
-
 
         for ( Asterism asterism: asterisms )
         {

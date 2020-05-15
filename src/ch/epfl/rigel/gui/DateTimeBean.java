@@ -46,7 +46,6 @@ public final class DateTimeBean
 
     public void setZonedDateTime( ZonedDateTime zonedDateTime )
     {
-        System.out.println("DateTimeBean class : " + zonedDateTime);
         setDate( zonedDateTime.toLocalDate() );
         setTime( zonedDateTime.toLocalTime() );
         setZone( zonedDateTime.getZone() );

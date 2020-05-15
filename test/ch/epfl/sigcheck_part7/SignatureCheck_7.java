@@ -20,9 +20,10 @@ final class SignatureCheck_7
     @Test
     void BlackBodyColorTest()
     {
-        System.out.println( BlackBodyColor.colorForTemperature( 7000 ) );
-        System.out.println( BlackBodyColor.colorForTemperature( 3000 ) );
-        System.out.println( BlackBodyColor.colorForTemperature( 15000 ) );
+        BlackBodyColor blackBodyColor = new BlackBodyColor();
+        System.out.println( blackBodyColor.colorForTemperature( 7000 ) );
+        System.out.println( blackBodyColor.colorForTemperature( 3000 ) );
+        System.out.println( blackBodyColor.colorForTemperature( 15000 ) );
     }
 
     private InputStream resourceStream(String resourceName) {

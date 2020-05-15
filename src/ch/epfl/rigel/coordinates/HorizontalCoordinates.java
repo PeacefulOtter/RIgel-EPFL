@@ -57,13 +57,25 @@ public final class HorizontalCoordinates extends SphericalCoordinates
         Preconditions.checkInInterval( ALT_INTERVAL, alt );
     }
 
-    public double az() { return lon(); }
+    @Override
+    public double lon() { return super.lon(); }
 
-    public double azDeg() { return lonDeg(); }
+    @Override
+    public double lonDeg() { return super.lonDeg(); }
 
-    public double alt() { return lat(); }
+    @Override
+    public double lat() { return super.lat(); }
 
-    public double altDeg() { return latDeg(); }
+    @Override
+    public double latDeg() { return super.latDeg(); }
+
+    public double az() { return super.lon(); }
+
+    public double azDeg() { return super.lonDeg(); }
+
+    public double alt() { return super.lat(); }
+
+    public double altDeg() { return super.latDeg(); }
 
     /**
      * @return the direction (N, E, S, W) depending on the longitude
