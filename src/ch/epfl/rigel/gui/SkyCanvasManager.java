@@ -36,7 +36,7 @@ public class SkyCanvasManager
     private final ObservableObjectValue<Transform> planeToCanvasBind;
     private final ObservableObjectValue<ObservedSky> observedSkyBind;
     private final ObservableObjectValue<HorizontalCoordinates> mouseHorizontalPosition;
-    private final ObjectProperty<Point2D> mousePosition = new SimpleObjectProperty( null );
+    private final ObjectProperty<Point2D> mousePosition = new SimpleObjectProperty( new Point2D( 0, 0 ) );
 
     public final ObservableDoubleValue mouseAzDeg, mouseAltDeg;
     public final ObservableStringValue objectUnderMouse;
