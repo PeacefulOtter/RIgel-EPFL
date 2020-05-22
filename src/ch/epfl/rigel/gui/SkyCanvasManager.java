@@ -1,6 +1,7 @@
 package ch.epfl.rigel.gui;
 
 import ch.epfl.rigel.astronomy.ObservedSky;
+import ch.epfl.rigel.astronomy.Star;
 import ch.epfl.rigel.astronomy.StarCatalogue;
 import ch.epfl.rigel.coordinates.CartesianCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
@@ -52,18 +53,24 @@ public class SkyCanvasManager
         SkyCanvasPainter painter = new SkyCanvasPainter( canvas );
 
 
-        projectionBind = Bindings.createObjectBinding( () -> {
-            return new StereographicProjection( viewingParametersBean.getCenter() );
-        }, viewingParametersBean.centerProperty() );
+        projectionBind = Bindings.createObjectBinding( () ->
+                        new StereographicProjection( viewingParametersBean.getCenter() )
+        , viewingParametersBean.centerProperty() );
 
 
         planeToCanvasBind = Bindings.createObjectBinding( () ->
         {
-            double angle = viewingParametersBean.getFieldOfViewDeg().doubleValue() * 10;
+            StereographicProjection projection = projectionBind.get();
             double width = canvas.getWidth() / 2;
             double height = canvas.getHeight() / 2;
-            System.out.println("planeToCanvas Bind   " + width + " " + height + " " + angle );
-            return Transform.affine( angle, 0, 0, -angle, width, height );
+            System.out.println(width);
+            double scale = 1;
+            if ( width != 0d )
+            {
+                scale = projection.applyToAngle( Angle.ofDeg( viewingParametersBean.getFieldOfViewDeg().doubleValue() ) );
+            }
+            System.out.println(scale);
+            return Transform.translate( width, height ).createConcatenation( Transform.scale( scale, -scale ) );
         },
                 canvas.widthProperty(),
                 canvas.heightProperty(),

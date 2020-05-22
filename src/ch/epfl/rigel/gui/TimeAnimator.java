@@ -14,7 +14,7 @@ public final class TimeAnimator extends AnimationTimer
     private final SimpleBooleanProperty running = new SimpleBooleanProperty( false );
     private final ObjectProperty<TimeAccelerator> acceleratorProperty = new SimpleObjectProperty<>( null );
     private final DateTimeBean simulatedTimeBean;
-    private final ZonedDateTime simulatedStart;
+    private ZonedDateTime simulatedStart;
 
     private boolean firstTimeHandle = true;
     private long simulatedStartTime;
@@ -41,14 +41,13 @@ public final class TimeAnimator extends AnimationTimer
     {
         if ( firstTimeHandle )
         {
-            System.out.println(simulatedTimeBean.getZonedDateTime());
+            simulatedStart = simulatedTimeBean.getZonedDateTime();
             simulatedStartTime = now; // t0
             firstTimeHandle = false;
             return;
         }
 
         long deltaRealTime = now - simulatedStartTime; // t - t0
-        // System.out.println(deltaRealTime);
         simulatedTimeBean.setZonedDateTime( getAccelerator().adjust( simulatedStart, deltaRealTime ) );
     }
 
