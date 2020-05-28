@@ -14,7 +14,6 @@ import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
-import javafx.scene.control.skin.ButtonSkin;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -44,11 +43,10 @@ public class Main extends Application
     private static final String RESET_BTN_TEXT = "\uf0e2";
     private static final String BACKUP_RESET_BTN_TEXT = "R";
     private static final String PLAY_BTN_TEXT = "\uf04b";
-    private static final String BACKUP_PLAY_NAME = "▶";
+    private static final String BACKUP_PLAY_BTN_TEXT = "▶";
     private static final String PAUSE_BTN_TEXT = "\uf04c";
     private static final String BACKUP_PAUSE_BTN_TEXT = "\u23F8";
 
-    private static final NumberStringConverter ONE_DECIMAL_CONVERTER = new NumberStringConverter("#0.0" );
     private static final NumberStringConverter TWO_DECIMAL_CONVERTER = new NumberStringConverter("#0.00" );
 
     private static final double INIT_OBSERVER_LON = 6.57;
@@ -58,7 +56,6 @@ public class Main extends Application
     private static final double INIT_FOV_VALUE = 100;
 
     private Canvas sky;
-    private LocalTime startTime;
     private TimeAnimator timeAnimator;
     private DateTimeBean dateTimeBean;
     private ObserverLocationBean observerLocationBean;
@@ -81,7 +78,7 @@ public class Main extends Application
     }
 
     @Override
-    public void start( Stage primaryStage ) throws Exception
+    public void start( Stage primaryStage )
     {
         dateTimeBean = new DateTimeBean();
         dateTimeBean.setZonedDateTime( ZonedDateTime.now() );
@@ -274,7 +271,7 @@ public class Main extends Application
         catch ( IOException e )
         {
             resetButton.setText( BACKUP_RESET_BTN_TEXT );
-            playPauseButton.setText( BACKUP_PLAY_NAME );
+            playPauseButton.setText( BACKUP_PLAY_BTN_TEXT );
             loadedFont = false;
         }
 
@@ -283,17 +280,18 @@ public class Main extends Application
             if ( timeAnimator.isRunning().get() )
             {
                 timeAnimator.stop();
-                playPauseButton.setText( PLAY_BTN_TEXT );
+                playPauseButton.setText( loadedFont ?  PLAY_BTN_TEXT : BACKUP_PLAY_BTN_TEXT );
             }
             else
             {
                 timeAnimator.start();
-                playPauseButton.setText( PAUSE_BTN_TEXT );
+                playPauseButton.setText( loadedFont ?  PAUSE_BTN_TEXT : BACKUP_PAUSE_BTN_TEXT );
             }
         } );
 
         resetButton.setOnMouseClicked( mouseEvent -> {
             dateTimeBean.setZonedDateTime( ZonedDateTime.now() );
+            timezoneBox.setValue( ZoneId.systemDefault() );
         } );
 
         timeManagerBox.getChildren().addAll( acceleratorChoiceBox, resetButton, playPauseButton );
