@@ -19,7 +19,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyCode;
 import javafx.scene.transform.Transform;
 
-import java.time.LocalTime;
 import java.util.Optional;
 
 public class SkyCanvasManager
