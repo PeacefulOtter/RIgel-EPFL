@@ -55,10 +55,10 @@ public class SkyCanvasManager
      * sets up a listener to react to cursor key presses and change the projection center accordingly
      * add listeners to be informed of changes in the links and properties affecting the drawing of the sky, and in this case ask the painter to redraw it.
      *
-     * @param catalogue
-     * @param dateTimeBean
-     * @param observerLocationBean
-     * @param viewingParametersBean
+     * @param catalogue : Starcatologue containing all the stars and asterisms
+     * @param dateTimeBean : the instant of observation (date, time, time zone)
+     * @param observerLocationBean : position of the observator
+     * @param viewingParametersBean : containing the parameters determining the portion of the sky visible on the image.
      */
     public SkyCanvasManager(
             StarCatalogue catalogue,
@@ -97,7 +97,7 @@ public class SkyCanvasManager
         initEventListener( painter );
     }
 
-
+    // initiate a bind containing the stereographic projection
     private ObservableObjectValue<StereographicProjection> initProjectionBind( ViewingParametersBean viewingParametersBean )
     {
         return Bindings.createObjectBinding( () ->
@@ -105,7 +105,7 @@ public class SkyCanvasManager
                 viewingParametersBean.centerProperty() );
     }
 
-
+    // initiate a bind containing the transformation corresponding to the transition from the stereographic projection plane to the canvas
     private ObservableObjectValue<Transform> initPlaneToCanvasBind( ViewingParametersBean viewingParametersBean )
     {
         return Bindings.createObjectBinding( () ->
@@ -129,6 +129,7 @@ public class SkyCanvasManager
         );
     }
 
+    // initiate a bind containing the actual ObservedSky
     private ObservableObjectValue<ObservedSky> initObservedSkyBind(
             DateTimeBean dateTimeBean, ObserverLocationBean observerLocationBean, StarCatalogue catalogue )
     {
@@ -146,6 +147,7 @@ public class SkyCanvasManager
         );
     }
 
+    // initiat the key event : change the projection center when the user presses the cursor keys
     private void initKeyPressedEvent( ViewingParametersBean viewingParametersBean )
     {
         canvas.setOnKeyPressed( keyEvent ->
@@ -188,6 +190,7 @@ public class SkyCanvasManager
         } );
     }
 
+    // initiat the scroll event : change the field of view when the user manipulates the mouse wheel and/or the trackpad
     private void initScrollEvent( ViewingParametersBean viewingParametersBean )
     {
         canvas.setOnScroll( scrollEvent ->
@@ -209,6 +212,7 @@ public class SkyCanvasManager
         );
     }
 
+    // initiate a bind containing the position of the mouse cursor in the horizontal coordinate system (az/alt)
     private ObservableObjectValue<HorizontalCoordinates> initMouseHorizontalPosBind()
     {
         return Bindings.createObjectBinding( () ->
@@ -221,6 +225,11 @@ public class SkyCanvasManager
         }, planeToCanvasBind, projectionBind, mousePosition );
     }
 
+    /**
+     *  initiate the bind containing the celestial object closest to this cursor.
+     *  it follows the mouse movements and export, via properties, the position of its cursor in the horizontal coordinate system,
+     *  and the celestial object closest to this cursor.
+     */
     private ObservableStringValue initObjectUnderMouseBind()
     {
         return Bindings.createStringBinding( () ->
@@ -235,6 +244,7 @@ public class SkyCanvasManager
         }, observedSkyBind, mousePosition, planeToCanvasBind );
     }
 
+    // add listener to observedSkyBind  and planeToCanvasBind to draw again the canvas
     private void initEventListener( SkyCanvasPainter painter )
     {
         observedSkyBind.addListener(   ( o, oV, nV ) -> {
