@@ -29,9 +29,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.function.UnaryOperator;
 
 
@@ -40,14 +38,15 @@ public class Main extends Application
 {
     private static final String HYG_CATALOGUE_NAME = "/hygdata_v3.csv";
     private static final String ASTERISM_CATALOGUE_NAME = "/asterisms.txt";
-    private static final String RESET_NAME = "\uf0e2";
-    private static final String BACKUP_RESET_NAME = "R";
-    private static final String PLAY_NAME = "\uf04b";
-    private static final String BACKUP_PLAY_NAME = "▶";
-    private static final String PAUSE_NAME = "\uf04c";
-    private static final String BACKUP_PAUSE_NAME = "\u23F8";
 
-    private static final NumberStringConverter ONE_DECIMAL_CONVERTER = new NumberStringConverter("#0.0" );
+    // Buttons text and backup text if the font cant load
+    private static final String RESET_BTN_TEXT = "\uf0e2";
+    private static final String BACKUP_RESET_BTN_TEXT = "R";
+    private static final String PLAY_BTN_TEXT = "\uf04b";
+    private static final String BACKUP_PLAY_BTN_TEXT = "▶";
+    private static final String PAUSE_BTN_TEXT = "\uf04c";
+    private static final String BACKUP_PAUSE_BTN_TEXT = "\u23F8";
+
     private static final NumberStringConverter TWO_DECIMAL_CONVERTER = new NumberStringConverter("#0.00" );
 
     private static final double INIT_OBSERVER_LON = 6.57;
@@ -57,7 +56,6 @@ public class Main extends Application
     private static final double INIT_FOV_VALUE = 100;
 
     private Canvas sky;
-    private LocalTime startTime;
     private TimeAnimator timeAnimator;
     private DateTimeBean dateTimeBean;
     private ObserverLocationBean observerLocationBean;
@@ -80,13 +78,14 @@ public class Main extends Application
     }
 
     @Override
-    public void start( Stage primaryStage ) throws Exception
+    public void start( Stage primaryStage )
     {
         dateTimeBean = new DateTimeBean();
         dateTimeBean.setZonedDateTime( ZonedDateTime.now() );
         timeAnimator = new TimeAnimator( dateTimeBean );
         TimeAccelerator accelerator = NamedTimeAccelerator.TIMES_3000.getAccelerator();
         timeAnimator.setAccelerator( accelerator );
+
         observerLocationBean = new ObserverLocationBean();
         viewingParametersBean = new ViewingParametersBean();
 
@@ -95,10 +94,7 @@ public class Main extends Application
         BorderPane wrapper = new BorderPane();
         wrapper.setMinWidth( 800 );
         wrapper.setMinHeight( 600 );
-        /*HBox topTab = buildTopTab();  TRY TO MAKE IT RESPONSIVE  - not *needed*
-        primaryStage.widthProperty().addListener( (o, oV, nV) -> {
-            topTab.setMinWidth( nV.doubleValue() );
-        } );*/
+
         wrapper.setTop( buildTopTab() );
         wrapper.setCenter( buildSky() );
         wrapper.setBottom( buildBottomTab() );
@@ -158,7 +154,6 @@ public class Main extends Application
 
     //      I) TOP TAB)
     // TODO : REORDER  ZoneId.getAvailableZoneIds() by alphabetic order
-    // TODO : CHANGE TEXT when isRunning changes, problem -> lambda only accepts final variables
     private HBox buildTopTab()
     {
         HBox topTab = new HBox();
@@ -234,7 +229,10 @@ public class Main extends Application
         dateTimeBean.timeProperty().bindBidirectional( timeFormatter.valueProperty() );
 
         // Time Zone
-        ObservableList zoneIds = FXCollections.observableList( List.of( ZoneId.getAvailableZoneIds().toArray() ) );
+        // directly sort the zone ids by alphabetical order
+        SortedSet<String> zoneIdsSet = new TreeSet<>( ZoneId.getAvailableZoneIds() );
+        // and turn the sorted set into an observable list
+        ObservableList zoneIds = FXCollections.observableList( new ArrayList<>( zoneIdsSet ) );
         ComboBox timezoneBox = new ComboBox( zoneIds );
         timezoneBox.setStyle( "-fx-pref-width: 180;" );
         timezoneBox.setValue( ZoneId.systemDefault() );
@@ -258,21 +256,22 @@ public class Main extends Application
         );
 
         // Buttons : refresh, play/pause
-        Button resetButton, playPauseButton;
+        Button resetButton = new Button();
+        Button playPauseButton = new Button();
         // load font or assign the button's text to a backup value
         try ( InputStream fontStream = resourceStream( "/Font Awesome 5 Free-Solid-900.otf" ) )
         {
             Font fontAwesome = Font.loadFont( fontStream, 15 );
-            resetButton = new Button( RESET_NAME );
             resetButton.setFont( fontAwesome );
-            playPauseButton = new Button( PLAY_NAME );
+            resetButton.setText( RESET_BTN_TEXT );
             playPauseButton.setFont( fontAwesome );
+            playPauseButton.setText( PLAY_BTN_TEXT );
             loadedFont = true;
         }
         catch ( IOException e )
         {
-            resetButton = new Button( BACKUP_RESET_NAME );
-            playPauseButton = new Button( BACKUP_PLAY_NAME );
+            resetButton.setText( BACKUP_RESET_BTN_TEXT );
+            playPauseButton.setText( BACKUP_PLAY_BTN_TEXT );
             loadedFont = false;
         }
 
@@ -281,23 +280,29 @@ public class Main extends Application
             if ( timeAnimator.isRunning().get() )
             {
                 timeAnimator.stop();
+                playPauseButton.setText( loadedFont ?  PLAY_BTN_TEXT : BACKUP_PLAY_BTN_TEXT );
             }
             else
             {
-                // timeAnimator.setDateTimeBean( dateTimeBean );
                 timeAnimator.start();
+                playPauseButton.setText( loadedFont ?  PAUSE_BTN_TEXT : BACKUP_PAUSE_BTN_TEXT );
             }
+        } );
+
+        resetButton.setOnMouseClicked( mouseEvent -> {
+            dateTimeBean.setZonedDateTime( ZonedDateTime.now() );
+            timezoneBox.setValue( ZoneId.systemDefault() );
         } );
 
         timeManagerBox.getChildren().addAll( acceleratorChoiceBox, resetButton, playPauseButton );
 
         // disable all inputs if the animation is running and enable them if not
         timeAnimator.isRunning().addListener( ( o, oV, nV ) -> {
-            posLongitudeField.setDisable( nV );
-            posLatitudeField.setDisable( nV );
             datePicker.setDisable( nV );
             hourField.setDisable( nV );
             timezoneBox.setDisable( nV );
+            acceleratorChoiceBox.setDisable( nV );
+            resetButton.setDisable( nV );
         } );
 
         topTab.getChildren().addAll(
@@ -310,7 +315,6 @@ public class Main extends Application
     }
 
     //      II) MIDDLE VIEW
-    // TODO : BIND Canvas dimensions to BorderPane dimensions
     private Pane buildSky()
     {
         if ( loadedResources )

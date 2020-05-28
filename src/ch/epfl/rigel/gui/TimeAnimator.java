@@ -11,12 +11,10 @@ import java.time.*;
 
 public final class TimeAnimator extends AnimationTimer
 {
-    // ReadOnlyBooleanProperty running = ...
     private final SimpleBooleanProperty running = new SimpleBooleanProperty( false );
+    private final ObjectProperty<TimeAccelerator> acceleratorProperty = new SimpleObjectProperty<>( null );
     private final DateTimeBean simulatedTimeBean;
     private ZonedDateTime simulatedStart;
-
-    private ObjectProperty<TimeAccelerator> acceleratorProperty = new SimpleObjectProperty<>( null );
 
     private boolean firstTimeHandle = true;
     private long simulatedStartTime;
@@ -43,10 +41,12 @@ public final class TimeAnimator extends AnimationTimer
     {
         if ( firstTimeHandle )
         {
+            simulatedStart = simulatedTimeBean.getZonedDateTime();
             simulatedStartTime = now; // t0
             firstTimeHandle = false;
             return;
         }
+
         long deltaRealTime = now - simulatedStartTime; // t - t0
         simulatedTimeBean.setZonedDateTime( getAccelerator().adjust( simulatedStart, deltaRealTime ) );
     }

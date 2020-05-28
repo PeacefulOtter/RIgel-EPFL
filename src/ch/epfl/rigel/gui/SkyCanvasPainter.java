@@ -16,12 +16,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.transform.Transform;
 
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 
 public class SkyCanvasPainter
 {
+    private static final double MAX_RADIUS_SIZE = 1E10;
+
     private static final Color BLUE_COLOR = Color.BLUE;
     private static final Color LIGHTGRAY_COLOR = Color.LIGHTGRAY;
     private static final Color WHITE_COLOR = Color.WHITE;
@@ -183,7 +184,6 @@ public class SkyCanvasPainter
         CartesianCoordinates moonPos = sky.moonPosition();
         Point2D moonPoint = planeToCanvas.transform( moonPos.x(), moonPos.y() );
 
-        //double moonDiameter = magnitudeDiameter( moon.magnitude(), projection );
         double projectedDiameter = projection.applyToAngle( Angle.ofDeg( 0.5 ) );
         double finalDiameter = planeToCanvas.deltaTransform( projectedDiameter, 0 ).getX();
         double radius = finalDiameter / 2;
@@ -199,13 +199,21 @@ public class SkyCanvasPainter
         Point2D transformedCenter = planeToCanvas.transform( center.x(), center.y() );
         double radius = projection.circleRadiusForParallel( hor );
         double transformedRadius = Math.abs( planeToCanvas.deltaTransform( radius, 0 ).getX() );
-
         ctx.setStroke( RED_COLOR );
         ctx.setLineWidth( 2 );
-        ctx.strokeOval(
-                transformedCenter.getX() - transformedRadius,
-                transformedCenter.getY() - transformedRadius,
-                transformedRadius * 2, transformedRadius * 2 );
+        if ( transformedRadius < MAX_RADIUS_SIZE )
+        {
+            ctx.strokeOval(
+                    transformedCenter.getX() - transformedRadius,
+                    transformedCenter.getY() - transformedRadius,
+                    transformedRadius * 2, transformedRadius * 2 );
+        }
+        else
+        {
+            // if radius is infinite, then draw a line
+            ctx.strokeLine( 0, canvas.getHeight() / 2, canvas.getWidth(), canvas.getHeight() / 2 );
+        }
+
 
         ctx.setTextAlign( TextAlignment.CENTER );
         ctx.setTextBaseline( VPos.TOP );
