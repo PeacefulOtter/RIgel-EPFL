@@ -42,6 +42,12 @@ public class SkyCanvasPainter
         blackBodyColor = new BlackBodyColor();
     }
 
+    /**
+     *
+     * @param magnitude
+     * @param projection
+     * @return the size of the disc representing a celestial object as a function of its magnitude
+     */
     private static double magnitudeDiameter( double magnitude, StereographicProjection projection )
     {
         double clippedMagnitude = MAGNITUDE_INTERVAL.clip( magnitude );
@@ -49,7 +55,12 @@ public class SkyCanvasPainter
         return sizeFactor * projection.applyToAngle( Angle.ofDeg( 0.5 ) );
     }
 
-
+    /**
+     * draw the sky in the canvas
+     * @param sky
+     * @param projection
+     * @param planeToCanvas
+     */
     public void drawSky( ObservedSky sky, StereographicProjection projection, Transform planeToCanvas )
     {
         this.clear();
@@ -60,7 +71,9 @@ public class SkyCanvasPainter
         this.drawHorizon( projection, planeToCanvas );
     }
 
-
+    /**
+     * clear the canvas
+     */
     public void clear()
     {
         ctx.clearRect( 0, 0, canvas.getWidth(), canvas.getHeight() );
@@ -69,6 +82,12 @@ public class SkyCanvasPainter
         ctx.fill();
     }
 
+    /**
+     * draw all the stars in the canvas
+     * @param sky
+     * @param projection
+     * @param planeToCanvas
+     */
     public void drawStars( ObservedSky sky, StereographicProjection projection, Transform planeToCanvas )
     {
         Set<Asterism> asterisms = sky.getAsterism();
@@ -136,6 +155,12 @@ public class SkyCanvasPainter
         }
     }
 
+    /**
+     * draw all the planets in the canvas
+     * @param sky
+     * @param projection
+     * @param planeToCanvas
+     */
     public void drawPlanets( ObservedSky sky, StereographicProjection projection, Transform planeToCanvas )
     {
         List<Planet> planets = sky.planets();
@@ -157,6 +182,12 @@ public class SkyCanvasPainter
         }
     }
 
+    /**
+     * draw the Sun in the canvas
+     * @param sky
+     * @param projection
+     * @param planeToCanvas
+     */
     public void drawSun( ObservedSky sky, StereographicProjection projection, Transform planeToCanvas )
     {
         CartesianCoordinates sunPos = sky.sunPosition();
@@ -179,6 +210,12 @@ public class SkyCanvasPainter
 
     }
 
+    /**
+     * draw the Moon in the canvas
+     * @param sky
+     * @param projection
+     * @param planeToCanvas
+     */
     public void drawMoon( ObservedSky sky, StereographicProjection projection, Transform planeToCanvas )
     {
         CartesianCoordinates moonPos = sky.moonPosition();
@@ -192,6 +229,12 @@ public class SkyCanvasPainter
         ctx.fillOval( moonPoint.getX() - radius, moonPoint.getY() - radius, finalDiameter, finalDiameter );
     }
 
+    /**
+     * draw the Horizon in the canvas
+     * @param sky
+     * @param projection
+     * @param planeToCanvas
+     */
     public void drawHorizon( StereographicProjection projection, Transform planeToCanvas )
     {
         HorizontalCoordinates hor = HorizontalCoordinates.ofDeg( 0, 0 );
