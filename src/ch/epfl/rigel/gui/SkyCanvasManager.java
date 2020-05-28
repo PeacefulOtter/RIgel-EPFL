@@ -1,7 +1,6 @@
 package ch.epfl.rigel.gui;
 
 import ch.epfl.rigel.astronomy.ObservedSky;
-import ch.epfl.rigel.astronomy.Star;
 import ch.epfl.rigel.astronomy.StarCatalogue;
 import ch.epfl.rigel.coordinates.CartesianCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
@@ -48,7 +47,19 @@ public class SkyCanvasManager
     public final ObservableDoubleValue mouseAzDeg, mouseAltDeg;
     public final ObservableStringValue objectUnderMouse;
 
-
+    /**
+     * creates a number of properties and links
+     * add a listener to be informed of mouse cursor movements, and store its position in a property
+     * add a listener to detect mouse clicks on the canvas and make it the recipient of keyboard events
+     * add a listener to react to mouse wheel and/or trackpad movements and change the field of view accordingly
+     * sets up a listener to react to cursor key presses and change the projection center accordingly
+     * add listeners to be informed of changes in the links and properties affecting the drawing of the sky, and in this case ask the painter to redraw it.
+     *
+     * @param catalogue
+     * @param dateTimeBean
+     * @param observerLocationBean
+     * @param viewingParametersBean
+     */
     public SkyCanvasManager(
             StarCatalogue catalogue,
             DateTimeBean dateTimeBean,
@@ -262,6 +273,7 @@ public class SkyCanvasManager
     {
         return mouseHorizontalPosition.get();
     }
+
 
     public Canvas canvas()
     {

@@ -6,7 +6,9 @@ import javafx.beans.property.*;
 
 public class ViewingParametersBean
 {
+    // field of view in degrees
     private final DoubleProperty fieldOfViewDeg = new SimpleDoubleProperty( 0 );
+    // center of the projection
     private final ObjectProperty<HorizontalCoordinates> center = new SimpleObjectProperty<>( null );
 
 

@@ -5,10 +5,14 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableObjectValue;
-
+/*
+    got the position of the observator in degrees and a Geographic Coordinates
+ */
 public class ObserverLocationBean
 {
+    // longitude of the observator in degrees
     private final DoubleProperty lonDegObservator = new SimpleDoubleProperty( 0 );
+    // latitude of the observator in degrees
     private final DoubleProperty latDegObservator = new SimpleDoubleProperty( 0 );
     private final ObservableObjectValue<GeographicCoordinates> coordinates = Bindings.createObjectBinding( () ->
         GeographicCoordinates.ofDeg( lonDegObservator.getValue(), latDegObservator.getValue() ),

@@ -4,8 +4,10 @@ import ch.epfl.rigel.Preconditions;
 import ch.epfl.rigel.math.ClosedInterval;
 import javafx.scene.paint.Color;
 
-import java.io.*;
-import java.util.Arrays;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,6 +17,9 @@ public class BlackBodyColor
     private static final ClosedInterval KELVIN_INTERVAL = ClosedInterval.of( 1000, 40000 );
     private final Map<Integer, Color> colorMap = new HashMap<>();
 
+    /**
+     * link to a temperature in kelvin a color
+     */
     public BlackBodyColor() { initColorMap(); }
 
     private void initColorMap()
@@ -39,6 +44,11 @@ public class BlackBodyColor
         }
     }
 
+    /**
+     *
+     * @param kelvin
+     * @return the colour of a black body given its temperature.
+     */
     public Color colorForTemperature( int kelvin )
     {
         Preconditions.checkInInterval( KELVIN_INTERVAL, kelvin );

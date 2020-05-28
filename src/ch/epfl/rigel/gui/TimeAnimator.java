@@ -8,7 +8,10 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
 import java.time.*;
-
+/*
+    represents a "time animator". Its purpose is to periodically modify, via a time accelerator,
+    the instant of observation stored in an instance of DateTimeBean, in order to (indirectly) animate the sky.
+ */
 public final class TimeAnimator extends AnimationTimer
 {
     private final SimpleBooleanProperty running = new SimpleBooleanProperty( false );
@@ -36,6 +39,10 @@ public final class TimeAnimator extends AnimationTimer
         this.simulatedTimeBean.setZonedDateTime( dateTimeBean.getZonedDateTime() );
     }
 
+    /**
+     * progress the animation by adjusting the accelerator and the dateTimeBean
+     * @param now : the number of nanoseconds elapsed since an unspecified start time.
+     */
     @Override
     public void handle( long now )
     {
@@ -51,6 +58,9 @@ public final class TimeAnimator extends AnimationTimer
         simulatedTimeBean.setZonedDateTime( getAccelerator().adjust( simulatedStart, deltaRealTime ) );
     }
 
+    /**
+     * start the timer of the animation
+     */
     public void start()
     {
         if ( getAccelerator() == null ) throw new IllegalArgumentException();
@@ -59,6 +69,9 @@ public final class TimeAnimator extends AnimationTimer
         firstTimeHandle = true;
     }
 
+    /**
+     * stop the timer of the animation
+     */
     public void stop()
     {
         super.stop();
