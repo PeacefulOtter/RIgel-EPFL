@@ -6,7 +6,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import java.time.*;
 
 /**
- * Represents a JavaFX bean containing the instant of observation, i.e. the triplet (date, time, time zone) of observation.
+ * containing the instant of observation, the triplet (date, time, time zone) of observation.
  * For all properties there is a getProperty, a getValue and a set
  * All properties value can be get/set at one time using a ZonedDateTime which is very convenient
  */

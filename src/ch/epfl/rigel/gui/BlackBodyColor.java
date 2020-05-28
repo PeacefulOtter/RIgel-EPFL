@@ -18,7 +18,7 @@ public class BlackBodyColor
     private final Map<Integer, Color> colorMap = new HashMap<>();
 
     /**
-     * link to a temperature in kelvin a color
+     * link a color to a temperature in kelvin
      */
     public BlackBodyColor() { initColorMap(); }
 
@@ -46,7 +46,7 @@ public class BlackBodyColor
 
     /**
      *
-     * @param kelvin
+     * @param kelvin : temperature in kelvin
      * @return the colour of a black body given its temperature.
      */
     public Color colorForTemperature( int kelvin )

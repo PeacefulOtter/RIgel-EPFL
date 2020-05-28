@@ -187,8 +187,8 @@ public class ObservedSky
 
     /**
      *
-     * @param point1
-     * @param point2
+     * @param point1 : point1 in Cartesian Coordinates
+     * @param point2 : point2 in Cartesian Coordinates
      * @return the distance between the 2 points
      */
     private double distanceBetween( CartesianCoordinates point1, CartesianCoordinates point2 )

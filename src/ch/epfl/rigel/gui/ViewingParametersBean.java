@@ -3,7 +3,9 @@ package ch.epfl.rigel.gui;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import javafx.beans.property.*;
 
-
+/*
+    containing the parameters determining the portion of the sky visible on the image.
+ */
 public class ViewingParametersBean
 {
     // field of view in degrees
