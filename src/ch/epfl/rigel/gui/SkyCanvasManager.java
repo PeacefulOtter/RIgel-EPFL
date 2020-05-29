@@ -1,5 +1,6 @@
 package ch.epfl.rigel.gui;
 
+import ch.epfl.rigel.astronomy.CelestialObject;
 import ch.epfl.rigel.astronomy.ObservedSky;
 import ch.epfl.rigel.astronomy.StarCatalogue;
 import ch.epfl.rigel.coordinates.CartesianCoordinates;
@@ -19,6 +20,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyCode;
 import javafx.scene.transform.Transform;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -34,8 +37,15 @@ public class SkyCanvasManager
     private static final ClosedInterval ALT_INTERVAL = ClosedInterval.of( Angle.toDeg( -Math.PI / 2 ), Angle.toDeg( Math.PI / 2 ) );
     // FOV interval
     private static final ClosedInterval FOV_INTERVAL = ClosedInterval.of( 50, 200 );
-
-    private static final int MAX_OBJECT_DISTANCE = 10;
+    // Arrow keys
+    private static final List<KeyCode> ARROW_KEYS = new ArrayList<>() { {
+        add( KeyCode.UP ); add( KeyCode.DOWN ); add( KeyCode.RIGHT ); add( KeyCode.LEFT );
+    } };
+    // maximum object distance of the ObjectClosestTo
+    private static final double MAX_OBJECT_DISTANCE = Angle.ofDeg( 10 );
+    // Angles to move when pressing an arrow key
+    private static final int LONGITUDE_DISTANCE = 10;
+    private static final int LATITUDE_DISTANCE = 5;
 
     private final Canvas canvas;
     private final ObservableObjectValue<StereographicProjection> projectionBind;
@@ -55,9 +65,9 @@ public class SkyCanvasManager
      * sets up a listener to react to cursor key presses and change the projection center accordingly
      * add listeners to be informed of changes in the links and properties affecting the drawing of the sky, and in this case ask the painter to redraw it.
      *
-     * @param catalogue : Starcatologue containing all the stars and asterisms
+     * @param catalogue : StarCatalogue containing all the stars and asterisms
      * @param dateTimeBean : the instant of observation (date, time, time zone)
-     * @param observerLocationBean : position of the observator
+     * @param observerLocationBean : position of the observer
      * @param viewingParametersBean : containing the parameters determining the portion of the sky visible on the image.
      */
     public SkyCanvasManager(
@@ -79,25 +89,27 @@ public class SkyCanvasManager
 
         initScrollEvent( viewingParametersBean );
 
-        initMouseMoveEvent( );
+        initMouseMoveEvent();
 
         mouseHorizontalPosition = initMouseHorizontalPosBind();
 
-
-        // REQUEST FOCUS on canvas click
+        // request focus on canvas click
         canvas.setOnMouseClicked( mouseEvent -> canvas.requestFocus() );
-
 
         this.mouseAzDeg  = Bindings.createDoubleBinding( () -> mouseHorizontalPosition.get().azDeg(),  mouseHorizontalPosition );
         this.mouseAltDeg = Bindings.createDoubleBinding( () -> mouseHorizontalPosition.get().altDeg(), mouseHorizontalPosition );
-
 
         this.objectUnderMouse = initObjectUnderMouseBind();
 
         initEventListener( painter );
     }
 
-    // initiate a bind containing the stereographic projection
+    /**
+     * Initiate a bind containing the stereographic projection.
+     * Bound to the center of the ViewingParametersBean.
+     * @param viewingParametersBean : The ViewingParametersBean required to get the center property
+     * @return an ObservableObjectValue of the StereographicProjection
+     */
     private ObservableObjectValue<StereographicProjection> initProjectionBind( ViewingParametersBean viewingParametersBean )
     {
         return Bindings.createObjectBinding( () ->
@@ -105,7 +117,13 @@ public class SkyCanvasManager
                 viewingParametersBean.centerProperty() );
     }
 
-    // initiate a bind containing the transformation corresponding to the transition from the stereographic projection plane to the canvas
+    /**
+     * Initiate a bind containing the transformation corresponding to the transition from the stereographic
+     * projection plane to the canvas.
+     * Bound to the canvas size, the stereographic projection and the FOV
+     * @param viewingParametersBean : The ViewingParametersBean required to get the center property
+     * @return an ObservableObjectValue of the Transformation
+     */
     private ObservableObjectValue<Transform> initPlaneToCanvasBind( ViewingParametersBean viewingParametersBean )
     {
         return Bindings.createObjectBinding( () ->
@@ -113,13 +131,15 @@ public class SkyCanvasManager
                     StereographicProjection projection = projectionBind.get();
                     double width = canvas.getWidth() / 2;
                     double height = canvas.getHeight() / 2;
-                    System.out.println(width);
+
                     double scale = 1;
                     if ( width != 0d )
                     {
-                        scale = projection.applyToAngle( Angle.ofDeg( viewingParametersBean.getFieldOfViewDeg().doubleValue() ) ) * viewingParametersBean.getFieldOfViewDeg();
+                        double FOV = viewingParametersBean.getFieldOfViewDeg();
+                        double radFOV = Angle.ofDeg( viewingParametersBean.getFieldOfViewDeg() );
+                        scale = projection.applyToAngle( radFOV ) * FOV;
                     }
-                    // System.out.println(scale * viewingParametersBean.getFieldOfViewDeg());
+                    // create 'two' consecutive transformations, a translation and a scaling
                     return Transform.translate( width, height ).createConcatenation( Transform.scale( scale, -scale ) );
                 },
                 canvas.widthProperty(),
@@ -129,7 +149,14 @@ public class SkyCanvasManager
         );
     }
 
-    // initiate a bind containing the actual ObservedSky
+    /**
+     * Initiate a bind containing the actual ObservedSky.
+     * Bound to the DateTimeBean properties, the observer coordinates and the stereographic projection
+     * @param dateTimeBean : the DateTimeBean
+     * @param observerLocationBean : the ObserverLocationBean
+     * @param catalogue : the StarCatalogue containing the stars and asterisms
+     * @return an ObservableObjectValue of the ObservedSky
+     */
     private ObservableObjectValue<ObservedSky> initObservedSkyBind(
             DateTimeBean dateTimeBean, ObserverLocationBean observerLocationBean, StarCatalogue catalogue )
     {
@@ -147,42 +174,42 @@ public class SkyCanvasManager
         );
     }
 
-    // initiat the key event : change the projection center when the user presses the cursor keys
+    /**
+     * Initiate the key event : change the projection center when the user presses the cursor keys
+     * @param viewingParametersBean : the ViewingParametersBean
+     */
     private void initKeyPressedEvent( ViewingParametersBean viewingParametersBean )
     {
         canvas.setOnKeyPressed( keyEvent ->
         {
-            keyEvent.consume();
-            KeyCode key = keyEvent.getCode();
-            if (
-                    key != KeyCode.UP && key != KeyCode.DOWN &&
-                            key != KeyCode.RIGHT && key != KeyCode.LEFT
-            )
-            {
-                return;
-            }
+            KeyCode key = keyEvent.getCode(); // get the key
+            // check if the key pressed is an arrow key, if it is not, then just exit the function
+            if ( !ARROW_KEYS.contains( key ) ) { return; }
+
+            keyEvent.consume(); // stops the event propagation.
             HorizontalCoordinates center = viewingParametersBean.getCenter();
+
             switch ( key )
             {
                 case UP:
                     viewingParametersBean.setCenter(
                             HorizontalCoordinates.ofDeg(
-                                    center.azDeg(), ALT_INTERVAL.clip( center.altDeg() + 5 ) ) );
+                                    center.azDeg(), ALT_INTERVAL.clip( center.altDeg() + LATITUDE_DISTANCE ) ) );
                     break;
                 case RIGHT:
                     viewingParametersBean.setCenter(
                             HorizontalCoordinates.ofDeg(
-                                    AZ_INTERVAL.reduce( center.azDeg() + 10 ),  center.altDeg() ) );
+                                    AZ_INTERVAL.reduce( center.azDeg() + LONGITUDE_DISTANCE ),  center.altDeg() ) );
                     break;
                 case DOWN:
                     viewingParametersBean.setCenter(
                             HorizontalCoordinates.ofDeg(
-                                    center.azDeg(), ALT_INTERVAL.clip( center.altDeg() - 5 ) ) );
+                                    center.azDeg(), ALT_INTERVAL.clip( center.altDeg() - LATITUDE_DISTANCE ) ) );
                     break;
                 case LEFT:
                     viewingParametersBean.setCenter(
                             HorizontalCoordinates.ofDeg(
-                                    AZ_INTERVAL.reduce( center.azDeg() - 10 ), center.altDeg() ) );
+                                    AZ_INTERVAL.reduce( center.azDeg() - LONGITUDE_DISTANCE ), center.altDeg() ) );
                     break;
                 default:
                     break;
@@ -190,7 +217,10 @@ public class SkyCanvasManager
         } );
     }
 
-    // initiat the scroll event : change the field of view when the user manipulates the mouse wheel and/or the trackpad
+    /**
+     * Initiate the scroll event : change the field of view when the user manipulates the mouse wheel and/or the trackpad
+     * @param viewingParametersBean : the ViewingParametersBean to get the FOV
+     */
     private void initScrollEvent( ViewingParametersBean viewingParametersBean )
     {
         canvas.setOnScroll( scrollEvent ->
@@ -198,13 +228,14 @@ public class SkyCanvasManager
             double deltaX = scrollEvent.getDeltaX();
             double deltaY = scrollEvent.getDeltaY();
             double maxScrollAxis = Math.abs( deltaX ) > Math.abs( deltaY ) ? deltaX : deltaY;
-            System.out.println(maxScrollAxis);
             double actualFov = viewingParametersBean.getFieldOfViewDeg();
             viewingParametersBean.setFieldOfViewDeg( FOV_INTERVAL.clip(  actualFov + maxScrollAxis ) );
-            System.out.println("fov =  " + viewingParametersBean.fieldOfViewDegProperty().get());
         } );
     }
 
+    /**
+     * Initiate the mouse move event : get the position of the mouse in the canvas
+     */
     private void initMouseMoveEvent()
     {
         canvas.setOnMouseMoved( mouseEvent ->
@@ -212,7 +243,10 @@ public class SkyCanvasManager
         );
     }
 
-    // initiate a bind containing the position of the mouse cursor in the horizontal coordinate system (az/alt)
+    /**
+     * Initiate a bind containing the position of the mouse cursor in the horizontal coordinate system (az/alt)
+     * @return an ObservableObjectValue of the mouse horizontal coordinates
+     */
     private ObservableObjectValue<HorizontalCoordinates> initMouseHorizontalPosBind()
     {
         return Bindings.createObjectBinding( () ->
@@ -225,10 +259,13 @@ public class SkyCanvasManager
         }, planeToCanvasBind, projectionBind, mousePosition );
     }
 
+
     /**
-     *  initiate the bind containing the celestial object closest to this cursor.
-     *  it follows the mouse movements and export, via properties, the position of its cursor in the horizontal coordinate system,
-     *  and the celestial object closest to this cursor.
+     * Initiate the bind containing the celestial object closest to the cursor.
+     * it follows the mouse movements and export, via properties, the position of its cursor in the horizontal coordinate system,
+     * and the celestial object closest to this cursor.
+     * Bound to the ObservedSky, the mouse position and the planeToCanvas transformation
+     * @return an ObservableStringValue which is the name of the object closest to the mouse
      */
     private ObservableStringValue initObjectUnderMouseBind()
     {
@@ -237,56 +274,43 @@ public class SkyCanvasManager
             if ( mousePosition.getValue() == null ) { return null; }
             Point2D mousePosInPlane = planeToCanvasBind.get().inverseTransform( mousePosition.getValue() );
             CartesianCoordinates mousePos = CartesianCoordinates.of( mousePosInPlane.getX(), mousePosInPlane.getY() );
-            double maxDist = projectionBind.get().applyToAngle( Angle.ofDeg( MAX_OBJECT_DISTANCE ) );
-            Optional hoverStar = observedSkyBind.get().objectClosestTo( mousePos, maxDist );
-            if ( hoverStar != Optional.empty() ) { return hoverStar.get().toString(); }
+            double maxDist = projectionBind.get().applyToAngle( MAX_OBJECT_DISTANCE );
+            Optional<CelestialObject> closestCelestialObject = observedSkyBind.get().objectClosestTo( mousePos, maxDist );
+            // if there is an object close the mouse, return the celestial objects name
+            if ( closestCelestialObject.isPresent() ) { return closestCelestialObject.get().toString(); }
+            // else, return an empty string
             return "";
         }, observedSkyBind, mousePosition, planeToCanvasBind );
     }
 
-    // add listener to observedSkyBind  and planeToCanvasBind to draw again the canvas
+    /**
+     * Add a listener to the Observable object observedSky and planeToCanvas to redraw the canvas
+     * when they change
+     */
     private void initEventListener( SkyCanvasPainter painter )
     {
-        observedSkyBind.addListener(   ( o, oV, nV ) -> {
+        observedSkyBind.addListener( ( o, oV, nV ) -> {
             painter.drawSky( nV, projectionBind.get(), planeToCanvasBind.get() );
         } );
-
 
         planeToCanvasBind.addListener( ( o, oV, nV ) -> {
             painter.drawSky( observedSkyBind.get(), projectionBind.get(), nV );
         } );
     }
 
-    public double getMouseAzDeg()
-    {
-        return mouseAzDeg.get();
-    }
 
-    public double getMouseAltDeg()
-    {
-        return mouseAltDeg.get();
-    }
+    /* Getters */
+    public double getMouseAzDeg() { return mouseAzDeg.get(); }
+
+    public double getMouseAltDeg() { return mouseAltDeg.get(); }
 
     public ObservableObjectValue<HorizontalCoordinates> mouseHorizontalPositionProperty() { return mouseHorizontalPosition; }
 
-    public ObservableObjectValue objectUnderMouseProperty()
-    {
-        return objectUnderMouse;
-    }
+    public ObservableStringValue objectUnderMouseProperty() { return objectUnderMouse; }
 
-    public String getObjectUnderMouse()
-    {
-        return objectUnderMouse.get();
-    }
+    public String getObjectUnderMouse() { return objectUnderMouse.get(); }
 
-    public HorizontalCoordinates getMouseHorizontalPosition()
-    {
-        return mouseHorizontalPosition.get();
-    }
+    public HorizontalCoordinates getMouseHorizontalPosition() { return mouseHorizontalPosition.get(); }
 
-
-    public Canvas canvas()
-    {
-        return canvas;
-    }
+    public Canvas canvas() { return canvas; }
 }

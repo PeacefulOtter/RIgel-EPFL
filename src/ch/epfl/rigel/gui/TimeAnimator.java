@@ -14,9 +14,13 @@ import java.time.*;
  */
 public final class TimeAnimator extends AnimationTimer
 {
+    // A property that tells if the time is running or not
     private final SimpleBooleanProperty running = new SimpleBooleanProperty( false );
+    // the TimeAccelerator used to change the time
     private final ObjectProperty<TimeAccelerator> acceleratorProperty = new SimpleObjectProperty<>( null );
+    // the simulated date and time
     private final DateTimeBean simulatedTimeBean;
+
     private ZonedDateTime simulatedStart;
 
     private boolean firstTimeHandle = true;
@@ -29,9 +33,10 @@ public final class TimeAnimator extends AnimationTimer
         this.simulatedStart = simulatedStartBean.getZonedDateTime(); // T0
     }
 
-    public TimeAccelerator getAccelerator() { return acceleratorProperty.getValue(); }
-
+    /* Getters and Setters */
     public ObjectProperty<TimeAccelerator> acceleratorProperty() { return acceleratorProperty; }
+
+    public TimeAccelerator getAccelerator() { return acceleratorProperty.getValue(); }
 
     public void setAccelerator( TimeAccelerator accelerator ) { this.acceleratorProperty.set( accelerator ); }
 
@@ -46,6 +51,7 @@ public final class TimeAnimator extends AnimationTimer
     @Override
     public void handle( long now )
     {
+        // register t0 when handle is called for the first time
         if ( firstTimeHandle )
         {
             simulatedStart = simulatedTimeBean.getZonedDateTime();
@@ -55,11 +61,12 @@ public final class TimeAnimator extends AnimationTimer
         }
 
         long deltaRealTime = now - simulatedStartTime; // t - t0
+        // updates the simulated time using the TimeAccelerator
         simulatedTimeBean.setZonedDateTime( getAccelerator().adjust( simulatedStart, deltaRealTime ) );
     }
 
     /**
-     * start the timer of the animation
+     * starts the animation
      */
     public void start()
     {
@@ -70,7 +77,7 @@ public final class TimeAnimator extends AnimationTimer
     }
 
     /**
-     * stop the timer of the animation
+     * stops the animation
      */
     public void stop()
     {
@@ -78,6 +85,6 @@ public final class TimeAnimator extends AnimationTimer
         running.setValue( false );
     }
 
-    public BooleanExpression isRunning() { return ReadOnlyBooleanProperty.booleanExpression( running ); }
 
+    public BooleanExpression isRunning() { return ReadOnlyBooleanProperty.booleanExpression( running ); }
 }

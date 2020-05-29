@@ -14,7 +14,7 @@ public final class DateTimeBean
 {
     private final ObjectProperty<LocalDate> dateProperty = new SimpleObjectProperty<>( null );
     private final ObjectProperty<LocalTime> timeProperty = new SimpleObjectProperty<>( null );
-    private final ObjectProperty<ZoneId> zoneProperty = new SimpleObjectProperty<>( null );
+    private final ObjectProperty<ZoneId>    zoneProperty = new SimpleObjectProperty<>( null );
 
 
     /** Date **/

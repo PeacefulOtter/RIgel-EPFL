@@ -166,10 +166,8 @@ public class SkyCanvasPainter
         // then we draw the stars
         for ( Star star : stars )
         {
-            // round to the nearest 500
-            int roundedColor = ( ( ( star.colorTemperature() + 499 ) / 500 ) * 500 );
             // get the corresponding color thanks to the BlackBodyColor class
-            Color starColor = blackBodyColor.colorForTemperature( roundedColor );
+            Color starColor = blackBodyColor.colorForTemperature( star.colorTemperature() );
             ctx.setFill( starColor );
             // get the diameter based on the star's magnitude
             double starDiameter = magnitudeDiameter( star.magnitude(), projection );

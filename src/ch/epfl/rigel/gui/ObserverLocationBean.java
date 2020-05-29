@@ -5,58 +5,58 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableObjectValue;
-/*
-    got the position of the observator in degrees and a Geographic Coordinates
+/**
+ * Represents the position of the observer in Geographic Coordinates
  */
 public class ObserverLocationBean
 {
-    // longitude of the observator in degrees
-    private final DoubleProperty lonDegObservator = new SimpleDoubleProperty( 0 );
-    // latitude of the observator in degrees
-    private final DoubleProperty latDegObservator = new SimpleDoubleProperty( 0 );
+    // longitude of the observer in degrees
+    private final DoubleProperty lonDegObserver = new SimpleDoubleProperty( 0 );
+    // latitude of the observer in degrees
+    private final DoubleProperty latDegObserver = new SimpleDoubleProperty( 0 );
+    // the geographic coordinates, bound to the observer longitude and latitude
     private final ObservableObjectValue<GeographicCoordinates> coordinates = Bindings.createObjectBinding( () ->
-        GeographicCoordinates.ofDeg( lonDegObservator.getValue(), latDegObservator.getValue() ),
-        this.lonDegObservator, this.latDegObservator );
+        GeographicCoordinates.ofDeg( lonDegObserver.getValue(), latDegObserver.getValue() ),
+        this.lonDegObserver, this.latDegObserver );
 
-
-    public void setObserverLocation( double lonDeg, double latDeg )
-    {
-        this.lonDegObservator.setValue( lonDeg );
-        this.latDegObservator.setValue( latDeg );
-    }
-
-
+    /* Longitude */
     public DoubleProperty lonDegProperty()
     {
-        return lonDegObservator;
+        return lonDegObserver;
     }
 
     public double getLonDeg()
     {
-        return lonDegObservator.getValue();
+        return lonDegObserver.getValue();
     }
 
     public void setLonDeg( double lonDeg )
     {
-        this.lonDegObservator.setValue( lonDeg );
+        this.lonDegObserver.setValue( lonDeg );
     }
 
-
+    /* Latitude */
     public DoubleProperty latDegProperty()
     {
-        return latDegObservator;
+        return latDegObserver;
     }
 
     public double getLatDeg()
     {
-        return latDegObservator.getValue();
+        return latDegObserver.getValue();
     }
 
     public void setLatDeg( double latDeg )
     {
-        this.latDegObservator.setValue( latDeg );
+        this.latDegObserver.setValue( latDeg );
     }
 
+
+    /* Geographic Coordinates */
+    public ObservableObjectValue<GeographicCoordinates> coordinatesProperty()
+    {
+        return coordinates;
+    }
 
     public GeographicCoordinates getCoordinates()
     {
@@ -67,10 +67,5 @@ public class ObserverLocationBean
     {
         setLonDeg( geographicCoordinates.lonDeg() );
         setLatDeg( geographicCoordinates.latDeg() );
-    }
-
-    public ObservableObjectValue coordinatesProperty()
-    {
-        return coordinates;
     }
 }

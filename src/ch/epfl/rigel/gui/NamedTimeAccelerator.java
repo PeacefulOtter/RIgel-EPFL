@@ -1,9 +1,7 @@
 package ch.epfl.rigel.gui;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,6 +21,7 @@ public enum NamedTimeAccelerator
     private final String name;
     private final TimeAccelerator timeAccelerator;
 
+    // Hashmap associating TimeAccelerator names to the TimeAccelerator
     public final static Map<String, TimeAccelerator> ACCELERATORS = new HashMap<>()
     {
         {

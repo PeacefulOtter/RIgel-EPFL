@@ -3,8 +3,9 @@ package ch.epfl.rigel.gui;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 
-/*
-    represents a "time accelerator", i.e. a function that calculates simulated - and usually accelerated - time based on real time.
+/**
+ * Represents a "time accelerator", i.e. a function that calculates simulated - and usually accelerated -
+ * time based on real time.
  */
 @FunctionalInterface
 public interface TimeAccelerator

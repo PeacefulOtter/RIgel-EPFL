@@ -3,8 +3,8 @@ package ch.epfl.rigel.gui;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import javafx.beans.property.*;
 
-/*
-    containing the parameters determining the portion of the sky visible on the image.
+/**
+ * Represents the parameters determining the portion of the sky visible on the image.
  */
 public class ViewingParametersBean
 {
@@ -13,7 +13,7 @@ public class ViewingParametersBean
     // center of the projection
     private final ObjectProperty<HorizontalCoordinates> center = new SimpleObjectProperty<>( null );
 
-
+    /* FOV */
     public DoubleProperty fieldOfViewDegProperty() { return fieldOfViewDeg; }
 
     public Double getFieldOfViewDeg() { return fieldOfViewDeg.getValue(); }
@@ -23,6 +23,7 @@ public class ViewingParametersBean
         fieldOfViewDeg.setValue( newFieldOfViewDeg );
     }
 
+    /* Center Horizontal Coordinates */
     public ObjectProperty<HorizontalCoordinates> centerProperty() { return center; }
 
     public HorizontalCoordinates getCenter() { return center.getValue(); }
