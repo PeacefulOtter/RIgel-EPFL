@@ -8,6 +8,8 @@ import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringExpression;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
@@ -59,7 +61,7 @@ public class Main extends Application
     private static final double INIT_VIEWING_LAT = 15;
     private static final double INIT_FOV_VALUE = 100;
     private static final String DEFAULT_ACC_NAME = NamedTimeAccelerator.TIMES_300.getName();
-    private static final String DEFAULT_ZONEID_NAME = ZoneId.systemDefault().toString();
+    private static final String DEFAULT_ZONE_ID_NAME = ZoneId.systemDefault().toString();
 
     // private attributes used inside the whole class
     private Canvas sky;
@@ -309,7 +311,7 @@ public class Main extends Application
         ObservableList<String> zoneIds = FXCollections.observableList( new ArrayList<>( zoneIdsSet ) );
         timezoneBox = new ComboBox<>( zoneIds );
         timezoneBox.setStyle( "-fx-pref-width: 180;" );
-        timezoneBox.setValue( DEFAULT_ZONEID_NAME );
+        timezoneBox.setValue( DEFAULT_ZONE_ID_NAME );
         // add a listener so that when the value changes, it updates the zoneId of the dateTimeBean
         // we don't use a bind here because the types are different, timezoneBox uses String whereas dateTimeBean uses ZoneId
         timezoneBox.getSelectionModel().selectedItemProperty().addListener( ( observable, oldValue, newValue ) ->
@@ -335,13 +337,26 @@ public class Main extends Application
         ObservableList<String> acceleratorsName = FXCollections.observableList(
                 new ArrayList<>( NamedTimeAccelerator.ACCELERATORS.keySet() ) );
         acceleratorChoiceBox = new ChoiceBox<>( acceleratorsName );
+
+        //ObjectProperty<NamedTimeAccelerator> p1 = new SimpleObjectProperty<>( NamedTimeAccelerator.TIMES_300 );
+        //ObjectProperty<String> p2 = new SimpleObjectProperty<>( DEFAULT_ACC_NAME );
         acceleratorChoiceBox.setValue( DEFAULT_ACC_NAME );
         // add a listener so that when the value changes, it updates the accelerator of the TimeAnimator
         // we don't use a bind here because the types are different, acceleratorButtonsBox uses String whereas
         // timeAnimator.setAccelerator() requires a TimeAccelerator
         acceleratorChoiceBox.getSelectionModel().selectedItemProperty().addListener( ( observable, oldValue, newValue ) ->
-                timeAnimator.setAccelerator( NamedTimeAccelerator.ACCELERATORS.get( newValue ) )
-        );
+        {
+            timeAnimator.setAccelerator( NamedTimeAccelerator.ACCELERATORS.get( newValue ) );
+            //p1.setValue( NamedTimeAccelerator.valueOf( newValue ) );
+        } );
+
+
+        /*p2.addListener( ( p, o, n ) -> {
+            System.out.printf("old: %s  new: %s%n", o, n);
+        });
+
+        p2.bind( Bindings.select( p1, "name" ) );
+        p1.set( NamedTimeAccelerator.TIMES_30 );*/
 
         // refresh and play/pause buttons
         resetButton = new Button();
@@ -394,7 +409,7 @@ public class Main extends Application
         // resets the date, time, and zone to the ones at start
         resetButton.setOnMouseClicked( mouseEvent -> {
             dateTimeBean.setZonedDateTime( ZonedDateTime.now() );
-            timezoneBox.setValue( DEFAULT_ZONEID_NAME );
+            timezoneBox.setValue( DEFAULT_ZONE_ID_NAME );
         } );
     }
 

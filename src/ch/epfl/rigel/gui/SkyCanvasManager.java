@@ -46,6 +46,9 @@ public class SkyCanvasManager
     // Angles to move when pressing an arrow key
     private static final int LONGITUDE_DISTANCE = 10;
     private static final int LATITUDE_DISTANCE = 5;
+    // canvas size
+    private static final int CANVAS_WIDTH = 800;
+    private static final int CANVAS_HEIGHT = 600;
 
     private final Canvas canvas;
     private final ObservableObjectValue<StereographicProjection> projectionBind;
@@ -76,7 +79,7 @@ public class SkyCanvasManager
             ObserverLocationBean observerLocationBean,
             ViewingParametersBean viewingParametersBean )
     {
-        canvas = new Canvas( 800, 600 );
+        canvas = new Canvas( CANVAS_WIDTH, CANVAS_HEIGHT );
         SkyCanvasPainter painter = new SkyCanvasPainter( canvas );
 
         projectionBind = initProjectionBind( viewingParametersBean );
@@ -129,18 +132,18 @@ public class SkyCanvasManager
         return Bindings.createObjectBinding( () ->
                 {
                     StereographicProjection projection = projectionBind.get();
-                    double width = canvas.getWidth() / 2;
-                    double height = canvas.getHeight() / 2;
-
+                    double halfWidth = canvas.getWidth() / 2;
+                    double halfHeight = canvas.getHeight() / 2;
                     double scale = 1;
-                    if ( width != 0d )
+                    // If the width is 0 (which it is the case when the program starts)
+                    // the scale becomes also 0 and it throws an exception
+                    if ( halfWidth > 0 )
                     {
-                        double FOV = viewingParametersBean.getFieldOfViewDeg();
                         double radFOV = Angle.ofDeg( viewingParametersBean.getFieldOfViewDeg() );
-                        scale = projection.applyToAngle( radFOV ) * FOV;
+                        scale = canvas.getWidth() / projection.applyToAngle( radFOV );
                     }
                     // create 'two' consecutive transformations, a translation and a scaling
-                    return Transform.translate( width, height ).createConcatenation( Transform.scale( scale, -scale ) );
+                    return Transform.translate( halfWidth, halfHeight ).createConcatenation( Transform.scale( scale, -scale ) );
                 },
                 canvas.widthProperty(),
                 canvas.heightProperty(),
