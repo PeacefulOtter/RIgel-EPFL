@@ -8,6 +8,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
 import java.time.*;
+
 /*
     represents a "time animator". Its purpose is to periodically modify, via a time accelerator,
     the instant of observation stored in an instance of DateTimeBean, in order to (indirectly) animate the sky.

@@ -1,8 +1,6 @@
 package ch.epfl.rigel.gui;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Represents a named time accelerator, i.e. a pair (name, accelerator)

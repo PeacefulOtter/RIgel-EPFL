@@ -9,7 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Utility class used to get the color of a star using it's temperature in kelvin
+ * Utility class used to get the color of a star using it's temperature in kelvin.
+ * This class used to be static but we made it instantiable so that we only read the bbr_color file
+ * one time and not for every stars which made the program much slower.
  */
 public class BlackBodyColor
 {

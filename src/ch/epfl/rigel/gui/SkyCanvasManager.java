@@ -55,7 +55,7 @@ public class SkyCanvasManager
     private final ObservableObjectValue<Transform> planeToCanvasBind;
     private final ObservableObjectValue<ObservedSky> observedSkyBind;
     private final ObservableObjectValue<HorizontalCoordinates> mouseHorizontalPosition;
-    private final ObjectProperty<Point2D> mousePosition = new SimpleObjectProperty( new Point2D( 0, 0 ) );
+    private final ObjectProperty<Point2D> mousePosition = new SimpleObjectProperty<>( new Point2D( 0, 0 ) );
 
     public final ObservableDoubleValue mouseAzDeg, mouseAltDeg;
     public final ObservableStringValue objectUnderMouse;
@@ -137,6 +137,7 @@ public class SkyCanvasManager
                     double scale = 1;
                     // If the width is 0 (which it is the case when the program starts)
                     // the scale becomes also 0 and it throws an exception
+                    // an if statement here is easier rather then a try/catch block
                     if ( halfWidth > 0 )
                     {
                         double radFOV = Angle.ofDeg( viewingParametersBean.getFieldOfViewDeg() );
