@@ -8,8 +8,6 @@ import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringExpression;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
@@ -60,8 +58,11 @@ public class Main extends Application
     private static final double INIT_VIEWING_LON = 180.000000000001;
     private static final double INIT_VIEWING_LAT = 15;
     private static final double INIT_FOV_VALUE = 100;
-    private static final String DEFAULT_ACC_NAME = NamedTimeAccelerator.TIMES_300.getName();
+    private static final NamedTimeAccelerator DEFAULT_ACCELERATOR = NamedTimeAccelerator.TIMES_300;
     private static final String DEFAULT_ZONE_ID_NAME = ZoneId.systemDefault().toString();
+    // canvas size
+    private static final int CANVAS_WIDTH = 800;
+    private static final int CANVAS_HEIGHT = 600;
 
     // private attributes used inside the whole class
     private Canvas sky;
@@ -74,7 +75,7 @@ public class Main extends Application
     private DatePicker datePicker;
     private TextField timeField;
     private ComboBox<String> timezoneBox;
-    private ChoiceBox<String> acceleratorChoiceBox;
+    private ChoiceBox<NamedTimeAccelerator> acceleratorChoiceBox;
     private Button resetButton, playPauseButton;
 
     private boolean loadedFont = true;
@@ -100,8 +101,7 @@ public class Main extends Application
         dateTimeBean.setZonedDateTime( ZonedDateTime.now() );
 
         timeAnimator = new TimeAnimator( dateTimeBean );
-        TimeAccelerator accelerator = NamedTimeAccelerator.TIMES_3000.getAccelerator();
-        timeAnimator.setAccelerator( accelerator );
+        timeAnimator.setAccelerator( DEFAULT_ACCELERATOR.getAccelerator() );
 
         observerLocationBean = new ObserverLocationBean();
         observerLocationBean.setCoordinates( GeographicCoordinates.ofDeg( INIT_OBSERVER_LON, INIT_OBSERVER_LAT ) );
@@ -115,8 +115,8 @@ public class Main extends Application
 
         // create the main wrapper that takes the entire window
         BorderPane wrapper = new BorderPane();
-        wrapper.setMinWidth( 800 );
-        wrapper.setMinHeight( 600 );
+        wrapper.setMinWidth( CANVAS_WIDTH );
+        wrapper.setMinHeight( CANVAS_HEIGHT );
 
         // create and set the different parts of the program
         wrapper.setTop( buildTopTab() );
@@ -128,8 +128,8 @@ public class Main extends Application
         sky.heightProperty().bind( wrapper.heightProperty() );
 
         // set pref size
-        primaryStage.setMinWidth( 800 );
-        primaryStage.setMinHeight( 600 );
+        primaryStage.setMinWidth( CANVAS_WIDTH );
+        primaryStage.setMinHeight( CANVAS_HEIGHT );
 
         primaryStage.setY( 100 );
 
@@ -312,8 +312,9 @@ public class Main extends Application
         timezoneBox = new ComboBox<>( zoneIds );
         timezoneBox.setStyle( "-fx-pref-width: 180;" );
         timezoneBox.setValue( DEFAULT_ZONE_ID_NAME );
-        // add a listener so that when the value changes, it updates the zoneId of the dateTimeBean
-        // we don't use a bind here because the types are different, timezoneBox uses String whereas dateTimeBean uses ZoneId
+        // add a listener to the selected item so that when the value changes, it updates the zoneId of the dateTimeBean.
+        // We don't use a bind here because the selectedItemProperty is a ReadOnly property and
+        // the types are different, timezoneBox uses String whereas dateTimeBean uses ZoneId
         timezoneBox.getSelectionModel().selectedItemProperty().addListener( ( observable, oldValue, newValue ) ->
                 dateTimeBean.setZone( ZoneId.of( newValue ) )
         );
@@ -334,29 +335,20 @@ public class Main extends Application
         acceleratorButtonsBox.setStyle( "-fx-spacing: inherit; -fx-alignment: baseline-right;" );
 
         // creates an observable list of Time Accelerators names
-        ObservableList<String> acceleratorsName = FXCollections.observableList(
-                new ArrayList<>( NamedTimeAccelerator.ACCELERATORS.keySet() ) );
+        List<NamedTimeAccelerator> accNames = new ArrayList<>();
+        Collections.addAll( accNames, NamedTimeAccelerator.values() );
+        ObservableList<NamedTimeAccelerator> acceleratorsName = FXCollections.observableList( accNames );
+
         acceleratorChoiceBox = new ChoiceBox<>( acceleratorsName );
-
-        //ObjectProperty<NamedTimeAccelerator> p1 = new SimpleObjectProperty<>( NamedTimeAccelerator.TIMES_300 );
-        //ObjectProperty<String> p2 = new SimpleObjectProperty<>( DEFAULT_ACC_NAME );
-        acceleratorChoiceBox.setValue( DEFAULT_ACC_NAME );
-        // add a listener so that when the value changes, it updates the accelerator of the TimeAnimator
-        // we don't use a bind here because the types are different, acceleratorButtonsBox uses String whereas
-        // timeAnimator.setAccelerator() requires a TimeAccelerator
+        acceleratorChoiceBox.setValue( DEFAULT_ACCELERATOR );
+        // add a listener to the selected item so that when the choicebox value changes, it updates the accelerator
+        // of the TimeAnimator. We don't use a bind here because the selectedItemProperty is a ReadOnly property and
+        // the types are different : acceleratorChoiceBox uses NamedTimeAccelerator whereas setAccelerator()
+        // requires a TimeAccelerator
+        // A listener here does exactly the same thing as a bind though
         acceleratorChoiceBox.getSelectionModel().selectedItemProperty().addListener( ( observable, oldValue, newValue ) ->
-        {
-            timeAnimator.setAccelerator( NamedTimeAccelerator.ACCELERATORS.get( newValue ) );
-            //p1.setValue( NamedTimeAccelerator.valueOf( newValue ) );
-        } );
-
-
-        /*p2.addListener( ( p, o, n ) -> {
-            System.out.printf("old: %s  new: %s%n", o, n);
-        });
-
-        p2.bind( Bindings.select( p1, "name" ) );
-        p1.set( NamedTimeAccelerator.TIMES_30 );*/
+            timeAnimator.setAccelerator( newValue.getAccelerator() )
+        );
 
         // refresh and play/pause buttons
         resetButton = new Button();

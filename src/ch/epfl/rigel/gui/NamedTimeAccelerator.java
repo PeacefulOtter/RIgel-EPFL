@@ -21,18 +21,6 @@ public enum NamedTimeAccelerator
     private final String name;
     private final TimeAccelerator timeAccelerator;
 
-    // Hashmap associating TimeAccelerator names to the TimeAccelerator
-    public final static Map<String, TimeAccelerator> ACCELERATORS = new HashMap<>()
-    {
-        {
-            put( TIMES_1.getName(), TIMES_1.getAccelerator() );
-            put( TIMES_30.getName(), TIMES_30.getAccelerator() );
-            put( TIMES_300.getName(), TIMES_300.getAccelerator() );
-            put( TIMES_3000.getName(), TIMES_3000.getAccelerator() );
-            put( DAY.getName(), DAY.getAccelerator() );
-            put( SIDEREAL_DAY.getName(), SIDEREAL_DAY.getAccelerator() );
-        }
-    };
 
     NamedTimeAccelerator( String name, TimeAccelerator timeAccelerator )
     {
