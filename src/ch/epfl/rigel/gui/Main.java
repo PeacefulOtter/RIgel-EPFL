@@ -158,6 +158,18 @@ public class Main extends Application
         sky.requestFocus();
     }
 
+    private void lol()
+    {
+        canvasManager.objectUnderMouseProperty().addListener( ( o, a, n ) -> {
+            System.out.println(n);
+            /*if ( hashmap.contains( n) )
+            {
+                Card c = hashmap.get( n );
+                wrapper.setTop( c );
+            }*/
+        } );
+    }
+
 
     /**
      * Retrieve the stars and asterisms from the /ressource folder and add them into the star catalogue

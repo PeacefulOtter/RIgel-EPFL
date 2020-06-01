@@ -1,6 +1,8 @@
 package ch.epfl.rigel.astronomy;
 
 public enum SunInfo {
+
+    // double degress, double earth distance, double radius,  double masse, double surface
     SUN( 5505, 149.6, 696340, 1.989, 6.0877 );
 
     // temperature in degrees of the Sun

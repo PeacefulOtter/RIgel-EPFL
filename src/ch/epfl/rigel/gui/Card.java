@@ -1,37 +1,73 @@
 package ch.epfl.rigel.gui;
 
-public class Card {
-    private String image;
-    private String title;
-    private String field;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 
-    public Card( String image, String title, String field ) {
-        this.image = image;
-        this.title = title;
-        this.field = field;
+public class Card
+{
+    private VBox card;
+
+    public Card( VBox card )
+    {
+        this.card = card;
     }
 
-    public String getImage() {
-        return image;
-    }
+    public VBox getCard() { return card; }
 
-    public void setImage(String image) {
-        this.image = image;
-    }
 
-    public String getTitle() {
-        return title;
-    }
+    public static class Builder
+    {
+        private static final int WRAPPER_WIDTH = 150;
+        private final VBox wrapper;
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+        public Builder( int wrapperHeight )
+        {
+            wrapper = new VBox();
+            wrapper.setPrefWidth( WRAPPER_WIDTH );
+            wrapper.setPrefHeight( wrapperHeight );
+            wrapper.setStyle(
+                    "-fx-spacing: 4;" +
+                    "-fx-padding: 10;" +
+                    "-fx-background-radius: 50px;" +
+                    "-fx-border-radius: 15px;" +
+                    "-fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.8), 10, 0, 0, 0);" );
+        }
 
-    public String getField() {
-        return field;
-    }
 
-    public void setField(String field) {
-        this.field = field;
+        public Builder setImage( String imgPath )
+        {
+            Image img = new Image( imgPath );
+            ImageView imgView = new ImageView( img );
+            imgView.setX( 0 );
+            imgView.setY( 0 );
+            imgView.setFitWidth( WRAPPER_WIDTH );
+            imgView.setFitHeight( WRAPPER_WIDTH );
+            wrapper.getChildren().set( 0, imgView );
+            return this;
+        }
+
+        public Builder setTitle( String title )
+        {
+            Label label = new Label( title );
+            label.setStyle( "-fx-spacing: 4; -fx-padding: 4; -fx-font-size: 12pt;" );
+            wrapper.getChildren().set( 1, label );
+            return this;
+        }
+
+        public Builder addLabel( String text )
+        {
+            Label label = new Label( text );
+            label.setStyle( "-fx-spacing: 4; -fx-padding: 4; -fx-font-size: 8pt;" );
+            wrapper.getChildren().add( label );
+            return this;
+        }
+
+        public Card build()
+        {
+            return new Card( wrapper );
+        }
+
     }
 }
