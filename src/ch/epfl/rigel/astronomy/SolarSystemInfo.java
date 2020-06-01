@@ -47,7 +47,7 @@ public enum SolarSystemInfo
                 .addLabel( "Radius : " + radius + " km")
                 .addLabel( "Mass : " + mass + "10^30 kg" )
                 .addLabel( "Surface : " + surface + " 10e12 km2" );
-        solarSystemCardsMap.put( "key", builder.build() );
+        solarSystemCardsMap.put( name, builder.build() );
     }
 
     // MOON Constructor
@@ -71,7 +71,7 @@ public enum SolarSystemInfo
                 .addLabel( "Gravity : " + gravity + " m/s²" )
                 .addLabel( "Surface : " + surface )
                 .addLabel( "Age : " + age + " billion years" );
-        solarSystemCardsMap.put( "key", builder.build() );
+        solarSystemCardsMap.put( name, builder.build() );
     }
 
     // PLANETS Constructor
@@ -93,6 +93,6 @@ public enum SolarSystemInfo
                 .addLabel( "Radius : " + radius + " km" )
                 .addLabel( "Gravity : " + gravity + " m/s²" )
                 .addLabel( "Surface : " + surface );
-        solarSystemCardsMap.put( "key", builder.build() );
+        solarSystemCardsMap.put( name, builder.build() );
     }
 }
