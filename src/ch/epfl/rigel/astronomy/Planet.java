@@ -11,8 +11,4 @@ public final class Planet extends CelestialObject
     {
         super( name, equatorialPos, angularSize, magnitude );
     }
-
-    private void setInfo(PlanetInfo info) {
-        super.setInfo("");
-    }
 }

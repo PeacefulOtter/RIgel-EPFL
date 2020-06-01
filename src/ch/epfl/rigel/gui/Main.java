@@ -2,6 +2,7 @@ package ch.epfl.rigel.gui;
 
 import ch.epfl.rigel.astronomy.AsterismLoader;
 import ch.epfl.rigel.astronomy.HygDatabaseLoader;
+import ch.epfl.rigel.astronomy.SolarSystemInfo;
 import ch.epfl.rigel.astronomy.StarCatalogue;
 import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
@@ -156,18 +157,6 @@ public class Main extends Application
         primaryStage.show();
 
         sky.requestFocus();
-    }
-
-    private void lol()
-    {
-        canvasManager.objectUnderMouseProperty().addListener( ( o, a, n ) -> {
-            System.out.println(n);
-            /*if ( hashmap.contains( n) )
-            {
-                Card c = hashmap.get( n );
-                wrapper.setTop( c );
-            }*/
-        } );
     }
 
 
@@ -557,7 +546,15 @@ public class Main extends Application
         if ( loadedResources )
         {
             sky = canvasManager.canvas();
-            return new Pane( sky );
+            Pane skyPane = new Pane( sky );
+            canvasManager.objectUnderMouseProperty().addListener( ( observable, oldValue, newValue ) -> {
+                /*if ( SolarSystemInfo.solarSystemCardsMap.containsKey( newValue ) )
+                {
+
+                }*/
+                System.out.println(newValue);
+            } );
+            return skyPane;
         }
         // otherwise, just return an empty Pane
         else

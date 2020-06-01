@@ -30,7 +30,7 @@ public class Card
             wrapper.setStyle(
                     "-fx-spacing: 4;" +
                     "-fx-padding: 10;" +
-                    "-fx-background-radius: 50px;" +
+                    "-fx-background-radius: 15px;" +
                     "-fx-border-radius: 15px;" +
                     "-fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.8), 10, 0, 0, 0);" );
         }
