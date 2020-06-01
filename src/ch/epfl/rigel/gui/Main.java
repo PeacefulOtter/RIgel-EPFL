@@ -101,6 +101,8 @@ public class Main extends Application
         return getClass().getResourceAsStream( resourceName );
     }
 
+    private static final int CANVAS_WIDTH = 800;
+    private static final int CANVAS_HEIGHT = 600;
 
     public static void main( String[] args )
     {
@@ -135,8 +137,10 @@ public class Main extends Application
 
         // create the main wrapper that takes the entire window
         BorderPane wrapper = new BorderPane();
-        wrapper.setMinWidth( canvasWidth );
-        wrapper.setMinHeight( canvasHeight );
+        wrapper.setMaxHeight( canvasHeight );
+        wrapper.setMaxWidth( canvasWidth );
+        wrapper.setMinHeight( CANVAS_HEIGHT );
+        wrapper.setMinWidth( CANVAS_WIDTH );
 
         // create and set the different parts of the program
         wrapper.setTop( buildTopTab() );
@@ -148,8 +152,12 @@ public class Main extends Application
         sky.heightProperty().bind( wrapper.heightProperty() );
 
         // set pref size
-        primaryStage.setMaximized( true );
+        primaryStage.setMaxHeight( canvasHeight );
+        primaryStage.setMaxWidth( canvasWidth );
+        primaryStage.setMinWidth( CANVAS_WIDTH );
+        primaryStage.setMinHeight( CANVAS_HEIGHT );
 
+        primaryStage.setY( 100 );
         primaryStage.setScene( new Scene( wrapper ) );
         primaryStage.show();
 
