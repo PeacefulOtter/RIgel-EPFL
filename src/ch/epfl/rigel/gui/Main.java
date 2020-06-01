@@ -12,6 +12,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
@@ -23,16 +24,15 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.converter.LocalTimeStringConverter;
 import javafx.util.converter.NumberStringConverter;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.io.*;
+import java.nio.file.Paths;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
@@ -54,9 +54,17 @@ public class Main extends Application
     private static final String BACKUP_PLAY_BTN_TEXT = "▶";
     private static final String PAUSE_BTN_TEXT = "\uf04c";
     private static final String BACKUP_PAUSE_BTN_TEXT = "\u23F8";
+    private static final String DOWNLOAD_BTN_TEXT = "\uf019";
+    private static final String BACKUP_DOWNLOAD_BTN_TEXT = "Download";
+    private static final String IMPORT_BTN_TEXT = "\uf574";
+    private static final String BACKUP_IMPORT_BTN_TEXT = "Import";
+    private static final String CROSSHAIR = "\uf05b";
 
     // Number string converter to have a result with only two decimals
     private static final NumberStringConverter TWO_DECIMALS_CONVERTER = new NumberStringConverter("#0.00" );
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern( "dd-MM-yyyy_HH-mm-ss" );
+    private static final FileChooser.ExtensionFilter EXTENSION_FILTER =
+            new FileChooser.ExtensionFilter("Text Files", "*.txt" );
 
     // init constants
     private static final NamedObserverLocations DEFAULT_OBSERVER_LOCATION = NamedObserverLocations.EPFL;
@@ -67,6 +75,7 @@ public class Main extends Application
     private static final String DEFAULT_ZONE_ID_NAME = ZoneId.systemDefault().toString();
 
     // private attributes used inside the whole class
+    private Stage primaryStage;
     private Canvas sky;
     private TimeAnimator timeAnimator;
     private DateTimeBean dateTimeBean;
@@ -79,7 +88,8 @@ public class Main extends Application
     private ComboBox<String> timezoneBox;
     private ChoiceBox<NamedTimeAccelerator> acceleratorChoiceBox;
     private ChoiceBox<NamedObserverLocations> observerChoiceBox;
-    private Button resetButton, playPauseButton;
+    private Button resetButton, playPauseButton, downloadButton, importButton;
+    private FileChooser importInput;
     TextFormatter<Number> lonTextFormatter, latTextFormatter;
 
     private boolean loadedFont = true;
@@ -100,6 +110,7 @@ public class Main extends Application
     @Override
     public void start( Stage primaryStage )
     {
+        this.primaryStage = primaryStage;
         // define a date, time, time animator, accelerator, observer location and viewing parameters
         dateTimeBean = new DateTimeBean();
         dateTimeBean.setZonedDateTime( ZonedDateTime.now() );
@@ -201,7 +212,7 @@ public class Main extends Application
         // THIRD PART : date, hour, zone id
         HBox timeDateZoneBox = initDateTimeZoneBox();
         // FOURTH PART : accelerator and buttons
-        HBox acceleratorButtonsBox = initAcceleratorButtonsBox();
+        HBox buttonsBox = initButtonsBox();
 
 
         // initialize mouse clicked event on the play/pause and reset buttons
@@ -224,7 +235,7 @@ public class Main extends Application
                 new Separator( Orientation.VERTICAL ),
                 timeDateZoneBox,
                 new Separator( Orientation.VERTICAL ),
-                acceleratorButtonsBox );
+                buttonsBox );
         return topTab;
     }
 
@@ -341,7 +352,7 @@ public class Main extends Application
      * Creates the accelerator choice box and the buttons
      * @return HBox - the box containing the accelerator choice box and the buttons
      */
-    private HBox initAcceleratorButtonsBox()
+    private HBox initButtonsBox()
     {
         HBox acceleratorButtonsBox = new HBox(); // container
         acceleratorButtonsBox.setStyle( "-fx-spacing: inherit; -fx-alignment: baseline-right;" );
@@ -353,7 +364,7 @@ public class Main extends Application
 
         acceleratorChoiceBox = new ChoiceBox<>( acceleratorsName );
         acceleratorChoiceBox.setValue( DEFAULT_ACCELERATOR );
-        // add a listener to the selected item so that when the choicebox value changes, it updates the accelerator
+        // add a listener to the selected item so that when the choice box value changes, it updates the accelerator
         // of the TimeAnimator. We don't use a bind here because the selectedItemProperty is a ReadOnly property and
         // the types are different : acceleratorChoiceBox uses NamedTimeAccelerator whereas setAccelerator()
         // requires a TimeAccelerator
@@ -365,6 +376,12 @@ public class Main extends Application
         // refresh and play/pause buttons
         resetButton = new Button();
         playPauseButton = new Button();
+        downloadButton = new Button();
+        importButton = new Button();
+        importInput = new FileChooser();
+        String programPath = Paths.get( "." ).toAbsolutePath().normalize().toString();
+        importInput.setInitialDirectory( new File( programPath ) );
+        importInput.setSelectedExtensionFilter( EXTENSION_FILTER );
 
         // load the 'Font Awesome' font or assign the button's text to a backup value
         try ( InputStream fontStream = resourceStream( FONT_FILE_NAME ) )
@@ -374,17 +391,29 @@ public class Main extends Application
             resetButton.setText( RESET_BTN_TEXT );
             playPauseButton.setFont( fontAwesome );
             playPauseButton.setText( PLAY_BTN_TEXT );
+            downloadButton.setFont( fontAwesome );
+            downloadButton.setText( DOWNLOAD_BTN_TEXT );
+            importButton.setFont( fontAwesome );
+            importButton.setText( IMPORT_BTN_TEXT );
             loadedFont = true;
         }
         catch ( IOException e )
         {
             resetButton.setText( BACKUP_RESET_BTN_TEXT );
             playPauseButton.setText( BACKUP_PLAY_BTN_TEXT );
+            downloadButton.setText( BACKUP_DOWNLOAD_BTN_TEXT );
+            importInput.setTitle( BACKUP_IMPORT_BTN_TEXT );
             loadedFont = false;
         }
 
         // add all the components to the box
-        acceleratorButtonsBox.getChildren().addAll( acceleratorChoiceBox, resetButton, playPauseButton );
+        acceleratorButtonsBox.getChildren().addAll(
+                acceleratorChoiceBox,
+                resetButton,
+                playPauseButton,
+                new Separator( Orientation.VERTICAL ),
+                downloadButton,
+                importButton );
 
         return acceleratorButtonsBox;
     }
@@ -440,8 +469,58 @@ public class Main extends Application
             timezoneBox.setValue( DEFAULT_ZONE_ID_NAME );
             observerChoiceBox.setValue( DEFAULT_OBSERVER_LOCATION );
         } );
-    }
 
+        downloadButton.setOnMouseClicked( mouseEvent ->  {
+            LocalDateTime now = LocalDateTime.now();
+            StringBuilder sb = new StringBuilder( "RigelSave_" )
+                    .append( DATE_TIME_FORMATTER.format( now ) )
+                    .append( ".txt" );
+
+            StringJoiner data = new StringJoiner("," )
+                    .add( lonTextFormatter.getValue().toString() )
+                    .add( latTextFormatter.getValue().toString() )
+                    .add( datePicker.getValue().toString() )
+                    .add( timeField.getText() )
+                    .add( timezoneBox.getValue() );
+
+            try ( FileOutputStream fos = new FileOutputStream( sb.toString() ) )
+            {
+                fos.write( data.toString().getBytes() );
+                fos.flush();
+            } catch ( IOException e )
+            {
+                System.out.println( "An error occurred." );
+                e.printStackTrace();
+            }
+        } );
+
+        importButton.setOnMouseClicked( mouseEvent ->  {
+            File importedFiles = importInput.showOpenDialog( primaryStage );
+
+            if ( importedFiles != null && importedFiles.getName().contains( "RigelSave" ) )
+            {
+                File importedFile = Collections.singletonList( importedFiles ).get( 0 );
+                try ( BufferedReader reader = new BufferedReader( new FileReader( importedFile ) ) )
+                {
+                    String line;
+                    while ( ( line = reader.readLine() ) != null )
+                    {
+                        String[] data = line.split( "," );
+                        lonTextFormatter.setValue( Double.valueOf( data[ 0 ] ) );
+                        latTextFormatter.setValue( Double.valueOf( data[ 1 ] ) );
+                        int[] date = Arrays.stream( data[ 2 ].split( "-" ) ).mapToInt( Integer::parseInt ).toArray();
+                        datePicker.setValue( LocalDate.of( date[ 0 ], date[ 1 ], date[ 2 ] ) );
+                        timeField.setText( data[ 3 ] );
+                        timezoneBox.setValue( data[ 4 ] );
+                    }
+                }
+                catch ( IOException e )
+                {
+                    e.printStackTrace();
+                }
+            }
+        } );
+    }
 
 
 
