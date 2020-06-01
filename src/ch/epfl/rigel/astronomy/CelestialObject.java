@@ -64,9 +64,6 @@ public abstract class CelestialObject
         return info;
     }
 
-    protected void setInfo(String info){
-        this.info = info;
-    }
     /**
      * @return the information written for the user
      */

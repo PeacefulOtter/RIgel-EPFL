@@ -30,10 +30,6 @@ public final class Sun extends CelestialObject
         this.meanAnomaly = meanAnomaly;
     }
 
-    protected void setInfo(SunInfo info) {
-        super.setInfo("");
-    }
-
     /**
      * @return the ecliptic position
      */

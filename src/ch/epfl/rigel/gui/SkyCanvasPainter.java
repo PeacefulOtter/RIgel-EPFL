@@ -268,7 +268,6 @@ public class SkyCanvasPainter
     }
 
     public void drawInfo( Optional<CelestialObject> closestCelestialObject ){
-
     }
 
     /**
