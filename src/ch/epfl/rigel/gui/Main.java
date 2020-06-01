@@ -480,9 +480,7 @@ public class Main extends Application
 
         downloadButton.setOnMouseClicked( mouseEvent ->  {
             LocalDateTime now = LocalDateTime.now();
-            StringBuilder sb = new StringBuilder( "RigelSave_" )
-                    .append( DATE_TIME_FORMATTER.format( now ) )
-                    .append( ".txt" );
+            String fileName = "RigelSave_" + DATE_TIME_FORMATTER.format( now ) + ".txt";
 
             StringJoiner data = new StringJoiner("," )
                     .add( lonTextFormatter.getValue().toString() )
@@ -491,7 +489,7 @@ public class Main extends Application
                     .add( timeField.getText() )
                     .add( timezoneBox.getValue() );
 
-            try ( FileOutputStream fos = new FileOutputStream( sb.toString() ) )
+            try ( FileOutputStream fos = new FileOutputStream( fileName ) )
             {
                 fos.write( data.toString().getBytes() );
                 fos.flush();
