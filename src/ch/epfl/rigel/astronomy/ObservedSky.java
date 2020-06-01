@@ -11,8 +11,6 @@ import java.util.*;
  */
 public class ObservedSky
 {
-    // list of planetModel without earth
-    private final List<PlanetModel> planetsModelWithoutEarth;
     // list of planet without earth
     private final List<Planet> planetsWithoutEarth;
     // hashmap linking a celestial object with his Cartesian Coordinates
@@ -22,7 +20,7 @@ public class ObservedSky
     private final StereographicProjection projection;
     private final Sun sun;
     private final Moon moon;
-    private StarCatalogue catalogue;
+    private final StarCatalogue catalogue;
 
     /**
      * calculates the projected position in the plane of all celestial objects: the Sun,
@@ -42,7 +40,8 @@ public class ObservedSky
         this.projection = projection;
         planetsWithoutEarth = new ArrayList<>();
         planetCartesianCoordinates = new HashMap<>();
-        planetsModelWithoutEarth = new ArrayList<>( PlanetModel.ALL );
+        // list of planetModel without earth
+        List<PlanetModel> planetsModelWithoutEarth = new ArrayList<>( PlanetModel.ALL );
         planetsModelWithoutEarth.remove(PlanetModel.EARTH);
         celestialObjects = new HashSet<>();
 
@@ -51,7 +50,6 @@ public class ObservedSky
         double daysUntil = Epoch.J2010.daysUntil( moment );
 
         sun = SunModel.SUN.at( daysUntil, conversionToEquatorial );
-        sun.setInfo(SunInfo.SUN);
         moon = MoonModel.MOON.at( daysUntil, conversionToEquatorial );
         celestialObjects.add( sun );
         celestialObjects.add( moon );

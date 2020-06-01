@@ -20,7 +20,7 @@ public enum SolarSystemInfo
 
     private final Card.Builder builder;
 
-    public final Map<String, Card> solarSystemCardsMap = new HashMap<>();
+    private Map<String, Card> solarSystemCardsMap = new HashMap<>();
 
     SolarSystemInfo( String name, String imgPath, String type, int cardHeight )
     {
@@ -90,4 +90,7 @@ public enum SolarSystemInfo
                 .addLabel( "Surface : " + surface + " x10^6 km2" );
         solarSystemCardsMap.put( name, builder.build() );
     }
+
+
+    public Map<String, Card> getCardMap() { return solarSystemCardsMap; }
 }
