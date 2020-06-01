@@ -5,7 +5,7 @@ import ch.epfl.rigel.math.ClosedInterval;
 
 import java.util.HashMap;
 import java.util.Map;
-/*
+
 public enum SolarSystemInfo
 {
     SUN(     "Soleil",  "" ,"Étoile",  5505, 149.6, 696340, 1.989, 6.0877 ),
@@ -94,4 +94,3 @@ public enum SolarSystemInfo
 
     public Map<String, Card> getCardMap() { return solarSystemCardsMap; }
 }
-*/
