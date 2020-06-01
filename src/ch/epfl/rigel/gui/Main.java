@@ -2,7 +2,6 @@ package ch.epfl.rigel.gui;
 
 import ch.epfl.rigel.astronomy.AsterismLoader;
 import ch.epfl.rigel.astronomy.HygDatabaseLoader;
-import ch.epfl.rigel.astronomy.SolarSystemInfo;
 import ch.epfl.rigel.astronomy.StarCatalogue;
 import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
@@ -13,6 +12,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
@@ -90,8 +90,8 @@ public class Main extends Application
     private boolean loadedFont = true;
     private boolean loadedResources = true;
 
-    private static final int CANVAS_WIDTH = 800;
-    private static final int CANVAS_HEIGHT = 600;
+    private static final int MIN_CANVAS_WIDTH = 800;
+    private static final int MIN_CANVAS_HEIGHT = 600;
 
     // an input stream to read the files
     private InputStream resourceStream( String resourceName )
@@ -133,10 +133,11 @@ public class Main extends Application
 
         // create the main wrapper that takes the entire window
         BorderPane wrapper = new BorderPane();
-        wrapper.setMinHeight( CANVAS_HEIGHT );
-        wrapper.setMinWidth( CANVAS_WIDTH );
-        wrapper.setMaxHeight( canvasHeight );
+        wrapper.setMinWidth( MIN_CANVAS_WIDTH );
+        wrapper.setMinHeight( MIN_CANVAS_HEIGHT );
         wrapper.setMaxWidth( canvasWidth );
+        wrapper.setMaxHeight( canvasHeight );
+
 
         // create and set the different parts of the program
         wrapper.setTop( buildTopTab() );
@@ -148,12 +149,13 @@ public class Main extends Application
         sky.heightProperty().bind( wrapper.heightProperty() );
 
         // set pref size
-        primaryStage.setMinWidth( CANVAS_WIDTH );
-        primaryStage.setMinHeight( CANVAS_HEIGHT );
-        primaryStage.setMaxHeight( canvasHeight );
+        primaryStage.setMinWidth( MIN_CANVAS_WIDTH );
+        primaryStage.setMinHeight( MIN_CANVAS_HEIGHT );
         primaryStage.setMaxWidth( canvasWidth );
+        primaryStage.setMaxHeight( canvasHeight );
 
-        primaryStage.setMaximized(true);
+        primaryStage.setScene( new Scene( wrapper ) );
+        primaryStage.setMaximized( true );
         primaryStage.show();
 
         sky.requestFocus();
@@ -547,13 +549,13 @@ public class Main extends Application
         {
             sky = canvasManager.canvas();
             Pane skyPane = new Pane( sky );
-            canvasManager.objectUnderMouseProperty().addListener( ( observable, oldValue, newValue ) -> {
-                /*if ( SolarSystemInfo.solarSystemCardsMap.containsKey( newValue ) )
+            /*canvasManager.objectUnderMouseProperty().addListener( ( observable, oldValue, newValue ) -> {
+                if ( SolarSystemInfo.solarSystemCardsMap.containsKey( newValue ) )
                 {
 
-                }*/
+                }
                 System.out.println(newValue);
-            } );
+            } );*/
             return skyPane;
         }
         // otherwise, just return an empty Pane
