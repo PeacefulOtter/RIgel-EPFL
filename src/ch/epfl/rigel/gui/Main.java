@@ -11,14 +11,19 @@ import javafx.beans.binding.StringExpression;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.converter.LocalTimeStringConverter;
 import javafx.util.converter.NumberStringConverter;
@@ -30,6 +35,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.List;
 import java.util.function.UnaryOperator;
 
 
@@ -53,16 +59,12 @@ public class Main extends Application
     private static final NumberStringConverter TWO_DECIMALS_CONVERTER = new NumberStringConverter("#0.00" );
 
     // init constants
-    private static final double INIT_OBSERVER_LON = 6.57;
-    private static final double INIT_OBSERVER_LAT = 46.52;
+    private static final NamedObserverLocations DEFAULT_OBSERVER_LOCATION = NamedObserverLocations.EPFL;
     private static final double INIT_VIEWING_LON = 180.000000000001;
     private static final double INIT_VIEWING_LAT = 15;
     private static final double INIT_FOV_VALUE = 100;
     private static final NamedTimeAccelerator DEFAULT_ACCELERATOR = NamedTimeAccelerator.TIMES_300;
     private static final String DEFAULT_ZONE_ID_NAME = ZoneId.systemDefault().toString();
-    // canvas size
-    private static final int CANVAS_WIDTH = 800;
-    private static final int CANVAS_HEIGHT = 600;
 
     // private attributes used inside the whole class
     private Canvas sky;
@@ -76,7 +78,9 @@ public class Main extends Application
     private TextField timeField;
     private ComboBox<String> timezoneBox;
     private ChoiceBox<NamedTimeAccelerator> acceleratorChoiceBox;
+    private ChoiceBox<NamedObserverLocations> observerChoiceBox;
     private Button resetButton, playPauseButton;
+    TextFormatter<Number> lonTextFormatter, latTextFormatter;
 
     private boolean loadedFont = true;
     private boolean loadedResources = true;
@@ -104,7 +108,7 @@ public class Main extends Application
         timeAnimator.setAccelerator( DEFAULT_ACCELERATOR.getAccelerator() );
 
         observerLocationBean = new ObserverLocationBean();
-        observerLocationBean.setCoordinates( GeographicCoordinates.ofDeg( INIT_OBSERVER_LON, INIT_OBSERVER_LAT ) );
+        observerLocationBean.setCoordinates( DEFAULT_OBSERVER_LOCATION.getObserverLocationBean().getCoordinates() );
 
         viewingParametersBean = new ViewingParametersBean();
         viewingParametersBean.setCenter( HorizontalCoordinates.ofDeg( INIT_VIEWING_LON, INIT_VIEWING_LAT ) );
@@ -113,10 +117,15 @@ public class Main extends Application
         // get the stars and asterisms from the files in the ressource folder
         initStarsAndAsterisms();
 
+        // get screen size
+        Rectangle2D screenBounds = Screen.getPrimary().getBounds();
+        double canvasWidth = screenBounds.getWidth();
+        double canvasHeight = screenBounds.getHeight();
+
         // create the main wrapper that takes the entire window
         BorderPane wrapper = new BorderPane();
-        wrapper.setMinWidth( CANVAS_WIDTH );
-        wrapper.setMinHeight( CANVAS_HEIGHT );
+        wrapper.setMinWidth( canvasWidth );
+        wrapper.setMinHeight( canvasHeight );
 
         // create and set the different parts of the program
         wrapper.setTop( buildTopTab() );
@@ -128,10 +137,7 @@ public class Main extends Application
         sky.heightProperty().bind( wrapper.heightProperty() );
 
         // set pref size
-        primaryStage.setMinWidth( CANVAS_WIDTH );
-        primaryStage.setMinHeight( CANVAS_HEIGHT );
-
-        primaryStage.setY( 100 );
+        primaryStage.setMaximized( true );
 
         primaryStage.setScene( new Scene( wrapper ) );
         primaryStage.show();
@@ -188,12 +194,15 @@ public class Main extends Application
         HBox topTab = new HBox(); // wrapper
         topTab.setStyle( "-fx-spacing: 4; -fx-padding: 4;" );
 
-        // LEFT PART : longitude, latitude
+        // FIRST PART : observer locations
+        HBox observerLocationsBox = initObserverLocationsInput();
+        // SECOND PART : longitude, latitude
         HBox posBox = initPositionBox();
-        // MIDDLE PART : date, hour, zone id
+        // THIRD PART : date, hour, zone id
         HBox timeDateZoneBox = initDateTimeZoneBox();
-        // RIGHT PART : accelerator and buttons
+        // FOURTH PART : accelerator and buttons
         HBox acceleratorButtonsBox = initAcceleratorButtonsBox();
+
 
         // initialize mouse clicked event on the play/pause and reset buttons
         initMouseClickedBtn();
@@ -209,6 +218,8 @@ public class Main extends Application
 
         // add the three parts together as well as the separators between them
         topTab.getChildren().addAll(
+                observerLocationsBox,
+                new Separator( Orientation.VERTICAL ),
                 posBox,
                 new Separator( Orientation.VERTICAL ),
                 timeDateZoneBox,
@@ -241,11 +252,11 @@ public class Main extends Application
             }
             catch ( Exception e ) { return null; }
         } );
-        TextFormatter<Number> lonTextFormatter = new TextFormatter<>( TWO_DECIMALS_CONVERTER, INIT_OBSERVER_LON, lonFilter );
+        lonTextFormatter = new TextFormatter<>(
+                TWO_DECIMALS_CONVERTER, DEFAULT_OBSERVER_LOCATION.getLon(), lonFilter );
         posLongitudeField.setTextFormatter( lonTextFormatter );
         // bind the longitude with the observer longitude latitude
         observerLocationBean.lonDegProperty().bind( lonTextFormatter.valueProperty() );
-
 
 
         // Latitude label and field
@@ -262,7 +273,8 @@ public class Main extends Application
             }
             catch ( Exception e ) { return null; }
         } );
-        TextFormatter<Number> latTextFormatter = new TextFormatter<>( TWO_DECIMALS_CONVERTER, INIT_OBSERVER_LAT, latFilter );
+        latTextFormatter = new TextFormatter<>(
+                TWO_DECIMALS_CONVERTER, DEFAULT_OBSERVER_LOCATION.getLat(), latFilter );
         posLatitudeField.setTextFormatter( latTextFormatter );
         // bind the latitude with the observer location latitude
         observerLocationBean.latDegProperty().bind( latTextFormatter.valueProperty() );
@@ -377,6 +389,30 @@ public class Main extends Application
         return acceleratorButtonsBox;
     }
 
+
+    private HBox initObserverLocationsInput()
+    {
+        HBox NamedObserverBox = new HBox(); // container
+        NamedObserverBox.setStyle( "-fx-spacing: inherit; -fx-alignment: baseline-right;" );
+
+        // creates an observable list of Time Accelerators names
+        List<NamedObserverLocations> observerLocations = new ArrayList<>();
+        Collections.addAll( observerLocations, NamedObserverLocations.values() );
+        ObservableList<NamedObserverLocations> observerLocationName = FXCollections.observableList( observerLocations );
+        observerChoiceBox = new ChoiceBox<>( observerLocationName );
+        observerChoiceBox.setValue( DEFAULT_OBSERVER_LOCATION );
+        observerChoiceBox.getSelectionModel().selectedItemProperty().addListener( ( observable, oldValue, newValue ) -> {
+            lonTextFormatter.setValue( newValue.getLon() );
+            latTextFormatter.setValue( newValue.getLat() );
+            timezoneBox.setValue( newValue.getZoneId().getId() );
+        } );
+
+        NamedObserverBox.getChildren().addAll( observerChoiceBox );
+
+        return NamedObserverBox;
+    }
+
+
     /**
      * Adds mouse clicked events to the buttons
      */
@@ -402,8 +438,10 @@ public class Main extends Application
         resetButton.setOnMouseClicked( mouseEvent -> {
             dateTimeBean.setZonedDateTime( ZonedDateTime.now() );
             timezoneBox.setValue( DEFAULT_ZONE_ID_NAME );
+            observerChoiceBox.setValue( DEFAULT_OBSERVER_LOCATION );
         } );
     }
+
 
 
 

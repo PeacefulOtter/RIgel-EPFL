@@ -47,7 +47,7 @@ public class SkyCanvasManager
     private static final int LONGITUDE_DISTANCE = 10;
     private static final int LATITUDE_DISTANCE = 5;
     // canvas size
-    private static final int CANVAS_WIDTH = 800;
+    private static final int CANVAS_WIDTH = 1000;
     private static final int CANVAS_HEIGHT = 600;
 
     private final Canvas canvas;
