@@ -267,6 +267,10 @@ public class SkyCanvasPainter
         ctx.fillOval( moonPoint.getX() - radius, moonPoint.getY() - radius, finalDiameter, finalDiameter );
     }
 
+    public void drawInfo( Optional<CelestialObject> closestCelestialObject ){
+
+    }
+
     /**
      * Draws the Horizon and the
      * @param projection : the stereographic projection

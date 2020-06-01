@@ -26,6 +26,10 @@ public final class Moon extends CelestialObject
         this.phase = phase;
     }
 
+    private void setInfo(MoonInfo info) {
+        super.setInfo("");
+    }
+
     @Override
     public String info()
     {
