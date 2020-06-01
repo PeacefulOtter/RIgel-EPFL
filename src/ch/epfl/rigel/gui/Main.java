@@ -12,13 +12,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -35,7 +30,6 @@ import java.nio.file.Paths;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.List;
 import java.util.function.UnaryOperator;
 
 
@@ -95,14 +89,15 @@ public class Main extends Application
     private boolean loadedFont = true;
     private boolean loadedResources = true;
 
+    private static final int CANVAS_WIDTH = 800;
+    private static final int CANVAS_HEIGHT = 600;
+
     // an input stream to read the files
     private InputStream resourceStream( String resourceName )
     {
         return getClass().getResourceAsStream( resourceName );
     }
 
-    private static final int CANVAS_WIDTH = 800;
-    private static final int CANVAS_HEIGHT = 600;
 
     public static void main( String[] args )
     {
@@ -137,10 +132,10 @@ public class Main extends Application
 
         // create the main wrapper that takes the entire window
         BorderPane wrapper = new BorderPane();
-        wrapper.setMaxHeight( canvasHeight );
-        wrapper.setMaxWidth( canvasWidth );
         wrapper.setMinHeight( CANVAS_HEIGHT );
         wrapper.setMinWidth( CANVAS_WIDTH );
+        wrapper.setMaxHeight( canvasHeight );
+        wrapper.setMaxWidth( canvasWidth );
 
         // create and set the different parts of the program
         wrapper.setTop( buildTopTab() );
@@ -152,13 +147,12 @@ public class Main extends Application
         sky.heightProperty().bind( wrapper.heightProperty() );
 
         // set pref size
-        primaryStage.setMaxHeight( canvasHeight );
-        primaryStage.setMaxWidth( canvasWidth );
         primaryStage.setMinWidth( CANVAS_WIDTH );
         primaryStage.setMinHeight( CANVAS_HEIGHT );
+        primaryStage.setMaxHeight( canvasHeight );
+        primaryStage.setMaxWidth( canvasWidth );
 
-        primaryStage.setY( 100 );
-        primaryStage.setScene( new Scene( wrapper ) );
+        primaryStage.setMaximized(true);
         primaryStage.show();
 
         sky.requestFocus();

@@ -51,6 +51,7 @@ public class ObservedSky
         double daysUntil = Epoch.J2010.daysUntil( moment );
 
         sun = SunModel.SUN.at( daysUntil, conversionToEquatorial );
+        sun.setInfo(SunInfo.SUN);
         moon = MoonModel.MOON.at( daysUntil, conversionToEquatorial );
         celestialObjects.add( sun );
         celestialObjects.add( moon );

@@ -10,6 +10,8 @@ public abstract class CelestialObject
     // name of the object
     private final String name;
 
+    private String info;
+
     // Equatorial position
     private final EquatorialCoordinates equatorialPos;
 
@@ -26,7 +28,7 @@ public abstract class CelestialObject
         Objects.requireNonNull( equatorialPos );
 
         Preconditions.checkArgument( angularSize >= 0 );
-
+        this.info = null;
         this.name = name;
         this.equatorialPos = equatorialPos;
         this.angularSize = angularSize;
@@ -59,9 +61,12 @@ public abstract class CelestialObject
      */
     public String info()
     {
-        return name();
+        return info;
     }
 
+    protected void setInfo(String info){
+        this.info = info;
+    }
     /**
      * @return the information written for the user
      */
