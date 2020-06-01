@@ -9,6 +9,7 @@ import ch.epfl.rigel.astronomy.*;
 import ch.epfl.rigel.coordinates.StereographicProjection;
 import ch.epfl.rigel.math.ClosedInterval;
 import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
 import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -265,9 +266,6 @@ public class SkyCanvasPainter
 
         ctx.setFill( WHITE_COLOR );
         ctx.fillOval( moonPoint.getX() - radius, moonPoint.getY() - radius, finalDiameter, finalDiameter );
-    }
-
-    public void drawInfo( Optional<CelestialObject> closestCelestialObject ){
     }
 
     /**
