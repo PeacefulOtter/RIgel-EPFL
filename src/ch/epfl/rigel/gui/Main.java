@@ -487,7 +487,10 @@ public class Main extends Application
                     .add( latTextFormatter.getValue().toString() )
                     .add( datePicker.getValue().toString() )
                     .add( timeField.getText() )
-                    .add( timezoneBox.getValue() );
+                    .add( timezoneBox.getValue() )
+                    .add( String.valueOf( viewingParametersBean.getCenter().azDeg() ) )
+                    .add( String.valueOf( viewingParametersBean.getCenter().altDeg() ) )
+                    .add( viewingParametersBean.getFieldOfViewDeg().toString() );
 
             try ( FileOutputStream fos = new FileOutputStream( fileName ) )
             {
@@ -512,12 +515,16 @@ public class Main extends Application
                     while ( ( line = reader.readLine() ) != null )
                     {
                         String[] data = line.split( "," );
-                        lonTextFormatter.setValue( Double.valueOf( data[ 0 ] ) );
-                        latTextFormatter.setValue( Double.valueOf( data[ 1 ] ) );
+                        lonTextFormatter.setValue( Double.parseDouble( data[ 0 ] ) );
+                        latTextFormatter.setValue( Double.parseDouble( data[ 1 ] ) );
                         int[] date = Arrays.stream( data[ 2 ].split( "-" ) ).mapToInt( Integer::parseInt ).toArray();
                         datePicker.setValue( LocalDate.of( date[ 0 ], date[ 1 ], date[ 2 ] ) );
                         timeField.setText( data[ 3 ] );
                         timezoneBox.setValue( data[ 4 ] );
+                        HorizontalCoordinates newCenter =  HorizontalCoordinates.ofDeg(
+                                Double.parseDouble( data[ 5 ] ), Double.parseDouble( data[ 6 ] ) );
+                        viewingParametersBean.setCenter( newCenter );
+                        viewingParametersBean.setFieldOfViewDeg( Double.parseDouble( data[ 7 ] ) );
                     }
                 }
                 catch ( IOException e )
