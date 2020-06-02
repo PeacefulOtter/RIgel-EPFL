@@ -2,6 +2,7 @@ package ch.epfl.rigel.gui;
 
 import ch.epfl.rigel.astronomy.AsterismLoader;
 import ch.epfl.rigel.astronomy.HygDatabaseLoader;
+import ch.epfl.rigel.astronomy.SolarSystemData;
 import ch.epfl.rigel.astronomy.StarCatalogue;
 import ch.epfl.rigel.coordinates.EquatorialToHorizontalConversion;
 import ch.epfl.rigel.coordinates.GeographicCoordinates;
@@ -125,7 +126,7 @@ public class Main extends Application
         viewingParametersBean.setCenter( HorizontalCoordinates.ofDeg( INIT_VIEWING_LON, INIT_VIEWING_LAT ) );
         viewingParametersBean.setFieldOfViewDeg( INIT_FOV_VALUE );
 
-        // get the stars and asterisms from the files in the ressource folder
+        // get the stars and asterisms from the files in the resource folder
         initStarsAndAsterisms();
 
         // get screen size
@@ -570,13 +571,22 @@ public class Main extends Application
         {
             sky = canvasManager.canvas();
             Pane skyPane = new Pane( sky );
-            /*canvasManager.objectUnderMouseProperty().addListener( ( observable, oldValue, newValue ) -> {
-                if ( SolarSystemInfo.solarSystemCardsMap.containsKey( newValue ) )
+            Map<String, Card> cardMap = SolarSystemData.getCardsMap();
+            canvasManager.objectUnderMouseProperty().addListener( ( observable, oldValue, newValue ) -> {
+                if ( cardMap.containsKey( newValue ) )
                 {
-
+                    Card card = cardMap.get( newValue );
+                    if ( !skyPane.getChildren().contains( card ) )
+                    {
+                        skyPane.getChildren().add( card );
+                    }
                 }
-                System.out.println(newValue);
-            } );*/
+                else if ( skyPane.getChildren().size() > 1 )
+                {
+                    skyPane.getChildren().remove( 1 );
+                }
+
+            } );
             return skyPane;
         }
         // otherwise, just return an empty Pane
