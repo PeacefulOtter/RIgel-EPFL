@@ -102,6 +102,7 @@ public class Main extends Application
     private FileChooser importInput;
     private TextFormatter<Number> lonTextFormatter, latTextFormatter;
     private Pane skyPane;
+    private String objectUnderMouseName;
 
     private boolean loadedFont = false;
     private boolean loadedResources = true;
@@ -608,6 +609,12 @@ public class Main extends Application
         Map<String, Card> cardMap = SolarSystemData.getCardsMap();
 
         canvasManager.objectUnderMouseProperty().addListener( ( observable, oldValue, newValue ) -> {
+            if ( skyPane.getChildren().size() > 1 && !newValue.equals( objectUnderMouseName ) )
+            {
+                FADE_OUT_TRANSITION.play();
+                // remove the card from the pane when the transition is finished
+                FADE_OUT_TRANSITION.setOnFinished( event -> skyPane.getChildren().remove( 1 ) );
+            }
             if ( cardMap.containsKey( newValue ) )
             {
                 Card card = cardMap.get( newValue );
@@ -619,13 +626,7 @@ public class Main extends Application
                     FADE_IN_TRANSITION.play();
                 }
             }
-            else if ( skyPane.getChildren().size() > 1 )
-            {
-                FADE_OUT_TRANSITION.play();
-                // remove the card from the pane when the transition is finished
-                FADE_OUT_TRANSITION.setOnFinished( event -> skyPane.getChildren().remove( 1 ) );
-            }
-
+            objectUnderMouseName = newValue;
         } );
         return skyPane;
     }
