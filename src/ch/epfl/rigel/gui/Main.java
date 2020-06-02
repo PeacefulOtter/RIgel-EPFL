@@ -442,6 +442,7 @@ public class Main extends Application
                 }
             }
         });
+        searchText.setPromptText("Recherche");
         searchBox.getChildren().addAll(searchText);
         return searchBox;
     }
