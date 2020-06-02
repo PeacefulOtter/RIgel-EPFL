@@ -1,11 +1,7 @@
 package ch.epfl.rigel.gui;
 
-import ch.epfl.rigel.astronomy.CelestialObject;
-import ch.epfl.rigel.astronomy.ObservedSky;
-import ch.epfl.rigel.astronomy.StarCatalogue;
-import ch.epfl.rigel.coordinates.CartesianCoordinates;
-import ch.epfl.rigel.coordinates.HorizontalCoordinates;
-import ch.epfl.rigel.coordinates.StereographicProjection;
+import ch.epfl.rigel.astronomy.*;
+import ch.epfl.rigel.coordinates.*;
 import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.ClosedInterval;
 import ch.epfl.rigel.math.RightOpenInterval;
@@ -281,7 +277,8 @@ public class SkyCanvasManager
             double maxDist = projectionBind.get().applyToAngle( MAX_OBJECT_DISTANCE );
             Optional<CelestialObject> closestCelestialObject = observedSkyBind.get().objectClosestTo( mousePos, maxDist );
             // if there is an object close the mouse, return the celestial objects name
-            if ( closestCelestialObject.isPresent() ) { return closestCelestialObject.get().toString(); }
+            if ( closestCelestialObject.isPresent() ) {
+                return closestCelestialObject.get().toString(); }
             // else, return an empty string
             return "";
         }, observedSkyBind, mousePosition, planeToCanvasBind );
@@ -302,7 +299,26 @@ public class SkyCanvasManager
         } );
     }
 
+    public EquatorialCoordinates check(String name){
+        for (Star star: observedSkyBind.get().stars()) {
+            if (name.equals(star.name())){
+                return star.equatorialPos();
+            }
 
+        }
+
+        for (Planet planet: observedSkyBind.get().planets()) {
+            if (name.equals(planet.name())){
+                return planet.equatorialPos();
+            }
+        }
+
+        if (name.equals(observedSkyBind.get().sun().name())) return observedSkyBind.get().sun().equatorialPos();
+        if (name.equals(observedSkyBind.get().moon().name())) return observedSkyBind.get().moon().equatorialPos();
+
+
+        return null;
+    }
     /* Getters */
     public double getMouseAzDeg() { return mouseAzDeg.get(); }
 

@@ -20,7 +20,7 @@ public enum SolarSystemInfo
 
     private final Card.Builder builder;
 
-    private Map<String, Card> solarSystemCardsMap = new HashMap<>();
+    public Map<String, Card> solarSystemCardsMap = new HashMap<>();
 
     SolarSystemInfo( String name, String imgPath, String type, int cardHeight )
     {

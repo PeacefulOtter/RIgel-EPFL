@@ -3,6 +3,7 @@ package ch.epfl.rigel.gui;
 import ch.epfl.rigel.astronomy.AsterismLoader;
 import ch.epfl.rigel.astronomy.HygDatabaseLoader;
 import ch.epfl.rigel.astronomy.StarCatalogue;
+import ch.epfl.rigel.coordinates.EquatorialToHorizontalConversion;
 import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import javafx.application.Application;
@@ -15,6 +16,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -218,8 +220,8 @@ public class Main extends Application
         HBox timeDateZoneBox = initDateTimeZoneBox();
         // FOURTH PART : accelerator and buttons
         HBox buttonsBox = initButtonsBox();
-
-
+        // FIVE PART : search Bar
+        HBox searchBar = initSearchBar();
         // initialize mouse clicked event on the play/pause and reset buttons
         initMouseClickedBtn();
 
@@ -240,7 +242,9 @@ public class Main extends Application
                 new Separator( Orientation.VERTICAL ),
                 timeDateZoneBox,
                 new Separator( Orientation.VERTICAL ),
-                buttonsBox );
+                buttonsBox,
+                new Separator( Orientation.VERTICAL ),
+                searchBar);
         return topTab;
     }
 
@@ -423,6 +427,23 @@ public class Main extends Application
         return acceleratorButtonsBox;
     }
 
+    private HBox initSearchBar()
+    {
+        HBox searchBox = new HBox();
+        TextField searchText = new TextField();
+        searchText.setStyle( "-fx-pref-width: 70; -fx-alignment: baseline-right;" );
+        searchText.setOnKeyReleased(keyEvent -> {
+            KeyCode key = keyEvent.getCode(); // get the key
+            if(key.equals(KeyCode.ENTER)){
+                EquatorialToHorizontalConversion conversion = new EquatorialToHorizontalConversion(dateTimeBean.getZonedDateTime(), observerLocationBean.getCoordinates());
+                if (canvasManager.check(searchText.getText()) != null){
+                    viewingParametersBean.setCenter(conversion.apply(canvasManager.check(searchText.getText())));
+                }
+            }
+        });
+        searchBox.getChildren().addAll(searchText);
+        return searchBox;
+    }
 
     private HBox initObserverLocationsInput()
     {

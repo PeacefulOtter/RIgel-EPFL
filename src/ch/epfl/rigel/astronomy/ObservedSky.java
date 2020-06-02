@@ -40,6 +40,7 @@ public class ObservedSky
         this.projection = projection;
         planetsWithoutEarth = new ArrayList<>();
         planetCartesianCoordinates = new HashMap<>();
+
         // list of planetModel without earth
         List<PlanetModel> planetsModelWithoutEarth = new ArrayList<>( PlanetModel.ALL );
         planetsModelWithoutEarth.remove(PlanetModel.EARTH);
@@ -194,5 +195,6 @@ public class ObservedSky
     {
         return Math.sqrt( Math.pow( point2.x() - point1.x(), 2 ) + Math.pow( point2.y() - point1.y(), 2 ) );
     }
+
 
 }
