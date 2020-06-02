@@ -4,9 +4,11 @@ import ch.epfl.rigel.astronomy.AsterismLoader;
 import ch.epfl.rigel.astronomy.HygDatabaseLoader;
 import ch.epfl.rigel.astronomy.SolarSystemData;
 import ch.epfl.rigel.astronomy.StarCatalogue;
+import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 import ch.epfl.rigel.coordinates.EquatorialToHorizontalConversion;
 import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
+import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringExpression;
@@ -26,6 +28,7 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.util.converter.LocalTimeStringConverter;
 import javafx.util.converter.NumberStringConverter;
 
@@ -43,7 +46,6 @@ public class Main extends Application
     // file names to load the stars and asterisms
     private static final String HYG_CATALOGUE_NAME = "/hygdata_v3.csv";
     private static final String ASTERISM_CATALOGUE_NAME = "/asterisms.txt";
-    private static final String FONT_FILE_NAME = "/Font Awesome 5 Free-Solid-900.otf";
 
     // Buttons text and backup text if the font cant load
     private static final String RESET_BTN_TEXT = "\uf0e2";
@@ -56,21 +58,30 @@ public class Main extends Application
     private static final String BACKUP_DOWNLOAD_BTN_TEXT = "Download";
     private static final String IMPORT_BTN_TEXT = "\uf574";
     private static final String BACKUP_IMPORT_BTN_TEXT = "Import";
-    private static final String CROSSHAIR = "\uf05b";
 
     // Number string converter to have a result with only two decimals
     private static final NumberStringConverter TWO_DECIMALS_CONVERTER = new NumberStringConverter("#0.00" );
+    // a date-time formatter used to saved files with different names : "RigelSave_dd-MM-yyyy_HH-mm-ss.txt"
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern( "dd-MM-yyyy_HH-mm-ss" );
+    // searching only for txt files
     private static final FileChooser.ExtensionFilter EXTENSION_FILTER =
             new FileChooser.ExtensionFilter("Text Files", "*.txt" );
+
+    private static final NamedTimeAccelerator DEFAULT_ACCELERATOR = NamedTimeAccelerator.TIMES_300;
+    private static final String DEFAULT_ZONE_ID_NAME = ZoneId.systemDefault().toString();
 
     // init constants
     private static final NamedObserverLocations DEFAULT_OBSERVER_LOCATION = NamedObserverLocations.EPFL;
     private static final double INIT_VIEWING_LON = 180.000000000001;
     private static final double INIT_VIEWING_LAT = 15;
     private static final double INIT_FOV_VALUE = 100;
-    private static final NamedTimeAccelerator DEFAULT_ACCELERATOR = NamedTimeAccelerator.TIMES_300;
-    private static final String DEFAULT_ZONE_ID_NAME = ZoneId.systemDefault().toString();
+    private static final int MIN_CANVAS_WIDTH = 800;
+    private static final int MIN_CANVAS_HEIGHT = 600;
+
+    // Card Transitions
+    private static final Duration TRANSITION_DURATION =  Duration.millis( 250 );
+    private static final FadeTransition FADE_IN_TRANSITION = new FadeTransition( TRANSITION_DURATION );
+    private static final FadeTransition FADE_OUT_TRANSITION = new FadeTransition( TRANSITION_DURATION );
 
     // private attributes used inside the whole class
     private Stage primaryStage;
@@ -81,6 +92,7 @@ public class Main extends Application
     private ViewingParametersBean viewingParametersBean;
     private SkyCanvasManager canvasManager;
 
+    private Font fontAwesome;
     private DatePicker datePicker;
     private TextField timeField;
     private ComboBox<String> timezoneBox;
@@ -88,13 +100,11 @@ public class Main extends Application
     private ChoiceBox<NamedObserverLocations> observerChoiceBox;
     private Button resetButton, playPauseButton, downloadButton, importButton;
     private FileChooser importInput;
-    TextFormatter<Number> lonTextFormatter, latTextFormatter;
+    private TextFormatter<Number> lonTextFormatter, latTextFormatter;
+    private Pane skyPane;
 
-    private boolean loadedFont = true;
+    private boolean loadedFont = false;
     private boolean loadedResources = true;
-
-    private static final int MIN_CANVAS_WIDTH = 800;
-    private static final int MIN_CANVAS_HEIGHT = 600;
 
     // an input stream to read the files
     private InputStream resourceStream( String resourceName )
@@ -112,6 +122,12 @@ public class Main extends Application
     public void start( Stage primaryStage )
     {
         this.primaryStage = primaryStage;
+        // transitions from-to values
+        FADE_IN_TRANSITION.setFromValue( 0 );
+        FADE_IN_TRANSITION.setToValue( 1 );
+        FADE_OUT_TRANSITION.setFromValue( 1 );
+        FADE_OUT_TRANSITION.setToValue( 0 );
+
         // define a date, time, time animator, accelerator, observer location and viewing parameters
         dateTimeBean = new DateTimeBean();
         dateTimeBean.setZonedDateTime( ZonedDateTime.now() );
@@ -126,8 +142,8 @@ public class Main extends Application
         viewingParametersBean.setCenter( HorizontalCoordinates.ofDeg( INIT_VIEWING_LON, INIT_VIEWING_LAT ) );
         viewingParametersBean.setFieldOfViewDeg( INIT_FOV_VALUE );
 
-        // get the stars and asterisms from the files in the resource folder
-        initStarsAndAsterisms();
+        // get the stars and asterisms from the files in the resource folder and load the font
+        initLoadFiles();
 
         // get screen size
         Rectangle2D screenBounds = Screen.getPrimary().getBounds();
@@ -140,7 +156,6 @@ public class Main extends Application
         wrapper.setMinHeight( MIN_CANVAS_HEIGHT );
         wrapper.setMaxWidth( canvasWidth );
         wrapper.setMaxHeight( canvasHeight );
-
 
         // create and set the different parts of the program
         wrapper.setTop( buildTopTab() );
@@ -169,7 +184,7 @@ public class Main extends Application
      * Retrieve the stars and asterisms from the /ressource folder and add them into the star catalogue
      *  and build the SkyCanvasManager
      */
-    private void initStarsAndAsterisms()
+    private void initLoadFiles()
     {
         StarCatalogue.Builder builder = new StarCatalogue.Builder();
         StarCatalogue catalogue;
@@ -185,7 +200,7 @@ public class Main extends Application
         }
 
         // Asterisms
-        try ( InputStream asterismStream = getClass().getResourceAsStream( ASTERISM_CATALOGUE_NAME ) )
+        try ( InputStream asterismStream = resourceStream( ASTERISM_CATALOGUE_NAME ) )
         {
             builder.loadFrom( asterismStream, AsterismLoader.INSTANCE );
         }
@@ -200,6 +215,10 @@ public class Main extends Application
         canvasManager = new SkyCanvasManager(
                 catalogue, dateTimeBean,
                 observerLocationBean, viewingParametersBean );
+
+        // load the font with the fontLoader class
+        fontAwesome = new FontLoader().loadFontAwesome();
+        if ( fontAwesome != null ) { loadedFont = true; }
     }
 
 
@@ -221,10 +240,11 @@ public class Main extends Application
         HBox timeDateZoneBox = initDateTimeZoneBox();
         // FOURTH PART : accelerator and buttons
         HBox buttonsBox = initButtonsBox();
-        // FIVE PART : search Bar
+        // FIFTH PART : search Bar
         HBox searchBar = initSearchBar();
+
         // initialize mouse clicked event on the play/pause and reset buttons
-        initMouseClickedBtn();
+        initMouseClickedEvents();
 
         // enable/disable all inputs depending on the animation running or not
         timeAnimator.isRunning().addListener( ( o, oV, nV ) -> {
@@ -247,6 +267,28 @@ public class Main extends Application
                 new Separator( Orientation.VERTICAL ),
                 searchBar);
         return topTab;
+    }
+
+    private HBox initObserverLocationsInput()
+    {
+        HBox NamedObserverBox = new HBox(); // container
+        NamedObserverBox.setStyle( "-fx-spacing: inherit; -fx-alignment: baseline-right;" );
+
+        // creates an observable list of Time Accelerators names
+        List<NamedObserverLocations> observerLocations = new ArrayList<>();
+        Collections.addAll( observerLocations, NamedObserverLocations.values() );
+        ObservableList<NamedObserverLocations> observerLocationName = FXCollections.observableList( observerLocations );
+        observerChoiceBox = new ChoiceBox<>( observerLocationName );
+        observerChoiceBox.setValue( DEFAULT_OBSERVER_LOCATION );
+        observerChoiceBox.getSelectionModel().selectedItemProperty().addListener( ( observable, oldValue, newValue ) -> {
+            lonTextFormatter.setValue( newValue.getLon() );
+            latTextFormatter.setValue( newValue.getLat() );
+            timezoneBox.setValue( newValue.getZoneId().getId() );
+        } );
+
+        NamedObserverBox.getChildren().addAll( observerChoiceBox );
+
+        return NamedObserverBox;
     }
 
 
@@ -393,10 +435,8 @@ public class Main extends Application
         importInput.setInitialDirectory( new File( programPath ) );
         importInput.setSelectedExtensionFilter( EXTENSION_FILTER );
 
-        // load the 'Font Awesome' font or assign the button's text to a backup value
-        try ( InputStream fontStream = resourceStream( FONT_FILE_NAME ) )
+        if ( loadedFont )
         {
-            Font fontAwesome = Font.loadFont( fontStream, 15 );
             resetButton.setFont( fontAwesome );
             resetButton.setText( RESET_BTN_TEXT );
             playPauseButton.setFont( fontAwesome );
@@ -405,15 +445,13 @@ public class Main extends Application
             downloadButton.setText( DOWNLOAD_BTN_TEXT );
             importButton.setFont( fontAwesome );
             importButton.setText( IMPORT_BTN_TEXT );
-            loadedFont = true;
         }
-        catch ( IOException e )
+        else
         {
             resetButton.setText( BACKUP_RESET_BTN_TEXT );
             playPauseButton.setText( BACKUP_PLAY_BTN_TEXT );
             downloadButton.setText( BACKUP_DOWNLOAD_BTN_TEXT );
             importInput.setTitle( BACKUP_IMPORT_BTN_TEXT );
-            loadedFont = false;
         }
 
         // add all the components to the box
@@ -432,48 +470,33 @@ public class Main extends Application
     {
         HBox searchBox = new HBox();
         TextField searchText = new TextField();
-        searchText.setStyle( "-fx-pref-width: 70; -fx-alignment: baseline-right;" );
-        searchText.setOnKeyReleased(keyEvent -> {
+        searchText.setStyle( "-fx-pref-width: 100; -fx-alignment: baseline-left; -fx-padding-left: 5pt; " );
+
+        searchText.setOnKeyReleased( keyEvent -> {
             KeyCode key = keyEvent.getCode(); // get the key
-            if(key.equals(KeyCode.ENTER)){
-                EquatorialToHorizontalConversion conversion = new EquatorialToHorizontalConversion(dateTimeBean.getZonedDateTime(), observerLocationBean.getCoordinates());
-                if (canvasManager.check(searchText.getText()) != null){
-                    viewingParametersBean.setCenter(conversion.apply(canvasManager.check(searchText.getText())));
+            String inputValue = searchText.getText();
+            if( key.equals( KeyCode.ENTER ) && inputValue.length() > 0 )
+            {
+                EquatorialToHorizontalConversion conversion = new EquatorialToHorizontalConversion(
+                        dateTimeBean.getZonedDateTime(), observerLocationBean.getCoordinates() );
+                EquatorialCoordinates equatorialCoordinates = canvasManager.getCoordinatesWithName( inputValue );
+                if ( equatorialCoordinates != null )
+                {
+                    viewingParametersBean.setCenter( conversion.apply( equatorialCoordinates ) );
                 }
             }
-        });
-        searchText.setPromptText("Recherche");
-        searchBox.getChildren().addAll(searchText);
-        return searchBox;
-    }
-
-    private HBox initObserverLocationsInput()
-    {
-        HBox NamedObserverBox = new HBox(); // container
-        NamedObserverBox.setStyle( "-fx-spacing: inherit; -fx-alignment: baseline-right;" );
-
-        // creates an observable list of Time Accelerators names
-        List<NamedObserverLocations> observerLocations = new ArrayList<>();
-        Collections.addAll( observerLocations, NamedObserverLocations.values() );
-        ObservableList<NamedObserverLocations> observerLocationName = FXCollections.observableList( observerLocations );
-        observerChoiceBox = new ChoiceBox<>( observerLocationName );
-        observerChoiceBox.setValue( DEFAULT_OBSERVER_LOCATION );
-        observerChoiceBox.getSelectionModel().selectedItemProperty().addListener( ( observable, oldValue, newValue ) -> {
-            lonTextFormatter.setValue( newValue.getLon() );
-            latTextFormatter.setValue( newValue.getLat() );
-            timezoneBox.setValue( newValue.getZoneId().getId() );
         } );
 
-        NamedObserverBox.getChildren().addAll( observerChoiceBox );
-
-        return NamedObserverBox;
+        searchText.setPromptText( "Search.." );
+        searchBox.getChildren().add( searchText );
+        return searchBox;
     }
 
 
     /**
      * Adds mouse clicked events to the buttons
      */
-    private void initMouseClickedBtn()
+    private void initMouseClickedEvents()
     {
         // stop the time animator if it is playing or start it if it is stopped
         playPauseButton.setOnMouseClicked( mouseEvent -> {
@@ -516,9 +539,18 @@ public class Main extends Application
             {
                 fos.write( data.toString().getBytes() );
                 fos.flush();
+                new NotificationBox()
+                        .setSuccessLogo()
+                        .setTitle( "File successfully saved !" )
+                        .setParentElement( skyPane )
+                        .fire();
             } catch ( IOException e )
             {
-                System.out.println( "An error occurred." );
+                new NotificationBox()
+                        .setErrorLogo()
+                        .setTitle( "File couldn't be saved" )
+                        .setParentElement( skyPane )
+                        .fire();
                 e.printStackTrace();
             }
         } );
@@ -567,34 +599,35 @@ public class Main extends Application
      */
     private Pane buildSky()
     {
-        // if we achieve the build the star catalogue, then we can draw the sky
-        if ( loadedResources )
-        {
-            sky = canvasManager.canvas();
-            Pane skyPane = new Pane( sky );
-            Map<String, Card> cardMap = SolarSystemData.getCardsMap();
-            canvasManager.objectUnderMouseProperty().addListener( ( observable, oldValue, newValue ) -> {
-                if ( cardMap.containsKey( newValue ) )
-                {
-                    Card card = cardMap.get( newValue );
-                    if ( !skyPane.getChildren().contains( card ) )
-                    {
-                        skyPane.getChildren().add( card );
-                    }
-                }
-                else if ( skyPane.getChildren().size() > 1 )
-                {
-                    skyPane.getChildren().remove( 1 );
-                }
+        // return an empty pane if we did not achieve to load the resources
+        if ( !loadedResources ) { return new Pane(); }
 
-            } );
-            return skyPane;
-        }
-        // otherwise, just return an empty Pane
-        else
-        {
-            return new Pane();
-        }
+        // if we achieve to build the star catalogue, then we can draw the sky
+        sky = canvasManager.canvas();
+        skyPane = new Pane( sky );
+        Map<String, Card> cardMap = SolarSystemData.getCardsMap();
+
+        canvasManager.objectUnderMouseProperty().addListener( ( observable, oldValue, newValue ) -> {
+            if ( cardMap.containsKey( newValue ) )
+            {
+                Card card = cardMap.get( newValue );
+                if ( !skyPane.getChildren().contains( card ) )
+                {
+                    skyPane.getChildren().add( card );
+                    FADE_IN_TRANSITION.setNode( card );
+                    FADE_OUT_TRANSITION.setNode( card );
+                    FADE_IN_TRANSITION.play();
+                }
+            }
+            else if ( skyPane.getChildren().size() > 1 )
+            {
+                FADE_OUT_TRANSITION.play();
+                // remove the card from the pane when the transition is finished
+                FADE_OUT_TRANSITION.setOnFinished( event -> skyPane.getChildren().remove( 1 ) );
+            }
+
+        } );
+        return skyPane;
     }
 
 

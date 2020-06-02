@@ -6,7 +6,7 @@ import ch.epfl.rigel.math.ClosedInterval;
 public enum SolarSystemInfo
 {
     SUN(     "Soleil",  "sun.jpg" ,   "Étoile", 5505, 149.6, 696340, 1.989, 6.0877 ),
-    MOON(    "Lune",    "moon.jpg",   "Satellite", 120 , -180, 384400, 1737,  1.62, 38,4.53 ),
+    MOON(    "Lune",    "moon.jpg",   "Satellite", 120 , -180, 384400, 1737,  1.62, 38 ),
     MERCURY( "Mercure", "mercury.jpg","Planète tellurique", 427,  -173, 91,  2440,  3.7,  75 ),
     VENUS(   "Vénus",   "venus.jpg",  "Planète tellurique", 490,   446, 42,  6052,  8.9,  460 ),
     MARS(    "Mars",    "mars.jpg",   "Planète tellurique", 36,   -140, 78,  3389,  3.7,  145 ),
@@ -38,35 +38,14 @@ public enum SolarSystemInfo
                      double surface )
     {
         this( name, imgPath, type, 460 );
-        card.addLabel( "Température : " + degrees + "°C" )
-                .addLabel( "Distance avec la Terre : " + earthDistance + " x10^6 km" )
+        card.addLabel( "Temperature : " + degrees + "°C" )
+                .addLabel( "Earth distance : " + earthDistance + " x10^6 km" )
                 .addLabel( "Rayon : " + radius + " km")
-                .addLabel( "Masse : " + mass + " x10^30 kg" )
+                .addLabel( "Mass : " + mass + " x10^30 kg" )
                 .addLabel( "Surface : " + surface + " x10^12 km2" );
     }
 
-    // MOON Constructor
-    SolarSystemInfo( String name,
-                     String imgPath,
-                     String type,
-                    double maxDegrees,
-                    double minDegrees,
-                    double earthDistance,
-                    double radius,
-                    double gravity,
-                    double surface,
-                    double age )
-    {
-        this( name, imgPath, type, 470 );
-        card.addLabel( "Températures : " + ClosedInterval.of( minDegrees, maxDegrees ).toString() + "°C" )
-                .addLabel( "Distance avec la Terre : " + earthDistance + " x10^6 km"  )
-                .addLabel( "Rayon : " + radius + " km" )
-                .addLabel( "Gravité : " + gravity + " m/s²" )
-                .addLabel( "Surface : " + surface + " x10^6 km2" )
-                .addLabel( "Age : " + age + " milliard d'années" );
-    }
-
-    // PLANETS Constructor
+    // PLANETS and MOON Constructor
     SolarSystemInfo( String name,
                      String imgPath,
                      String type,
@@ -78,13 +57,13 @@ public enum SolarSystemInfo
                      double surface )
     {
         this( name, imgPath, type, 460 );
-        card.addLabel( "Températures : " + ClosedInterval.of( minDegrees, maxDegrees ).toString() + "°C" )
-                .addLabel( "Distance avec la Terre : " + earthDistance + "x10^6 km" )
+        card.addLabel( "Temperatures : " + ClosedInterval.of( minDegrees, maxDegrees ).toString() + "°C" )
+                .addLabel( "Earth distance : " + earthDistance + "x10^6 km" )
                 .addLabel( "Rayon : " + radius + " km" )
-                .addLabel( "Gravité : " + gravity + " m/s²" )
+                .addLabel( "Gravity : " + gravity + " m/s²" )
                 .addLabel( "Surface : " + surface + " x10^6 km2" );
     }
 
     public String getName() { return name; }
-    public Card getCard() { return card; }
+    public Card getCard()   { return card; }
 }

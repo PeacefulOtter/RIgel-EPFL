@@ -11,7 +11,7 @@ public enum NamedObserverLocations
 {
     EPFL( "EPFL",  6.57, 46.52, "Europe/Zurich" ),
     NEW_YORK( "New York",  -73.96, 40.78, "America/New_York" ),
-    LONDON( "Londres", -0.13, 51.51, "Europe/London" );
+    LONDON( "London", -0.13, 51.51, "Europe/London" );
 
     private final ObservableObjectValue<String> name;
     private final ObservableObjectValue<ObserverLocationBean> observerLocationBean;

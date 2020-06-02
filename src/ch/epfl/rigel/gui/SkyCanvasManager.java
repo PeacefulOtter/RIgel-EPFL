@@ -299,26 +299,29 @@ public class SkyCanvasManager
         } );
     }
 
-    public EquatorialCoordinates check(String name){
-        for (Star star: observedSkyBind.get().stars()) {
-            if (name.equals(star.name())){
-                return star.equatorialPos();
-            }
+    public EquatorialCoordinates getCoordinatesWithName( String name )
+    {
+        Sun sun = observedSkyBind.get().sun();
+        Moon moon = observedSkyBind.get().moon();
 
+        if ( name.equals( sun.name() ) ) { return sun.equatorialPos(); }
+        else if ( name.equals( moon.name() ) ) { return moon.equatorialPos(); }
+
+        List<Star> stars = observedSkyBind.get().stars();
+        for ( Star star : stars )
+        {
+            if ( name.equals( star.name() ) ) { return star.equatorialPos(); }
         }
 
-        for (Planet planet: observedSkyBind.get().planets()) {
-            if (name.equals(planet.name())){
-                return planet.equatorialPos();
-            }
+        List<Planet> planets = observedSkyBind.get().planets();
+        for ( Planet planet : planets )
+        {
+            if ( name.equals( planet.name() ) ) { return planet.equatorialPos(); }
         }
-
-        if (name.equals(observedSkyBind.get().sun().name())) return observedSkyBind.get().sun().equatorialPos();
-        if (name.equals(observedSkyBind.get().moon().name())) return observedSkyBind.get().moon().equatorialPos();
-
 
         return null;
     }
+
     /* Getters */
     public double getMouseAzDeg() { return mouseAzDeg.get(); }
 
