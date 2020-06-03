@@ -54,8 +54,8 @@ public class Main extends Application
     private static final String BACKUP_PLAY_BTN_TEXT = "▶";
     private static final String PAUSE_BTN_TEXT = "\uf04c";
     private static final String BACKUP_PAUSE_BTN_TEXT = "\u23F8";
-    private static final String DOWNLOAD_BTN_TEXT = "\uf019";
-    private static final String BACKUP_DOWNLOAD_BTN_TEXT = "Download";
+    private static final String EXPORT_BTN_TEXT = "\uf019";
+    private static final String BACKUP_EXPORT_BTN_TEXT = "Export";
     private static final String IMPORT_BTN_TEXT = "\uf574";
     private static final String BACKUP_IMPORT_BTN_TEXT = "Import";
 
@@ -71,7 +71,7 @@ public class Main extends Application
     private static final String DEFAULT_ZONE_ID_NAME = ZoneId.systemDefault().toString();
 
     // init constants
-    private static final NamedObserverLocations DEFAULT_OBSERVER_LOCATION = NamedObserverLocations.EPFL;
+    private static final NamedObserverLocations DEFAULT_OBSERVER_LOCATION = NamedObserverLocations.CUSTOM;
     private static final double INIT_VIEWING_LON = 180.000000000001;
     private static final double INIT_VIEWING_LAT = 15;
     private static final double INIT_FOV_VALUE = 100;
@@ -93,12 +93,13 @@ public class Main extends Application
     private SkyCanvasManager canvasManager;
 
     private Font fontAwesome;
+    private TextField posLongitudeField, posLatitudeField;
     private DatePicker datePicker;
     private TextField timeField;
     private ComboBox<String> timezoneBox;
     private ChoiceBox<NamedTimeAccelerator> acceleratorChoiceBox;
-    private ChoiceBox<NamedObserverLocations> observerChoiceBox;
-    private Button resetButton, playPauseButton, downloadButton, importButton;
+    private ChoiceBox<NamedObserverLocations> observerLocationsChoiceBox;
+    private Button resetButton, playPauseButton, exportButton, importButton;
     private FileChooser importInput;
     private TextFormatter<Number> lonTextFormatter, latTextFormatter;
     private Pane skyPane;
@@ -279,17 +280,32 @@ public class Main extends Application
         List<NamedObserverLocations> observerLocations = new ArrayList<>();
         Collections.addAll( observerLocations, NamedObserverLocations.values() );
         ObservableList<NamedObserverLocations> observerLocationName = FXCollections.observableList( observerLocations );
-        observerChoiceBox = new ChoiceBox<>( observerLocationName );
-        observerChoiceBox.setValue( DEFAULT_OBSERVER_LOCATION );
-        observerChoiceBox.getSelectionModel().selectedItemProperty().addListener( ( observable, oldValue, newValue ) -> {
+
+        observerLocationsChoiceBox = new ChoiceBox<>( observerLocationName );
+        observerLocationsChoiceBox.setValue( DEFAULT_OBSERVER_LOCATION );
+
+        observerLocationsChoiceBox.getSelectionModel().selectedItemProperty().addListener( ( observable, oldValue, newValue ) -> {
+            if ( newValue.getName().equals( DEFAULT_OBSERVER_LOCATION.getName() ) )
+            {
+                setDisableObserverLocation( false );
+                return;
+            }
             lonTextFormatter.setValue( newValue.getLon() );
             latTextFormatter.setValue( newValue.getLat() );
             timezoneBox.setValue( newValue.getZoneId().getId() );
+            setDisableObserverLocation( true );
         } );
 
-        NamedObserverBox.getChildren().addAll( observerChoiceBox );
+        NamedObserverBox.getChildren().addAll( observerLocationsChoiceBox );
 
         return NamedObserverBox;
+    }
+
+    private void setDisableObserverLocation( boolean disable )
+    {
+        posLongitudeField.setDisable( disable );
+        posLatitudeField.setDisable( disable );
+        timezoneBox.setDisable( disable );
     }
 
 
@@ -304,7 +320,7 @@ public class Main extends Application
 
         // Longitude label and field
         Label posLongitudeLabel = new Label( "Longitude (°) :" );
-        TextField posLongitudeField = new TextField();
+        posLongitudeField = new TextField();
         posLongitudeField.setStyle( "-fx-pref-width: 60; -fx-alignment: baseline-right;" );
         // Longitude Text Formatter - with two decimals
         UnaryOperator<TextFormatter.Change> lonFilter = ( change -> {
@@ -325,7 +341,7 @@ public class Main extends Application
 
         // Latitude label and field
         Label posLatitudeLabel = new Label( "Latitude (°) :" );
-        TextField posLatitudeField = new TextField();
+        posLatitudeField = new TextField();
         posLatitudeField.setStyle( "-fx-pref-width: 60; -fx-alignment: baseline-right;" );
         // Latitude Text Formatter - with two decimals
         UnaryOperator<TextFormatter.Change> latFilter = ( change -> {
@@ -429,7 +445,7 @@ public class Main extends Application
         // refresh and play/pause buttons
         resetButton = new Button();
         playPauseButton = new Button();
-        downloadButton = new Button();
+        exportButton = new Button();
         importButton = new Button();
         importInput = new FileChooser();
         String programPath = Paths.get( "." ).toAbsolutePath().normalize().toString();
@@ -442,8 +458,8 @@ public class Main extends Application
             resetButton.setText( RESET_BTN_TEXT );
             playPauseButton.setFont( fontAwesome );
             playPauseButton.setText( PLAY_BTN_TEXT );
-            downloadButton.setFont( fontAwesome );
-            downloadButton.setText( DOWNLOAD_BTN_TEXT );
+            exportButton.setFont( fontAwesome );
+            exportButton.setText( EXPORT_BTN_TEXT );
             importButton.setFont( fontAwesome );
             importButton.setText( IMPORT_BTN_TEXT );
         }
@@ -451,7 +467,7 @@ public class Main extends Application
         {
             resetButton.setText( BACKUP_RESET_BTN_TEXT );
             playPauseButton.setText( BACKUP_PLAY_BTN_TEXT );
-            downloadButton.setText( BACKUP_DOWNLOAD_BTN_TEXT );
+            exportButton.setText( BACKUP_EXPORT_BTN_TEXT );
             importInput.setTitle( BACKUP_IMPORT_BTN_TEXT );
         }
 
@@ -461,7 +477,7 @@ public class Main extends Application
                 resetButton,
                 playPauseButton,
                 new Separator( Orientation.VERTICAL ),
-                downloadButton,
+                exportButton,
                 importButton );
 
         return acceleratorButtonsBox;
@@ -519,10 +535,10 @@ public class Main extends Application
         resetButton.setOnMouseClicked( mouseEvent -> {
             dateTimeBean.setZonedDateTime( ZonedDateTime.now() );
             timezoneBox.setValue( DEFAULT_ZONE_ID_NAME );
-            observerChoiceBox.setValue( DEFAULT_OBSERVER_LOCATION );
+            observerLocationsChoiceBox.setValue( DEFAULT_OBSERVER_LOCATION );
         } );
 
-        downloadButton.setOnMouseClicked( mouseEvent ->  {
+        exportButton.setOnMouseClicked( mouseEvent ->  {
             LocalDateTime now = LocalDateTime.now();
             String fileName = "RigelSave_" + DATE_TIME_FORMATTER.format( now ) + ".txt";
 
@@ -606,8 +622,13 @@ public class Main extends Application
         // if we achieve to build the star catalogue, then we can draw the sky
         sky = canvasManager.canvas();
         skyPane = new Pane( sky );
-        Map<String, Card> cardMap = SolarSystemData.getCardsMap();
+        initObjectUnderMouseListener();
+        return skyPane;
+    }
 
+    private void initObjectUnderMouseListener()
+    {
+        Map<String, Card> cardMap = SolarSystemData.getCardsMap();
         canvasManager.objectUnderMouseProperty().addListener( ( observable, oldValue, newValue ) -> {
             if ( skyPane.getChildren().size() > 1 && !newValue.equals( objectUnderMouseName ) )
             {
@@ -628,7 +649,6 @@ public class Main extends Application
             }
             objectUnderMouseName = newValue;
         } );
-        return skyPane;
     }
 
 

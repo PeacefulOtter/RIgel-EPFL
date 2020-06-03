@@ -6,12 +6,16 @@ import javafx.beans.value.ObservableObjectValue;
 
 import java.time.ZoneId;
 
-// sort of bean but with immutable properties (no setters)
+// Collection of locations around the world consisting of a Name, a longitude and latitude, and a zone id
 public enum NamedObserverLocations
 {
+    CUSTOM( "Custom", 0, 0, "Etc/GMT" ),
     EPFL( "EPFL",  6.57, 46.52, "Europe/Zurich" ),
     NEW_YORK( "New York",  -73.96, 40.78, "America/New_York" ),
-    LONDON( "London", -0.13, 51.51, "Europe/London" );
+    LONDON( "London", -0.13, 51.51, "Europe/London" ),
+    REYKJAVIK( "Reykjavik", -22, 64.1, "Atlantic/Reykjavik" ),
+    DELHI( "Delhi", 77.1, 28.7, "Asia/Calcutta" ),
+    SYDNEY( "Sydney", 151.2, -33.86 ,"Australia/Sydney" );
 
     private final ObservableObjectValue<String> name;
     private final ObservableObjectValue<ObserverLocationBean> observerLocationBean;
@@ -20,9 +24,9 @@ public enum NamedObserverLocations
     NamedObserverLocations( String name, double lon, double lat, String zoneIdName )
     {
         this.name = new SimpleObjectProperty<>( name );
-        this.observerLocationBean = new SimpleObjectProperty<>( new ObserverLocationBean() );
-        this.observerLocationBean.get().setLonDeg( lon );
-        this.observerLocationBean.get().setLatDeg( lat );
+        ObserverLocationBean olb = new ObserverLocationBean();
+        olb.setLonDeg( lon ); olb.setLatDeg( lat );
+        this.observerLocationBean = new SimpleObjectProperty<>( olb );
         this.zoneId = new SimpleObjectProperty<>( ZoneId.of( zoneIdName ) );
     }
 

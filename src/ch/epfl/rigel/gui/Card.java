@@ -36,6 +36,7 @@ public class Card extends VBox
         container.setStyle( "-fx-padding: 10;" );
 
         this.getChildren().addAll( imgView, container );
+        container.getChildren().add( new Label() );
     }
 
 
@@ -50,10 +51,11 @@ public class Card extends VBox
 
     public Card setTitle( String title )
     {
-        Label label = new Label( title );
+        Label label = (Label) container.getChildren().get( 0 );
+        label.setText( title );
         label.setStyle( "-fx-spacing: 4; -fx-padding: 4; -fx-font-size: 13pt;" );
         label.setFont( FONT_AWESOME );
-        container.getChildren().add( label );
+        container.getChildren().set( 0, label );
         return this;
     }
 
