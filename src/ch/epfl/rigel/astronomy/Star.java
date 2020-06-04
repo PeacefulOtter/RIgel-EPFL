@@ -3,6 +3,8 @@ package ch.epfl.rigel.astronomy;
 import ch.epfl.rigel.Preconditions;
 import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 import ch.epfl.rigel.math.ClosedInterval;
+import javafx.scene.paint.Color;
+
 
 /**
  * Represents a Star as a CelestialObject
@@ -47,4 +49,9 @@ public final class Star extends CelestialObject
      * @return the color Temperature of the Star in Kelvin using the color Index
      */
     public int colorTemperature() { return colorTemperature; }
+
+    @Override
+    public Color nameColor(){
+        return Color.valueOf("f28a2c");
+    }
 }

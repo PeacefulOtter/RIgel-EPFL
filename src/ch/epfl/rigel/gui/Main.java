@@ -1,7 +1,6 @@
 package ch.epfl.rigel.gui;
 
 import ch.epfl.rigel.astronomy.*;
-import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 import ch.epfl.rigel.coordinates.EquatorialToHorizontalConversion;
 import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
@@ -489,14 +488,16 @@ public class Main extends Application
         searchText.setOnKeyReleased( keyEvent -> {
             KeyCode key = keyEvent.getCode(); // get the key
             String inputValue = searchText.getText();
-            if( key.equals( KeyCode.ENTER ) && inputValue.length() > 0 )
+            if( key.equals( KeyCode.ENTER ) && inputValue.length() > 2 )
             {
                 EquatorialToHorizontalConversion conversion = new EquatorialToHorizontalConversion(
                         dateTimeBean.getZonedDateTime(), observerLocationBean.getCoordinates() );
-                EquatorialCoordinates equatorialCoordinates = canvasManager.getCoordinatesWithName( inputValue );
-                if ( equatorialCoordinates != null )
+                CelestialObject celestialObject = canvasManager.getCoordinatesWithName( inputValue );
+                if ( celestialObject != null )
                 {
-                    viewingParametersBean.setCenter( conversion.apply( equatorialCoordinates ) );
+                    viewingParametersBean.setCenter( conversion.apply( celestialObject.equatorialPos() ) );
+                    sky.getGraphicsContext2D().setFill(celestialObject.nameColor());
+                    sky.getGraphicsContext2D().fillText(celestialObject.name(), sky.getWidth()/2,sky.getHeight()/2);
                 }
             }
         } );
