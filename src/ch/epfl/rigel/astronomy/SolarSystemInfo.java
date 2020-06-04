@@ -15,7 +15,7 @@ public enum SolarSystemInfo
     URANUS(  "Uranus",  "uranus.jpg", "Planète gazeuse",   -208 , -212 ,2723,25362 ,8.9 , 8083 ),
     NEPTUNE( "Neptune", "neptune.jpg","Planète gazeuse",   -210,  -220, 4351,24622 ,11.2 ,7618 );
 
-    private Card card;
+    private final Card card;
     private final String name;
 
     SolarSystemInfo( String name, String imgPath, String type, int cardHeight )

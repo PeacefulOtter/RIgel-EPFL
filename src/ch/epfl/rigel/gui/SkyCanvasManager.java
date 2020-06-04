@@ -299,24 +299,30 @@ public class SkyCanvasManager
         } );
     }
 
+
+    private boolean compareObjectWithName( CelestialObject object, String name )
+    {
+        return name.equalsIgnoreCase( object.name() ) || object.name().toLowerCase().startsWith( name.toLowerCase() );
+    }
+
     public CelestialObject getCoordinatesWithName( String name )
     {
         Sun sun = observedSkyBind.get().sun();
-        Moon moon = observedSkyBind.get().moon();
+        if ( compareObjectWithName( sun, name ) ) { return sun; }
 
-        if ( name.equalsIgnoreCase( sun.name() ) || sun.name().toLowerCase().startsWith(name.toLowerCase()) ) { return sun; }
-        else if ( name.equalsIgnoreCase( moon.name() ) || moon.name().toLowerCase().startsWith(name.toLowerCase()) ) { return moon; }
+        Moon moon = observedSkyBind.get().moon();
+        if ( compareObjectWithName( moon, name ) ) { return moon; }
 
         List<Star> stars = observedSkyBind.get().stars();
         for ( Star star : stars )
         {
-            if ( name.equalsIgnoreCase( star.name() ) || star.name().toLowerCase().startsWith(name.toLowerCase()) ) { return star; }
+            if ( compareObjectWithName( star, name ) ) { return star; }
         }
 
         List<Planet> planets = observedSkyBind.get().planets();
         for ( Planet planet : planets )
         {
-            if ( name.equalsIgnoreCase( planet.name()) || planet.name().toLowerCase().startsWith(name.toLowerCase()) ) { return planet; }
+            if ( compareObjectWithName( planet, name ) ) { return planet; }
         }
         return null;
     }
