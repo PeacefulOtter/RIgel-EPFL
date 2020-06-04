@@ -34,9 +34,9 @@ public final class Moon extends CelestialObject
     }
 
 
-    public Color getBackgroundColor() { return Color.WHITESMOKE; }
+    public Color getBackgroundColor() { return Color.web( "#f1d0f5" ); }
 
-    public Color getTextColor() { return Color.WHITE; }
+    public Color getTextColor() { return Color.web( "#c43ed6" ); }
 
 }
 

@@ -41,7 +41,7 @@ public final class Sun extends CelestialObject
      */
     public double meanAnomaly() { return meanAnomaly; }
 
-    public Color getBackgroundColor() { return Color.valueOf( "fef6ee" ); }
+    public Color getBackgroundColor() { return Color.web( "#fef6ee" ); }
 
-    public Color getTextColor() { return Color.valueOf( "f28a2c" ); }
+    public Color getTextColor() { return Color.web( "#f28a2c" ); }
 }

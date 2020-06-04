@@ -13,8 +13,8 @@ public final class Planet extends CelestialObject
         super( name, equatorialPos, angularSize, magnitude );
     }
 
-    public Color getBackgroundColor() { return Color.valueOf( "edf5f7" ); }
+    public Color getBackgroundColor() { return Color.web( "#edf5f7" ); }
 
-    public Color getTextColor() { return Color.valueOf( "20859e" ); }
+    public Color getTextColor() { return Color.web( "#20859e" ); }
 
 }

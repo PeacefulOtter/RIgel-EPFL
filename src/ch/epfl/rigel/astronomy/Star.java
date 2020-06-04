@@ -50,7 +50,7 @@ public final class Star extends CelestialObject
      */
     public int colorTemperature() { return colorTemperature; }
 
-    public Color getBackgroundColor() { return Color.valueOf( "edf7f3" ); }
+    public Color getBackgroundColor() { return Color.web( "#edf7f3" ); }
 
-    public Color getTextColor() { return Color.valueOf( "209e67" ); }
+    public Color getTextColor() { return Color.web( "#209e67" ); }
 }
