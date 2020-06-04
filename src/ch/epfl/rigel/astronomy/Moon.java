@@ -3,6 +3,7 @@ package ch.epfl.rigel.astronomy;
 import ch.epfl.rigel.Preconditions;
 import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 import ch.epfl.rigel.math.ClosedInterval;
+import javafx.scene.paint.Color;
 
 import java.util.Locale;
 /**
@@ -30,5 +31,10 @@ public final class Moon extends CelestialObject
     public String info()
     {
         return String.format( Locale.ROOT, "Lune (%.1f%s)", phase * 100, "%" );
+    }
+
+    @Override
+    public Color nameColor(){
+        return Color.ANTIQUEWHITE;
     }
 }

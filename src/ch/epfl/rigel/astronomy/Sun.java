@@ -2,6 +2,7 @@ package ch.epfl.rigel.astronomy;
 
 import ch.epfl.rigel.coordinates.EclipticCoordinates;
 import ch.epfl.rigel.coordinates.EquatorialCoordinates;
+import javafx.scene.paint.Color;
 
 /**
  * Represents the Sun at a given moment
@@ -39,4 +40,9 @@ public final class Sun extends CelestialObject
      * @return the mean anomaly
      */
     public double meanAnomaly() { return meanAnomaly; }
+
+    @Override
+    public Color nameColor(){
+        return Color.valueOf("209e67");
+    }
 }

@@ -2,6 +2,7 @@ package ch.epfl.rigel.astronomy;
 
 import ch.epfl.rigel.Preconditions;
 import ch.epfl.rigel.coordinates.EquatorialCoordinates;
+import javafx.scene.paint.Color;
 
 import java.util.Objects;
 
@@ -61,6 +62,9 @@ public abstract class CelestialObject
         return name;
     }
 
+    public Color nameColor(){
+        return Color.WHITE;
+    }
     /**
      * @return the information written for the user
      */

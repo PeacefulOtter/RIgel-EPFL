@@ -299,26 +299,25 @@ public class SkyCanvasManager
         } );
     }
 
-    public EquatorialCoordinates getCoordinatesWithName( String name )
+    public CelestialObject getCoordinatesWithName( String name )
     {
         Sun sun = observedSkyBind.get().sun();
         Moon moon = observedSkyBind.get().moon();
 
-        if ( name.equals( sun.name() ) ) { return sun.equatorialPos(); }
-        else if ( name.equals( moon.name() ) ) { return moon.equatorialPos(); }
+        if ( name.equalsIgnoreCase( sun.name() ) || sun.name().toLowerCase().startsWith(name.toLowerCase()) ) { return sun; }
+        else if ( name.equalsIgnoreCase( moon.name() ) || moon.name().toLowerCase().startsWith(name.toLowerCase()) ) { return moon; }
 
         List<Star> stars = observedSkyBind.get().stars();
         for ( Star star : stars )
         {
-            if ( name.equals( star.name() ) ) { return star.equatorialPos(); }
+            if ( name.equalsIgnoreCase( star.name() ) || star.name().toLowerCase().startsWith(name.toLowerCase()) ) { return star; }
         }
 
         List<Planet> planets = observedSkyBind.get().planets();
         for ( Planet planet : planets )
         {
-            if ( name.equals( planet.name() ) ) { return planet.equatorialPos(); }
+            if ( name.equalsIgnoreCase( planet.name()) || planet.name().toLowerCase().startsWith(name.toLowerCase()) ) { return planet; }
         }
-
         return null;
     }
 
