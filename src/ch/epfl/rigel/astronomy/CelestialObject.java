@@ -62,10 +62,11 @@ public abstract class CelestialObject
         return name;
     }
 
-    public Color[] nameColor(){
 
-        return new Color[]{Color.WHITE, Color.BLUE};
-    }
+    abstract public Color getBackgroundColor();
+    abstract public Color getTextColor();
+
+
     /**
      * @return the information written for the user
      */

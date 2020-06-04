@@ -33,7 +33,11 @@ public final class Moon extends CelestialObject
         return String.format( Locale.ROOT, "Lune (%.1f%s)", phase * 100, "%" );
     }
 
-    @Override
-    public Color[] nameColor(){
-        return new Color[]{Color.WHITESMOKE, Color.DARKGRAY};
-    }}
+
+    public Color getBackgroundColor() { return Color.WHITESMOKE; }
+
+    public Color getTextColor() { return Color.WHITE; }
+
+}
+
+

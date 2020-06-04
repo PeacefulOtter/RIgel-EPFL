@@ -12,6 +12,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.geometry.Rectangle2D;
+import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -23,6 +24,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -105,6 +107,12 @@ public class Main extends Application
 
     private boolean loadedFont = false;
     private boolean loadedResources = true;
+
+    private static final int LETTER_WIDTH = 9;
+    private static final int RECT_PADDING = 12;
+    private static final int RECT_HEIGHT = 20;
+    private static final int TRIANGLE_START = 5;
+    private static final int TRIANGLE_WIDTH = 6;
 
     // an input stream to read the files
     private InputStream resourceStream( String resourceName )
@@ -490,32 +498,37 @@ public class Main extends Application
         searchText.setOnKeyReleased( keyEvent -> {
             KeyCode key = keyEvent.getCode(); // get the key
             String inputValue = searchText.getText();
-            if( key.equals( KeyCode.ENTER ) && inputValue.length() > 2 )
+            if( key.equals( KeyCode.ENTER ) && inputValue.length() > 1 )
             {
                 EquatorialToHorizontalConversion conversion = new EquatorialToHorizontalConversion(
                         dateTimeBean.getZonedDateTime(), observerLocationBean.getCoordinates() );
                 CelestialObject celestialObject = canvasManager.getCoordinatesWithName( inputValue );
                 if ( celestialObject != null )
                 {
-                    double heigth = sky.getHeight();
-                    double width = sky.getWidth();
-                    double letter = 6;
-                    double padding = 2;
-                    double nameLength = celestialObject.name().length();
-                    double[] xpoint = new double[]{width/2 - 3, width/2 + 3, width/2};
-                    double[] ypoint = new double[]{heigth/2 + 7, heigth/2 + 7, heigth/2 - 0.5};
-                    Color[] color = celestialObject.nameColor();
-                    GraphicsContext ctx = sky.getGraphicsContext2D();
-
                     viewingParametersBean.setCenter( conversion.apply( celestialObject.equatorialPos() ) );
 
-                    ctx.setFill(color[0]);
-                    ctx.fillPolygon(xpoint, ypoint, 3);
-                    ctx.setFill(color[0]);
-                    ctx.fillRect(width/2 - nameLength * letter / 2 - padding , heigth/2 + 7 , nameLength * letter + 2*padding, 14);
-                    ctx.setFill(color[1]);
-                    ctx.fillText(celestialObject.name(), sky.getWidth()/2,sky.getHeight()/2 + 5);
+                    GraphicsContext ctx = sky.getGraphicsContext2D();
+                    String objectName = celestialObject.name();
+                    double halfWidth  = sky.getWidth()  / 2;
+                    double halfHeight = sky.getHeight() / 2;
 
+                    double rectWidth = ( objectName.length() * LETTER_WIDTH ) + RECT_PADDING;
+                    double endTriangleX = halfWidth + TRIANGLE_START + TRIANGLE_WIDTH;
+
+                    double[] trianglePointsX = new double[] {
+                            halfWidth + TRIANGLE_START, endTriangleX, endTriangleX };
+                    double[] trianglePointsY = new double[] {
+                            halfHeight, halfHeight - TRIANGLE_WIDTH, halfHeight + TRIANGLE_WIDTH };
+
+
+
+                    ctx.setFill( celestialObject.getBackgroundColor() );
+                    ctx.fillPolygon( trianglePointsX, trianglePointsY, 3 );
+                    ctx.fillRect( endTriangleX, halfHeight - RECT_HEIGHT / 2d, rectWidth, RECT_HEIGHT );
+                    ctx.setFill( celestialObject.getTextColor() );
+                    ctx.setFont( fontAwesome );
+                    ctx.setTextBaseline( VPos.CENTER );
+                    ctx.fillText( objectName, endTriangleX + rectWidth / 2, halfHeight + 1 );
                 }
             }
         } );
