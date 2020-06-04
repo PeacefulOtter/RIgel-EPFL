@@ -554,7 +554,7 @@ public class Main extends Application
             observerLocationsChoiceBox.setValue( DEFAULT_OBSERVER_LOCATION );
         } );
 
-        exportButton.setOnMouseClicked( mouseEvent ->  {
+        exportButton.setOnMouseClicked( event ->  {
             LocalDateTime now = LocalDateTime.now();
             String fileName = "RigelSave_" + DATE_TIME_FORMATTER.format( now ) + ".txt";
 
@@ -584,11 +584,10 @@ public class Main extends Application
                         .setTitle( "File couldn't be saved" )
                         .setParentElement( skyPane )
                         .fire();
-                e.printStackTrace();
             }
         } );
 
-        importButton.setOnMouseClicked( mouseEvent ->  {
+        importButton.setOnMouseClicked( event ->  {
             File importedFiles = importInput.showOpenDialog( primaryStage );
 
             if ( importedFiles != null && importedFiles.getName().contains( "RigelSave" ) )
@@ -611,10 +610,19 @@ public class Main extends Application
                         viewingParametersBean.setCenter( newCenter );
                         viewingParametersBean.setFieldOfViewDeg( Double.parseDouble( data[ 7 ] ) );
                     }
+                    new NotificationBox()
+                            .setSuccessLogo()
+                            .setTitle( "File successfully imported !" )
+                            .setParentElement( skyPane )
+                            .fire();
                 }
                 catch ( IOException e )
                 {
-                    e.printStackTrace();
+                    new NotificationBox()
+                            .setErrorLogo()
+                            .setTitle( "File could not be read !" )
+                            .setParentElement( skyPane )
+                            .fire();
                 }
             }
         } );
@@ -644,17 +652,27 @@ public class Main extends Application
 
     private void initObjectUnderMouseListener()
     {
-        Map<String, Card> cardMap = SolarSystemData.getCardsMap();
+        Map<String, Card> cardMap = new HashMap<>();
+        for ( SolarSystemInfo info: SolarSystemInfo.values() )
+        {
+            cardMap.put( info.getName(), info.getCard() );
+        }
+
         canvasManager.objectUnderMouseProperty().addListener( ( observable, oldValue, newValue ) -> {
-            if ( skyPane.getChildren().size() > 1 && !newValue.equals( objectUnderMouseName ) )
+            // split the spaces and keep only the first part of the newValue.
+            // this is necessary because the Moon name looks like "Lune (xx.x%)"
+            String value = newValue.split( " " )[ 0 ];
+
+            if ( skyPane.getChildren().size() > 1 && !value.equals( objectUnderMouseName ) )
             {
                 FADE_OUT_TRANSITION.play();
                 // remove the card from the pane when the transition is finished
                 FADE_OUT_TRANSITION.setOnFinished( event -> skyPane.getChildren().remove( 1 ) );
             }
-            if ( cardMap.containsKey( newValue ) )
+
+            if ( cardMap.containsKey( value ) )
             {
-                Card card = cardMap.get( newValue );
+                Card card = cardMap.get( value );
                 if ( !skyPane.getChildren().contains( card ) )
                 {
                     skyPane.getChildren().add( card );
@@ -663,7 +681,8 @@ public class Main extends Application
                     FADE_IN_TRANSITION.play();
                 }
             }
-            objectUnderMouseName = newValue;
+
+            objectUnderMouseName = value;
         } );
     }
 
