@@ -42,7 +42,7 @@ public final class Sun extends CelestialObject
     public double meanAnomaly() { return meanAnomaly; }
 
     @Override
-    public Color nameColor(){
-        return Color.valueOf("209e67");
+    public Color[] nameColor(){
+        return new Color[]{Color.valueOf("fef6ee"), Color.valueOf("f28a2c")};
     }
 }

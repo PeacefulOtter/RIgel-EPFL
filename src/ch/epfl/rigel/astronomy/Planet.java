@@ -14,7 +14,7 @@ public final class Planet extends CelestialObject
     }
 
     @Override
-    public Color nameColor(){
-        return Color.valueOf("d5eef5");
+    public Color[] nameColor(){
+        return new Color[]{Color.valueOf("edf5f7"), Color.valueOf("20859e")};
     }
 }

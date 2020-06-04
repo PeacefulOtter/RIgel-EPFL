@@ -34,7 +34,6 @@ public final class Moon extends CelestialObject
     }
 
     @Override
-    public Color nameColor(){
-        return Color.ANTIQUEWHITE;
-    }
-}
+    public Color[] nameColor(){
+        return new Color[]{Color.LIGHTGRAY, Color.WHITESMOKE};
+    }}

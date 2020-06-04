@@ -14,11 +14,13 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
@@ -495,9 +497,25 @@ public class Main extends Application
                 CelestialObject celestialObject = canvasManager.getCoordinatesWithName( inputValue );
                 if ( celestialObject != null )
                 {
+                    double heigth = sky.getHeight();
+                    double width = sky.getWidth();
+                    double letter = 6;
+                    double padding = 2;
+                    double nameLength = celestialObject.name().length();
+                    double[] xpoint = new double[]{width/2 - 3, width/2 + 3, width/2};
+                    double[] ypoint = new double[]{heigth/2 + 7, heigth/2 + 7, heigth/2 - 0.5};
+                    Color[] color = celestialObject.nameColor();
+                    GraphicsContext ctx = sky.getGraphicsContext2D();
+
                     viewingParametersBean.setCenter( conversion.apply( celestialObject.equatorialPos() ) );
-                    sky.getGraphicsContext2D().setFill(celestialObject.nameColor());
-                    sky.getGraphicsContext2D().fillText(celestialObject.name(), sky.getWidth()/2,sky.getHeight()/2);
+
+                    ctx.setFill(color[0]);
+                    ctx.fillPolygon(xpoint, ypoint, 3);
+                    ctx.setFill(color[0]);
+                    ctx.fillRect(width/2 - nameLength * letter / 2 - padding , heigth/2 + 7 , nameLength * letter + 2*padding, 14);
+                    ctx.setFill(color[1]);
+                    ctx.fillText(celestialObject.name(), sky.getWidth()/2,sky.getHeight()/2 + 5);
+
                 }
             }
         } );
