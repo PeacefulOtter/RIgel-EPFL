@@ -299,12 +299,21 @@ public class SkyCanvasManager
         } );
     }
 
-
+    /**
+     * @param object: a Celestial Object
+     * @param name : a prefix of a Celestial Object
+     * @return true if the name is a prefix of the Celestial Object
+     */
     private boolean compareObjectWithName( CelestialObject object, String name )
     {
         return object.name().toLowerCase().startsWith( name.toLowerCase() );
     }
 
+    /**
+     *
+     * @param name the input of the search
+     * @return the celestial object who has as prefix the name
+     */
     public CelestialObject getCoordinatesWithName( String name )
     {
         Sun sun = observedSkyBind.get().sun();

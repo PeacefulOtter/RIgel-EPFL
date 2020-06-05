@@ -18,6 +18,14 @@ public enum SolarSystemInfo
     private final Card card;
     private final String name;
 
+    /**
+     * Create a Card for each.
+     * @param name : the name of the Celestial Object
+     * @param imgPath : an image of the Celestial Object
+     * @param type : the type of Celestial Object
+     * @param cardHeight : the cardHeight
+     */
+
     SolarSystemInfo( String name, String imgPath, String type, int cardHeight )
     {
         this.name = name;
@@ -38,6 +46,7 @@ public enum SolarSystemInfo
                      double surface )
     {
         this( name, imgPath, type, 460 );
+        // create the Sun Card
         card.addLabel( "Temperature : " + degrees + "°C" )
                 .addLabel( "Earth distance : " + earthDistance + " x10^6 km" )
                 .addLabel( "Rayon : " + radius + " km")
@@ -57,6 +66,7 @@ public enum SolarSystemInfo
                      double surface )
     {
         this( name, imgPath, type, 460 );
+        // Create the Card for each planet and Moon
         card.addLabel( "Temperatures : " + ClosedInterval.of( minDegrees, maxDegrees ).toString() + "°C" )
                 .addLabel( "Earth distance : " + earthDistance + "x10^6 km" )
                 .addLabel( "Rayon : " + radius + " km" )

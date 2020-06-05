@@ -486,6 +486,12 @@ public class Main extends Application
         return acceleratorButtonsBox;
     }
 
+    /**
+     * Create the search bar and set an event on key (Enter) released
+     * if a celestial object is found by canvasManager.getCoordinatesWithName( inputValue ) set de center of
+     * the ViewingParameterBean on the celestial object and draw a label on the Canvas
+     * @return HBox containing the searchBar
+     */
     private HBox initSearchBar()
     {
         HBox searchBox = new HBox();
@@ -497,11 +503,13 @@ public class Main extends Application
             String inputValue = searchText.getText();
             if( key.equals( KeyCode.ENTER ) && inputValue.length() > 0 )
             {
+                // create a EquatorialToHorizontalConversion
                 EquatorialToHorizontalConversion conversion = new EquatorialToHorizontalConversion(
                         dateTimeBean.getZonedDateTime(), observerLocationBean.getCoordinates() );
                 CelestialObject celestialObject = canvasManager.getCoordinatesWithName( inputValue );
                 if ( celestialObject != null )
                 {
+                    // Set the Center on the Celestial Object
                     viewingParametersBean.setCenter( conversion.apply( celestialObject.equatorialPos() ) );
 
                     GraphicsContext ctx = sky.getGraphicsContext2D();
@@ -518,7 +526,7 @@ public class Main extends Application
                             halfHeight, halfHeight - TRIANGLE_WIDTH, halfHeight + TRIANGLE_WIDTH };
 
 
-
+                    // draw the label with one rectangle and a triangle
                     ctx.setFill( celestialObject.getBackgroundColor() );
                     ctx.fillPolygon( trianglePointsX, trianglePointsY, 3 );
                     ctx.fillRect( endTriangleX, halfHeight - RECT_HEIGHT / 2d, rectWidth, RECT_HEIGHT );
