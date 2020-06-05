@@ -4,7 +4,9 @@ import ch.epfl.rigel.coordinates.GeographicCoordinates;
 
 import java.time.ZoneId;
 
-// Collection of locations around the world consisting of a Name, a longitude and latitude, and a zone id
+/**
+ * Collection of locations around the world consisting of a Name, a longitude, a latitude, and a zone id
+ */
 public enum NamedObserverLocations
 {
     CUSTOM( "Custom", 0, 0, "Etc/GMT" ),

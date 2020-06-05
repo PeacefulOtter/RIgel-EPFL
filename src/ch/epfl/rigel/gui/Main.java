@@ -66,10 +66,10 @@ public class Main extends Application
             new FileChooser.ExtensionFilter("Text Files", "*.txt" );
 
     private static final NamedTimeAccelerator DEFAULT_ACCELERATOR = NamedTimeAccelerator.TIMES_300;
+    private static final NamedObserverLocations DEFAULT_OBSERVER_LOCATION = NamedObserverLocations.CUSTOM;
     private static final String DEFAULT_ZONE_ID_NAME = ZoneId.systemDefault().toString();
 
-    // init constants
-    private static final NamedObserverLocations DEFAULT_OBSERVER_LOCATION = NamedObserverLocations.CUSTOM;
+    private static final File ABSOLUTE_DIRECTORY = new File( Paths.get( "." ).toAbsolutePath().normalize().toString() );
     private static final double INIT_VIEWING_LON = 180.000000000001;
     private static final double INIT_VIEWING_LAT = 15;
     private static final double INIT_FOV_VALUE = 100;
@@ -452,8 +452,7 @@ public class Main extends Application
         exportButton = new Button();
         importButton = new Button();
         importInput = new FileChooser();
-        String programPath = Paths.get( "." ).toAbsolutePath().normalize().toString();
-        importInput.setInitialDirectory( new File( programPath ) );
+        importInput.setInitialDirectory( ABSOLUTE_DIRECTORY );
         importInput.setSelectedExtensionFilter( EXTENSION_FILTER );
 
         if ( loadedFont )
@@ -566,9 +565,12 @@ public class Main extends Application
         } );
 
         exportButton.setOnMouseClicked( event ->  {
+            // get the actual LocalDateTime
             LocalDateTime now = LocalDateTime.now();
+            // and used it to get a different file name each time the button is pressed
             String fileName = "RigelSave_" + DATE_TIME_FORMATTER.format( now ) + ".txt";
 
+            // regroup all the values we want to store and separate them by a ","
             StringJoiner data = new StringJoiner("," )
                     .add( lonTextFormatter.getValue().toString() )
                     .add( latTextFormatter.getValue().toString() )
@@ -579,10 +581,13 @@ public class Main extends Application
                     .add( String.valueOf( viewingParametersBean.getCenter().altDeg() ) )
                     .add( viewingParametersBean.getFieldOfViewDeg().toString() );
 
+            // create the file with the previously made file name
             try ( FileOutputStream fos = new FileOutputStream( fileName ) )
             {
+                // write the data
                 fos.write( data.toString().getBytes() );
                 fos.flush();
+                // and if the operation is successful, draw a notification on the screen to inform the user that everything went well
                 new NotificationBox()
                         .setSuccessLogo()
                         .setTitle( "File successfully saved !" )
@@ -590,6 +595,7 @@ public class Main extends Application
                         .fire();
             } catch ( IOException e )
             {
+                // otherwise, draw a notification on the screen to inform the user that something went wrong
                 new NotificationBox()
                         .setErrorLogo()
                         .setTitle( "File couldn't be saved" )
@@ -599,17 +605,21 @@ public class Main extends Application
         } );
 
         importButton.setOnMouseClicked( event ->  {
-            File importedFiles = importInput.showOpenDialog( primaryStage );
-
-            if ( importedFiles != null && importedFiles.getName().contains( "RigelSave" ) )
+            // open the file manager and let the user select a .txt file
+            File importedFile = importInput.showOpenDialog( primaryStage );
+            // if a file is selected and it contains the name RigelSave, then we can pretty much say that
+            // it is one of our file
+            if ( importedFile != null && importedFile.getName().contains( "RigelSave" ) )
             {
-                File importedFile = Collections.singletonList( importedFiles ).get( 0 );
+                // read the imported file
                 try ( BufferedReader reader = new BufferedReader( new FileReader( importedFile ) ) )
                 {
                     String line;
                     while ( ( line = reader.readLine() ) != null )
                     {
+                        // get each value by splitting the line
                         String[] data = line.split( "," );
+                        // and set all the parameters with their new value
                         lonTextFormatter.setValue( Double.parseDouble( data[ 0 ] ) );
                         latTextFormatter.setValue( Double.parseDouble( data[ 1 ] ) );
                         int[] date = Arrays.stream( data[ 2 ].split( "-" ) ).mapToInt( Integer::parseInt ).toArray();
@@ -621,17 +631,20 @@ public class Main extends Application
                         viewingParametersBean.setCenter( newCenter );
                         viewingParametersBean.setFieldOfViewDeg( Double.parseDouble( data[ 7 ] ) );
                     }
+                    // finally, if the operation is successful, draw a notification on the screen to inform the user
+                    // that everything went well
                     new NotificationBox()
                             .setSuccessLogo()
                             .setTitle( "File successfully imported !" )
                             .setParentElement( skyPane )
                             .fire();
                 }
-                catch ( IOException e )
+                catch ( Exception e )
                 {
+                    // otherwise draw a notification on the screen to inform the user that something went wrong
                     new NotificationBox()
                             .setErrorLogo()
-                            .setTitle( "File could not be read !" )
+                            .setTitle( "File could not be imported or it is not a proper RigelSave file !" )
                             .setParentElement( skyPane )
                             .fire();
                 }
@@ -661,6 +674,10 @@ public class Main extends Application
         return skyPane;
     }
 
+    /**
+     * Initialise the objectUnderMouse listener and when the mouse is over a planet/the sun/the moon, it displays
+     * the corresponding Card
+     */
     private void initObjectUnderMouseListener()
     {
         Map<String, Card> cardMap = new HashMap<>();
@@ -674,6 +691,7 @@ public class Main extends Application
             // this is necessary because the Moon name looks like "Lune (xx.x%)"
             String value = newValue.split( " " )[ 0 ];
 
+            // not over the object anymore
             if ( skyPane.getChildren().size() > 1 && !value.equals( objectUnderMouseName ) )
             {
                 FADE_OUT_TRANSITION.play();
@@ -681,6 +699,9 @@ public class Main extends Application
                 FADE_OUT_TRANSITION.setOnFinished( event -> skyPane.getChildren().remove( 1 ) );
             }
 
+            // mouse over a planet/the sun/the moon
+            // not an elsif here because we can do both operations at the same time, for example when the mouse goes
+            // from the sun to venus directly !
             if ( cardMap.containsKey( value ) )
             {
                 Card card = cardMap.get( value );
