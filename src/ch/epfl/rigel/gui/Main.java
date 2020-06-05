@@ -487,6 +487,12 @@ public class Main extends Application
         return acceleratorButtonsBox;
     }
 
+    /**
+     * Create the search bar and set an event on key (Enter) released
+     * if a celestial object is found by canvasManager.getCoordinatesWithName( inputValue ) set de center of
+     * the ViewingParameterBean on the celestial object and draw a label on the Canvas
+     * @return HBox containing the searchBar
+     */
     private HBox initSearchBar()
     {
         HBox searchBox = new HBox();

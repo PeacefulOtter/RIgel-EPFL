@@ -18,6 +18,14 @@ public enum SolarSystemInfo
     private final Card card;
     private final String name;
 
+    /**
+     * Create a Card for each.
+     * @param name : the name of the Celestial Object
+     * @param imgPath : an image of the Celestial Object
+     * @param type : the type of Celestial Object
+     * @param cardHeight : the cardHeight
+     */
+
     SolarSystemInfo( String name, String imgPath, String type, int cardHeight )
     {
         this.name = name;
