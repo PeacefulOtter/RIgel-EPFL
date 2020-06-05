@@ -302,7 +302,7 @@ public class SkyCanvasManager
 
     private boolean compareObjectWithName( CelestialObject object, String name )
     {
-        return name.equalsIgnoreCase( object.name() ) || object.name().toLowerCase().startsWith( name.toLowerCase() );
+        return object.name().toLowerCase().startsWith( name.toLowerCase() );
     }
 
     public CelestialObject getCoordinatesWithName( String name )

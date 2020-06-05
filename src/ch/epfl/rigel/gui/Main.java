@@ -496,7 +496,7 @@ public class Main extends Application
         searchText.setOnKeyReleased( keyEvent -> {
             KeyCode key = keyEvent.getCode(); // get the key
             String inputValue = searchText.getText();
-            if( key.equals( KeyCode.ENTER ) && inputValue.length() > 1 )
+            if( key.equals( KeyCode.ENTER ) && inputValue.length() > 0 )
             {
                 EquatorialToHorizontalConversion conversion = new EquatorialToHorizontalConversion(
                         dateTimeBean.getZonedDateTime(), observerLocationBean.getCoordinates() );
